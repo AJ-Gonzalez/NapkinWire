@@ -43,7 +43,7 @@ document.querySelectorAll('.color-btn').forEach(button => {
         // Update current color
         currentColor = this.dataset.color;
         // In your color button click handler
-        document.getElementById('activeColorName').textContent = this.textContent;
+        // document.getElementById('activeColorName').textContent = this.textContent;
 
         // In your color button click handler, add:
         const indicator = document.getElementById('activeColorName');
