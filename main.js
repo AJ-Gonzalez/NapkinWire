@@ -323,6 +323,34 @@ Please create a functional interface that matches this layout exactly. Use the v
 
 
 
+
+
+
+document.getElementById("get_prompt").addEventListener('click', function () {
+    // Generate the prompt
+    const finalPrompt = generateFinalPrompt();
+
+    // Copy to clipboard immediately
+    navigator.clipboard.writeText(finalPrompt).then(() => {
+        // Flash the button text
+        const originalText = this.textContent;
+        this.textContent = 'Copied to Clipboard!';
+        this.style.backgroundColor = '#059669'; // Slightly different green
+
+        setTimeout(() => {
+            this.textContent = originalText;
+            this.style.backgroundColor = 'var(--button_bg)'; // Back to original
+        }, 1500);
+    }).catch(() => {
+        // Fallback if clipboard fails
+        this.textContent = 'Copy failed - check preview';
+        setTimeout(() => {
+            this.textContent = 'Get Prompt!';
+        }, 2000);
+    });
+});
+
+
 // Reset canvas functionality - add this to main.js
 document.getElementById("clear_canvas").addEventListener('click', function () {
     rectangles = [];
@@ -343,49 +371,4 @@ document.getElementById("clear_canvas").addEventListener('click', function () {
     setTimeout(() => {
         this.textContent = originalText;
     }, 800);
-});
-
-
-// Wait for DOM to be ready
-document.addEventListener('DOMContentLoaded', function() {
-    
-    // Get prompt button
-    document.getElementById("get_prompt").addEventListener('click', function () {
-        const finalPrompt = generateFinalPrompt();
-        
-        navigator.clipboard.writeText(finalPrompt).then(() => {
-            const originalText = this.textContent;
-            this.textContent = 'Copied to Clipboard!';
-            this.style.backgroundColor = '#059669';
-            
-            setTimeout(() => {
-                this.textContent = originalText;
-                this.style.backgroundColor = 'var(--button_bg)';
-            }, 1500);
-        }).catch(() => {
-            this.textContent = 'Copy failed - check preview';
-            setTimeout(() => {
-                this.textContent = 'Get Prompt!';
-            }, 2000);
-        });
-    });
-
-    // Clear canvas button
-    document.getElementById("clear_canvas").addEventListener('click', function () {
-        rectangles = [];
-        redrawCanvas();
-        document.getElementById('ascii-preview').textContent = '';
-        document.getElementById('prompt-preview').value = '';
-        document.getElementById('rectangle-dropdowns').innerHTML = '';
-        document.getElementById('overall-purpose').value = '';
-        document.getElementById('platform').value = '';
-        document.getElementById('tuiMode').checked = false;
-        
-        const originalText = this.textContent;
-        this.textContent = 'Cleared!';
-        setTimeout(() => {
-            this.textContent = originalText;
-        }, 800);
-    });
-    
 });

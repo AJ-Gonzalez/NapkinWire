@@ -129,3 +129,7 @@ canvas {
         max-width: 90%; /* Bit more breathing room on small screens */
     }
 }
+
+#prompt_preview {
+    padding-top: 2%;
+}
