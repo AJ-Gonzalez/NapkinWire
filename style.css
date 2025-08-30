@@ -1,0 +1,131 @@
+:root {
+    --fg: #166534;
+    --bg: #fefce8;
+    --button_fg: #fefce8;
+    --button_bg: #166534;
+    --button_bg_clicked: #0d4322;
+}
+
+
+body {
+    background-color: var(--bg);
+    color: var(--fg);
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+h1 {
+    font-family: 'Oswald';
+    font-size: large;
+    padding-left: 10%;
+}
+
+.row {
+    display: flex;
+}
+
+.column {
+    flex: 50%;
+}
+
+.action_button {
+    background-color: var(--button_bg);
+    color: var(--button_fg);
+}
+
+.action_button:focus {
+    background-color: var(--button_bg_clicked);
+}
+
+
+canvas {
+    padding: 1%;
+    background-color: gainsboro;
+    border: 2px solid darkolivegreen; /* Fixed border syntax */
+    border-radius: 4px;
+    max-width: 100%; /* This is key */
+    height: auto; /* Maintains aspect ratio */
+}
+
+.color-btn {
+    padding: 8px 12px;
+    margin: 4px;
+    border: 2px solid transparent;
+    cursor: pointer;
+}
+
+.color-btn::before {
+    content: '●';
+    font-size: 18px;
+    margin-right: 8px;
+    width: 20px;
+}
+
+.color-btn.red::before { color: #ff0000; }
+.color-btn.green::before { color: #00ff00; }
+.color-btn.blue::before { color: #0000ff; }
+.color-btn.yellow::before { color: #ffff00; }
+.color-btn.purple::before { color: #ff00ff; }
+
+.color-btn.active {
+    border: 2px solid var(--fg);
+}
+
+.active-color-display {
+    padding: 4px 8px;
+    border-radius: 4px;
+    display: inline-block;
+    margin: 4px;
+    color: white;
+    background-color: red;
+    font-weight: bold;
+}
+.drawing_panel, .label_and_preview {
+    padding: 10px;
+    margin: 10px;
+    box-sizing: border-box; /* Makes padding count inside the element */
+}
+
+.canvas-instructions {
+    font-size: 13px;
+    color: var(--fg);
+    margin: 8px 0;
+    font-style: italic;
+    padding-left: 2%;
+}
+
+#get_prompt {
+    font-size: large;
+    font-weight: bold;
+    background-color: var(--button_bg);
+    color: var(--button_fg);
+}
+
+#get_prompt:focus {
+    background-color: var(--button_bg_clicked);
+}
+
+#ascii-preview {
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    background-color: #f5f5f5;
+    border: 1px solid var(--fg);
+    padding: 10px;
+    white-space: pre;
+    overflow-x: auto;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+    .row {
+        flex-direction: column;
+    }
+    
+    .column {
+        flex: 100%;
+    }
+    
+    canvas {
+        max-width: 90%; /* Bit more breathing room on small screens */
+    }
+}
