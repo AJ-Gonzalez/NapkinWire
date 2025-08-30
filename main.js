@@ -369,6 +369,8 @@ document.getElementById("clear_canvas").addEventListener('click', function () {
     tuiCheckbox.checked = false;
     tuiCheckbox.dispatchEvent(new Event('change')); // Force visual update
 
+    document.getElementById('tuiMode').checked = false;
+
     // Flash feedback
     const originalText = this.textContent;
     this.textContent = 'Cleared!';
