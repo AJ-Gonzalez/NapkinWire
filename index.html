@@ -17,14 +17,14 @@
             <div class="column">
                 <div class="drawing_panel">
                     <div class="row">
-                        <select title="Choose Layout" id="layoutPicker">
+                        <select title="Screen Layout" id="layoutPicker">
                             <option value="desktop">Desktop (16:9)</option>
                             <option value="mobile">Mobile (9:16)</option>
                             <option value="square">Square (1:1)</option>
                         </select>
 
                         <div class="canvas-instructions">
-                            Click and drag to draw rectangles. Purple rectangles are for text content - everything updates automatically as you draw.
+                            Click and drag to draw rectangles. Purple rectangles to label what's what - everything updates automatically as you draw.
                         </div>
                     </div>
 
@@ -82,15 +82,17 @@
                             </div>
                         </div>
                         
-                        <div class="row">
-                            <h3>Final Prompt</h3>
-                            <textarea title="preview" id="prompt-preview" rows="6" readonly></textarea>
-                        </div>
+                        
                     </div>
 
                     <div class="row">
                         <div class="output-options">
                             <button id="get_prompt">Get Prompt!</button>
+                        </div>
+
+                        <div class="row">
+                            <h3>Final Prompt</h3>
+                            <textarea title="preview" id="prompt-preview" rows="6" readonly></textarea>
                         </div>
                     </div>
                 </div>
