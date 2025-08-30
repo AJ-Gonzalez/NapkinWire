@@ -114,7 +114,7 @@ document.addEventListener('mouseup', function (e) {
             height: Math.abs(height),
             color: currentColor
         });
-        
+
         // Auto-generate ASCII and input fields immediately
         updateLayout();
     }
@@ -132,7 +132,7 @@ document.addEventListener('mousemove', function (e) {
 
     // Redraw everything + show preview rectangle
     redrawCanvas();
-    
+
     // Draw the preview rectangle
     ctx.strokeStyle = currentColor;
     ctx.lineWidth = 2;
@@ -274,30 +274,8 @@ function getColorName(color) {
     return names[color] || 'Unknown';
 }
 
-// Replace the existing "get_prompt" event listener in main.js
-document.getElementById("get_prompt").addEventListener('click', function () {
-    // Generate the prompt
-    const finalPrompt = generateFinalPrompt();
 
-    // Copy to clipboard immediately
-    navigator.clipboard.writeText(finalPrompt).then(() => {
-        // Flash the button text
-        const originalText = this.textContent;
-        this.textContent = 'Copied to Clipboard!';
-        this.style.backgroundColor = '#059669'; // Slightly different green
 
-        setTimeout(() => {
-            this.textContent = originalText;
-            this.style.backgroundColor = 'var(--button_bg)'; // Back to original
-        }, 1500);
-    }).catch(() => {
-        // Fallback if clipboard fails
-        this.textContent = 'Copy failed - check preview';
-        setTimeout(() => {
-            this.textContent = 'Get Prompt!';
-        }, 2000);
-    });
-});
 
 function generateFinalPrompt() {
     const asciiLayout = generateASCII();
@@ -365,4 +343,29 @@ document.getElementById("clear_canvas").addEventListener('click', function () {
     setTimeout(() => {
         this.textContent = originalText;
     }, 800);
+});
+
+
+document.getElementById("get_prompt").addEventListener('click', function () {
+    // Generate the prompt
+    const finalPrompt = generateFinalPrompt();
+
+    // Copy to clipboard immediately
+    navigator.clipboard.writeText(finalPrompt).then(() => {
+        // Flash the button text
+        const originalText = this.textContent;
+        this.textContent = 'Copied to Clipboard!';
+        this.style.backgroundColor = '#059669'; // Slightly different green
+
+        setTimeout(() => {
+            this.textContent = originalText;
+            this.style.backgroundColor = 'var(--button_bg)'; // Back to original
+        }, 1500);
+    }).catch(() => {
+        // Fallback if clipboard fails
+        this.textContent = 'Copy failed - check preview';
+        setTimeout(() => {
+            this.textContent = 'Get Prompt!';
+        }, 2000);
+    });
 });
