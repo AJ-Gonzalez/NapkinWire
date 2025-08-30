@@ -370,3 +370,102 @@ document.getElementById("clear_canvas").addEventListener('click', function () {
         this.textContent = originalText;
     }, 800);
 });
+
+// Add these touch event listeners to your main.js, after your existing mouse events
+
+// Touch detection for adjusting snap grid
+const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+const snapSize = isTouchDevice ? 15 : 10; // Bigger grid for touch
+
+// Updated snap function
+function snapToGrid(coord) {
+    return Math.floor(coord / snapSize) * snapSize;
+}
+
+// Get touch position (similar to getMousePos but for touch)
+function getTouchPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+
+    const touch = e.touches[0]; // First finger
+    const x = (touch.clientX - rect.left) * scaleX;
+    const y = (touch.clientY - rect.top) * scaleY;
+
+    return {
+        x: snapToGrid(x),
+        y: snapToGrid(y)
+    };
+}
+
+// Touch start - same as mouse down
+canvas.addEventListener('touchstart', function (e) {
+    e.preventDefault(); // Prevent scrolling
+
+    const pos = getTouchPos(e);
+    isDrawing = true;
+    startX = pos.x;
+    startY = pos.y;
+});
+
+// Touch move - same as mouse move
+document.addEventListener('touchmove', function (e) {
+    if (!isDrawing) return;
+    e.preventDefault(); // Prevent scrolling
+
+    const pos = getTouchPos(e);
+    const width = pos.x - startX;
+    const height = pos.y - startY;
+
+    // Redraw everything + show preview rectangle
+    redrawCanvas();
+
+    // Draw the preview rectangle
+    ctx.strokeStyle = currentColor;
+    ctx.lineWidth = 2;
+    if (currentColor === '#ff00ff') {
+        // Purple rectangles get filled
+        ctx.fillStyle = currentColor;
+        ctx.fillRect(startX, startY, width, height);
+    } else {
+        // Other colors just get stroked
+        ctx.strokeRect(startX, startY, width, height);
+    }
+});
+
+// Mobile support
+// Touch end - same as mouse up
+document.addEventListener('touchend', function (e) {
+    if (!isDrawing) return;
+    e.preventDefault();
+
+    // For touchend, we need to use changedTouches instead of touches
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+
+    const touch = e.changedTouches[0]; // The finger that was lifted
+    const x = (touch.clientX - rect.left) * scaleX;
+    const y = (touch.clientY - rect.top) * scaleY;
+
+    const pos = { x: snapToGrid(x), y: snapToGrid(y) };
+    const width = pos.x - startX;
+    const height = pos.y - startY;
+
+    // Only add if rectangle has actual size
+    if (Math.abs(width) >= snapSize && Math.abs(height) >= snapSize) {
+        rectangles.push({
+            x: Math.min(startX, pos.x),
+            y: Math.min(startY, pos.y),
+            width: Math.abs(width),
+            height: Math.abs(height),
+            color: currentColor
+        });
+
+        // Auto-generate ASCII and input fields
+        updateLayout();
+    }
+
+    isDrawing = false;
+    redrawCanvas();
+});
