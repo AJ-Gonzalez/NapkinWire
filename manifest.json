@@ -1,0 +1,21 @@
+{
+  "name": "NapkinWire",
+  "short_name": "NapkinWire",
+  "description": "Sketch UI layouts, get LLM prompts instantly",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fefce8",
+  "theme_color": "#166534",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png", 
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
