@@ -235,12 +235,12 @@ function generateASCII() {
     return asciiOutput;
 
     function isOnPerimeter(x, y, rect) {
-        const pixelX = x * 10;
-        const pixelY = y * 10;
+        const pixelX = x * snapSize; // Use snapSize instead of hardcoded 10
+        const pixelY = y * snapSize;
 
-        const onLeftOrRight = (pixelX === rect.x || pixelX === rect.x + rect.width - 10) &&
+        const onLeftOrRight = (pixelX === rect.x || pixelX === rect.x + rect.width - snapSize) &&
             (pixelY >= rect.y && pixelY < rect.y + rect.height);
-        const onTopOrBottom = (pixelY === rect.y || pixelY === rect.y + rect.height - 10) &&
+        const onTopOrBottom = (pixelY === rect.y || pixelY === rect.y + rect.height - snapSize) &&
             (pixelX >= rect.x && pixelX < rect.x + rect.width);
 
         return onLeftOrRight || onTopOrBottom;
