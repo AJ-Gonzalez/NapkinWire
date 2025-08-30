@@ -6,9 +6,8 @@
     <meta name="description" content="Sketch UI layouts, get LLM prompts instantly">
     <title>NapkinWire - Sketch to Prompt</title>
     <link href='https://fonts.googleapis.com/css?family=Oswald' rel='stylesheet'>
+    <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32x32.png">
     <link rel="stylesheet" href="style.css">
-    
-    <!-- PWA manifest -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#166534">
 </head>
@@ -19,6 +18,7 @@
     </header>
 
     <main class="app-container">
+        <!-- Left side: Drawing -->
         <section class="drawing-section">
             <div class="controls">
                 <select id="layoutPicker" class="layout-select">
@@ -33,44 +33,44 @@
                     <button data-color="#0000ff" class="color-btn blue">Blue</button>
                     <button data-color="#ffff00" class="color-btn yellow">Yellow</button>
                     <button data-color="#ff00ff" class="color-btn purple">[TEXT]</button>
-                </div>
-                
-                <div class="action-buttons">
                     <button id="undoBtn" class="action-btn">Undo</button>
                     <button id="clear_canvas" class="action-btn">Clear</button>
                 </div>
             </div>
 
             <canvas id="drawingCanvas" width="800" height="450"></canvas>
-            
-            <div id="ascii-preview" class="ascii-display"></div>
         </section>
 
-        <section class="input-section">
-            <div class="input-group">
-                <label for="overall-purpose">What are you building?</label>
-                <input type="text" id="overall-purpose" placeholder="Dashboard, blog, chat app...">
-            </div>
+        <!-- Right side: ASCII + Inputs -->
+        <section class="output-section">
+            <div id="ascii-preview" class="ascii-display"></div>
             
-            <div class="input-group">
-                <label for="platform">Framework/Language</label>
-                <input type="text" id="platform" placeholder="React, Vue, Python...">
-            </div>
+            <div class="input-section">
+                <div class="input-group">
+                    <label for="overall-purpose">What are you building?</label>
+                    <input type="text" id="overall-purpose" placeholder="Dashboard, blog, chat app...">
+                </div>
+                
+                <div class="input-group">
+                    <label for="platform">Framework/Language</label>
+                    <input type="text" id="platform" placeholder="React, Vue, Python...">
+                </div>
 
-            <div id="rectangle-dropdowns" class="text-areas">
-                <!-- Text area inputs generated here -->
-            </div>
+                <div id="rectangle-dropdowns" class="text-areas">
+                    <!-- Text area inputs generated here -->
+                </div>
 
-            <div class="checkbox-group">
-                <label>
-                    <input type="checkbox" id="tuiMode">
-                    Terminal UI instead of web
-                </label>
-            </div>
+                <div class="checkbox-group">
+                    <label>
+                        <input type="checkbox" id="tuiMode">
+                        Terminal UI instead of web
+                    </label>
+                </div>
 
-            <button id="get_prompt" class="primary-btn">
-                Copy Prompt to Clipboard
-            </button>
+                <button id="get_prompt" class="primary-btn">
+                    Copy Prompt to Clipboard
+                </button>
+            </div>
         </section>
     </main>
 
