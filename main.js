@@ -46,11 +46,11 @@ document.querySelectorAll('.color-btn').forEach(button => {
         // document.getElementById('activeColorName').textContent = this.textContent;
 
         // In your color button click handler, add:
-        const indicator = document.getElementById('activeColorName');
-        const colorDisplay = document.querySelector('.active-color-display');
+        // const indicator = document.getElementById('activeColorName');
+        // const colorDisplay = document.querySelector('.active-color-display');
 
-        indicator.textContent = this.textContent;
-        colorDisplay.style.backgroundColor = currentColor;
+        // indicator.textContent = this.textContent;
+        // colorDisplay.style.backgroundColor = currentColor;
 
         // Adjust text color for readability
         if (currentColor === '#ffff00') {
