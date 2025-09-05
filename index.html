@@ -1,0 +1,143 @@
+<!DOCTYPE html lang="en">
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>AJ's sketch to ASCII</title>
+        <meta name="description" content>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href='https://fonts.googleapis.com/css?family=Oswald'
+            rel='stylesheet'>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <h1>Idea to ASCII for LLMs</h1>
+
+        <div class="row">
+            <div class="column"><div class="drawing_panel">
+
+                    <div class="row">
+
+                        <select title="Choose Layout" id="layoutPicker">
+                            <option value="desktop">Desktop (16:9)</option>
+                            <option value="mobile">Mobile (9:16)</option>
+                            <option value="square">Square (1:1)</option>
+                        </select>
+
+                        <div class="canvas-instructions">
+                            Click and drag to draw rectangles. Each color
+                            represents a different UI element.[TEXT] will allow
+                            you to label what each
+                            area is.
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="color-palette">
+                            <button data-color="#ff0000"
+                                class="color-btn red">Red</button>
+                            <button data-color="#00ff00"
+                                class="color-btn green">Green</button>
+                            <button data-color="#0000ff"
+                                class="color-btn blue">Blue</button>
+                            <button data-color="#ffff00"
+                                class="color-btn yellow">Yellow</button>
+                            <button data-color="#ff00ff"
+                                class="color-btn purple">[TEXT]</button>
+                            <button id="undoBtn" class="action_button">Undo Last
+                                Rectangle</button>
+                            <div class="active-color-display">
+                                <span>Active: </span>
+                                <span id="activeColorName">Red</span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <canvas id="drawingCanvas" width="800"
+                            height="450"></canvas>
+                    </div>
+                    <div class="row">
+                        <button id="generate_layout"
+                            class="action_button">Generate Layout</button>
+                    </div>
+
+                </div></div>
+            <div class="column"><div class="label_and_preview">
+
+                    <div class="row">
+                        <pre id="ascii-preview"></pre>
+                    </div>
+                    <div class="row">
+                        <div class="row">
+                            <div id="input-fields">
+                                <h3>Describe Your Layout</h3>
+                                <div>
+                                    <label>Overall Purpose:</label>
+                                    <input type="text" id="overall-purpose"
+                                        placeholder="e.g., Dashboard, Landing page, Blog layout">
+                                </div>
+                                <div>
+                                    <label>Language/Framework:</label>
+                                    <input type="text" id="platform"
+                                        placeholder="e.g., Javascript with NextJS, Python with Textual, Vanilla JS">
+                                </div>
+
+                                <div>
+                                    <label>Text Areas Represent:</label>
+                                    <input type="text" id="text-areas"
+                                        placeholder="e.g., Headings, Buttons, Form labels">
+                                </div>
+                                <div id="rectangle-dropdowns">
+                                    <!-- Dynamic dropdowns will be generated here -->
+                                </div>
+
+                                <div>
+                                    <label>
+                                        <input type="checkbox" id="tuiMode">
+                                        Generate
+                                        TUI prompt
+                                        instead of GUI
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <h3>Final Prompt Preview</h3>
+                            <textarea title="preview" id="prompt-preview"
+                                rows="6"
+                                readonly></textarea>
+                        </div>
+                    </div>
+
+                    <div class="row">
+
+                        <div class="output-options">
+
+                            <button id="get_prompt">Get Prompt!</button>
+                        </div>
+
+                        <div>
+                            <!-- Add this button to your HTML where you want it -->
+                            <button id="clear_canvas"
+                                class="action_button">Clear Canvas</button>
+                        </div>
+                    </div>
+                </div></div>
+        </div>
+
+        <div class="button bar">
+            <div class="row">
+
+            </div>
+
+        </div>
+
+        <script src="main.js" async defer></script>
+    </body>
+</html>
