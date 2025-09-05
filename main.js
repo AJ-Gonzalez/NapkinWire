@@ -362,13 +362,8 @@ document.getElementById("clear_canvas").addEventListener('click', function () {
     // Clear the main input fields too
     document.getElementById('overall-purpose').value = '';
     document.getElementById('platform').value = '';
-    document.getElementById('text-areas').value = '';
-
-    // In the clear button event listener, replace the tuiMode line with:
-    const tuiCheckbox = document.getElementById('tuiMode');
-    tuiCheckbox.checked = false;
-    tuiCheckbox.dispatchEvent(new Event('change')); // Force visual update
-
+    // Remove this line - field doesn't exist anymore:
+    // document.getElementById('text-areas').value = '';
     document.getElementById('tuiMode').checked = false;
 
     // Flash feedback
