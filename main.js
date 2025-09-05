@@ -363,7 +363,11 @@ document.getElementById("clear_canvas").addEventListener('click', function () {
     document.getElementById('overall-purpose').value = '';
     document.getElementById('platform').value = '';
     document.getElementById('text-areas').value = '';
-    document.getElementById('tuiMode').checked = false;
+
+    // In the clear button event listener, replace the tuiMode line with:
+    const tuiCheckbox = document.getElementById('tuiMode');
+    tuiCheckbox.checked = false;
+    tuiCheckbox.dispatchEvent(new Event('change')); // Force visual update
 
     // Flash feedback
     const originalText = this.textContent;
