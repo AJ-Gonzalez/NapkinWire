@@ -315,8 +315,6 @@ Content areas:${textAreaDescriptions}
 
 Please create a functional interface that matches this layout exactly. Use the visual structure shown in the ASCII art as your guide for positioning and proportions.`;
 
-    // Display the prompt in the preview textarea
-    document.getElementById('prompt-preview').value = finalPrompt;
 
     return finalPrompt;
 }
@@ -343,7 +341,7 @@ document.getElementById("get_prompt").addEventListener('click', function () {
         }, 1500);
     }).catch(() => {
         // Fallback if clipboard fails
-        this.textContent = 'Copy failed - check preview';
+        this.textContent = 'Copy failed';
         setTimeout(() => {
             this.textContent = 'Get Prompt!';
         }, 2000);
@@ -356,7 +354,6 @@ document.getElementById("clear_canvas").addEventListener('click', function () {
     rectangles = [];
     redrawCanvas();
     document.getElementById('ascii-preview').textContent = '';
-    document.getElementById('prompt-preview').value = '';
     document.getElementById('rectangle-dropdowns').innerHTML = '';
 
     // Clear the main input fields too
