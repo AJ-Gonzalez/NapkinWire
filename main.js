@@ -190,7 +190,7 @@ function generateASCII() {
         '#ff0000': '#',  // Red
         '#00ff00': '@',  // Green
         '#0000ff': '%',  // Blue
-        '#ffff00': '&',  // Yellow
+        '#DAA520': '&',  // Yellow
         '#ff00ff': '.'   // Purple - will be replaced with numbers
     };
 
@@ -269,12 +269,10 @@ function generateInputFields() {
 function getColorName(color) {
     const names = {
         '#ff0000': 'Red', '#00ff00': 'Green', '#0000ff': 'Blue',
-        '#ffff00': 'Yellow', '#ff00ff': 'Purple'
+        '#DAA520': 'Yellow', '#ff00ff': 'Purple'
     };
     return names[color] || 'Unknown';
 }
-
-
 
 
 function generateFinalPrompt() {
