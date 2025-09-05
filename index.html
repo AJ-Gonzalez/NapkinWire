@@ -1,104 +1,79 @@
-<!DOCTYPE html >
+<!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>NapkinWire - Sketch to Prompt</title>
-        <meta name="description" content="The fastest way to go from sketch to LLM prompt">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link href='https://fonts.googleapis.com/css?family=Oswald'
-            rel='stylesheet'>
-        <link rel="stylesheet" href="style.css">
-    </head>
-    <body>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Sketch UI layouts, get LLM prompts instantly">
+    <title>NapkinWire - Sketch to Prompt</title>
+    <link href='https://fonts.googleapis.com/css?family=Oswald' rel='stylesheet'>
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- PWA manifest -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#166534">
+</head>
+<body>
+    <header>
         <h1>NapkinWire</h1>
+        <p class="tagline">From sketch to prompt in seconds</p>
+    </header>
 
-        <div class="row">
-            <div class="column">
-                <div class="drawing_panel">
-                    <div class="row">
-                        <select title="Screen Layout" id="layoutPicker">
-                            <option value="desktop">Desktop (16:9)</option>
-                            <option value="mobile">Mobile (9:16)</option>
-                            <option value="square">Square (1:1)</option>
-                        </select>
-
-                        <div class="canvas-instructions">
-                            Click and drag to draw rectangles. Purple rectangles to label what's what - everything updates automatically as you draw.
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="color-palette">
-                            <button data-color="#ff0000" class="color-btn red">Red</button>
-                            <button data-color="#00ff00" class="color-btn green">Green</button>
-                            <button data-color="#0000ff" class="color-btn blue">Blue</button>
-                            <button data-color="#ffff00" class="color-btn yellow">Yellow</button>
-                            <button data-color="#ff00ff" class="color-btn purple">[TEXT]</button>
-                            <button id="undoBtn" class="action_button">Undo</button>
-                            <button id="clear_canvas" class="action_button">Clear</button>
-                            <div class="active-color-display">
-                                <span>Active: </span>
-                                <span id="activeColorName">Red</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <canvas id="drawingCanvas" width="800" height="450"></canvas>
-                    </div>
+    <main class="app-container">
+        <section class="drawing-section">
+            <div class="controls">
+                <select id="layoutPicker" class="layout-select">
+                    <option value="desktop">Desktop (16:9)</option>
+                    <option value="mobile">Mobile (9:16)</option>
+                    <option value="square">Square (1:1)</option>
+                </select>
+                
+                <div class="color-palette">
+                    <button data-color="#ff0000" class="color-btn red">Red</button>
+                    <button data-color="#00ff00" class="color-btn green">Green</button>
+                    <button data-color="#0000ff" class="color-btn blue">Blue</button>
+                    <button data-color="#ffff00" class="color-btn yellow">Yellow</button>
+                    <button data-color="#ff00ff" class="color-btn purple">[TEXT]</button>
                 </div>
+                
+                <div class="action-buttons">
+                    <button id="undoBtn" class="action-btn">Undo</button>
+                    <button id="clear_canvas" class="action-btn">Clear</button>
+                </div>
+            </div>
+
+            <canvas id="drawingCanvas" width="800" height="450"></canvas>
+            
+            <div id="ascii-preview" class="ascii-display"></div>
+        </section>
+
+        <section class="input-section">
+            <div class="input-group">
+                <label for="overall-purpose">What are you building?</label>
+                <input type="text" id="overall-purpose" placeholder="Dashboard, blog, chat app...">
             </div>
             
-            <div class="column">
-                <div class="label_and_preview">
-                    <div class="row">
-                        <pre id="ascii-preview"></pre>
-                    </div>
-                    
-                    <div class="row">
-                        <div id="input-fields">
-                            <h3>Describe Your Layout</h3>
-                            <div>
-                                <label>Overall Purpose:</label>
-                                <input type="text" id="overall-purpose"
-                                    placeholder="e.g., Dashboard, Blog, Chat app">
-                            </div>
-                            <div>
-                                <label>Language/Framework:</label>
-                                <input type="text" id="platform"
-                                    placeholder="e.g., React, Vue, vanilla JS">
-                            </div>
-
-                            <div id="rectangle-dropdowns">
-                                <!-- Text area inputs generated here -->
-                            </div>
-
-                            <div>
-                                <label>
-                                    <input type="checkbox" id="tuiMode">
-                                    Generate TUI prompt instead of GUI
-                                </label>
-                            </div>
-                        </div>
-                        
-                        
-                    </div>
-
-                    <div class="row">
-                        <div class="output-options">
-                            <button id="get_prompt">Get Prompt!</button>
-                        </div>
-
-                        <div class="row">
-                            <h3>Final Prompt</h3>
-                            <textarea title="preview" id="prompt-preview" rows="6" readonly></textarea>
-                        </div>
-                    </div>
-                </div>
+            <div class="input-group">
+                <label for="platform">Framework/Language</label>
+                <input type="text" id="platform" placeholder="React, Vue, Python...">
             </div>
-        </div>
 
-        <script src="main.js" async defer></script>
-    </body>
+            <div id="rectangle-dropdowns" class="text-areas">
+                <!-- Text area inputs generated here -->
+            </div>
+
+            <div class="checkbox-group">
+                <label>
+                    <input type="checkbox" id="tuiMode">
+                    Terminal UI instead of web
+                </label>
+            </div>
+
+            <button id="get_prompt" class="primary-btn">
+                Copy Prompt to Clipboard
+            </button>
+        </section>
+    </main>
+
+    <script src="main.js"></script>
+</body>
 </html>
