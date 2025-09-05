@@ -247,14 +247,6 @@ function generateASCII() {
     }
 }
 
-document.getElementById("generate_layout").addEventListener('click', function () {
-    const ascii_out = generateASCII();
-    document.getElementById('ascii-preview').textContent = ascii_out;
-
-    // Generate input fields for each unique rectangle
-    generateInputFields();
-});
-
 function generateInputFields() {
     const container = document.getElementById('rectangle-dropdowns');
     container.innerHTML = ''; // Clear existing fields
