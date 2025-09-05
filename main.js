@@ -52,12 +52,12 @@ document.querySelectorAll('.color-btn').forEach(button => {
         // indicator.textContent = this.textContent;
         // colorDisplay.style.backgroundColor = currentColor;
 
-        // Adjust text color for readability
-        if (currentColor === '#ffff00') {
-            colorDisplay.style.color = 'black'; // Yellow needs dark text
-        } else {
-            colorDisplay.style.color = 'white';
-        }
+        // // Adjust text color for readability
+        // if (currentColor === '#ffff00') {
+        //     colorDisplay.style.color = 'black'; // Yellow needs dark text
+        // } else {
+        //     colorDisplay.style.color = 'white';
+        // }
 
         console.log('Selected color:', currentColor); // For debugging
     });
