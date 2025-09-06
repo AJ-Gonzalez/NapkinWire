@@ -3,12 +3,23 @@ import { getMousePos } from './shared/ascii-converter.js';
 import { getTouchPos } from './shared/ascii-converter.js';
 import { isOnPerimeter } from './shared/ascii-converter.js';
 import { redrawCanvas } from './shared/ascii-converter.js';
+import { generateASCII } from './shared/ascii-converter.js';
 
 const canvas = document.getElementById('drawingCanvas');
 // Touch detection for adjusting snap grid
 const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 const snapSize = isTouchDevice ? 15 : 10; // Bigger grid for touch
 const ctx = canvas.getContext('2d');
+
+const uiColorMapping = {
+    '#ff0000': '#',  // Red
+    '#00ff00': '@',  // Green  
+    '#0000ff': '%',  // Blue
+    '#DAA520': '&',  // Yellow
+    '#ff00ff': '.'   // Purple
+};
+
+
 
 document.getElementById('layoutPicker').addEventListener('change', function (e) {
     const layout = e.target.value;
@@ -52,24 +63,7 @@ document.querySelectorAll('.color-btn').forEach(button => {
 
         // Update current color
         currentColor = this.dataset.color;
-        // In your color button click handler
-        // document.getElementById('activeColorName').textContent = this.textContent;
 
-        // In your color button click handler, add:
-        // const indicator = document.getElementById('activeColorName');
-        // const colorDisplay = document.querySelector('.active-color-display');
-
-        // indicator.textContent = this.textContent;
-        // colorDisplay.style.backgroundColor = currentColor;
-
-        // // Adjust text color for readability
-        // if (currentColor === '#ffff00') {
-        //     colorDisplay.style.color = 'black'; // Yellow needs dark text
-        // } else {
-        //     colorDisplay.style.color = 'white';
-        // }
-
-        console.log('Selected color:', currentColor); // For debugging
     });
 });
 
@@ -150,7 +144,8 @@ function undoLastRectangle() {
 
 // New function that handles both ASCII and input field generation:
 function updateLayout() {
-    const ascii_out = generateASCII();
+    // Call with the mapping
+    const ascii_out = generateASCII(rectangles, canvas.width, canvas.height, snapSize, uiColorMapping);
     document.getElementById('ascii-preview').textContent = ascii_out;
     generateInputFields();
 }
@@ -163,21 +158,7 @@ document.getElementById('tuiMode').addEventListener('change', function (e) {
     isTUIMode = e.target.checked;
 });
 
-function old_redrawCanvas() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    rectangles.forEach(rect => {
-        if (rect.color === '#ff00ff') { // Purple text rectangles
-            ctx.fillStyle = rect.color;
-            ctx.fillRect(rect.x, rect.y, rect.width, rect.height);
-        } else {
-            ctx.strokeStyle = rect.color;
-            ctx.lineWidth = 2;
-            ctx.strokeRect(rect.x, rect.y, rect.width, rect.height);
-        }
-    });
-}
-
-function generateASCII() {
+function old_generateASCII() {
     const colorToChar = {
         '#ff0000': '#',  // Red
         '#00ff00': '@',  // Green
@@ -257,7 +238,7 @@ function getColorName(color) {
 
 
 function generateFinalPrompt() {
-    const asciiLayout = generateASCII();
+    const asciiLayout = generateASCII(rectangles, canvas.width, canvas.height, snapSize, uiColorMapping);
     const overallPurpose = document.getElementById('overall-purpose').value || 'web interface';
     const platform = document.getElementById('platform').value || 'vanilla JS';
     const isTUI = document.getElementById("tuiMode").checked;

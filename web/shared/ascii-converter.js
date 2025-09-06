@@ -50,46 +50,42 @@ function updateLayout() {
 export function redrawCanvas(ctx, shapes) {
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     shapes.forEach(shape => {
-        if (shape.color === '#ff00ff') { // Purple text shapes
-            ctx.fillStyle = shape.color;
-            ctx.fillRect(shape.x, shape.y, shape.width, shape.height);
-        } else {
-            ctx.strokeStyle = shape.color;
-            ctx.lineWidth = 2;
-            ctx.strokeRect(shape.x, shape.y, shape.width, shape.height);
+        if (shape.type === 'rectangle') {
+            if (shape.color === '#ff00ff') { // Purple text shapes
+                ctx.fillStyle = shape.color;
+                ctx.fillRect(shape.x, shape.y, shape.width, shape.height);
+            } else {
+                ctx.strokeStyle = shape.color;
+                ctx.lineWidth = 2;
+                ctx.strokeRect(shape.x, shape.y, shape.width, shape.height);
+            }
         }
-    });
+        // Add handling for other shape types later
+    }
+    );
 }
 
 export function isOnPerimeter(x, y, shape, snapSize) {
     if (shape.type === 'rectangle') {
         const pixelX = x * snapSize;
         const pixelY = y * snapSize;
-        
+
         const onLeftOrRight = (pixelX === shape.x || pixelX === shape.x + shape.width - snapSize) &&
             (pixelY >= shape.y && pixelY < shape.y + shape.height);
         const onTopOrBottom = (pixelY === shape.y || pixelY === shape.y + shape.height - snapSize) &&
             (pixelX >= shape.x && pixelX < shape.x + shape.width);
-            
+
         return onLeftOrRight || onTopOrBottom;
     }
-    
+
     // TODO: Add diamond, circle, arrow logic later
     return false;
 }
 
-
 export function generateASCII(shapes, canvasWidth, canvasHeight, snapSize, colorMapping) {
-    const colorToChar = {
-        '#ff0000': '#',  // Red
-        '#00ff00': '@',  // Green
-        '#0000ff': '%',  // Blue
-        '#DAA520': '&',  // Yellow
-        '#ff00ff': '.'   // Purple - will be replaced with numbers
-    };
 
-    const gridWidth = Math.floor(canvas.width / 10);
-    const gridHeight = Math.floor(canvas.height / 10);
+    const gridWidth = Math.floor(canvasWidth / snapSize);
+    const gridHeight = Math.floor(canvasHeight / snapSize);
     let asciiOutput = '';
 
     // Track text areas for numbering
@@ -97,8 +93,8 @@ export function generateASCII(shapes, canvasWidth, canvasHeight, snapSize, color
     const textAreaNumbers = new Map(); // rect index -> number
 
     // Assign numbers to text areas first
-    shapes.forEach((rect, index) => {
-        if (rect.color === '#ff00ff') {
+    shapes.forEach((shape, index) => {
+        if (shape.color === '#ff00ff') {
             textAreaNumbers.set(index, textAreaCounter++);
         }
     });
@@ -108,15 +104,15 @@ export function generateASCII(shapes, canvasWidth, canvasHeight, snapSize, color
         for (let x = 0; x < gridWidth; x++) {
             let char = ' '; // default empty space
 
-            for (let rectIndex = 0; rectIndex < shapes.length; rectIndex++) {
-                const rect = shapes[rectIndex];
+            for (let shapeIndex = 0; shapeIndex < shapes.length; shapeIndex++) {
+                const shape = shapes[shapeIndex];
 
-                if (isOnPerimeter(x, y, rect)) {
-                    if (rect.color === '#ff00ff') {
+                if (isOnPerimeter(x, y, shape, snapSize)) {
+                    if (shape.color === '#ff00ff') {
                         // Use the assigned number for this text area
-                        char = textAreaNumbers.get(rectIndex).toString();
+                        char = textAreaNumbers.get(shapeIndex).toString();
                     } else {
-                        char = colorToChar[rect.color] || '?';
+                        char = colorMapping[shape.color] || '?';
                     }
                     break;
                 }
@@ -127,8 +123,6 @@ export function generateASCII(shapes, canvasWidth, canvasHeight, snapSize, color
     }
 
     return asciiOutput;
-
-
 }
 
 export function generateInputFields() {
