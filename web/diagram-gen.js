@@ -532,3 +532,95 @@ function getArrowChar(shape, gridX, gridY, snapSize) {
 
     return '-'; // Fallback to horizontal
 }
+
+
+
+function generateDiagramPrompt() {
+    // Get the ASCII representation
+    const asciiOutput = generateDiagramASCII(shapes, canvas.width, canvas.height, snapSize);
+    
+    // Build annotations for numbered shapes
+    let annotations = '';
+    let shapeNumbers = new Map();
+    let counter = 1;
+
+    // Assign numbers to shapes with text labels (same logic as generateDiagramASCII)
+    shapes.forEach((shape, index) => {
+        if (shape.text && shape.text.trim()) {
+            shapeNumbers.set(index, counter++);
+        }
+    });
+
+    // Create the legend
+    shapes.forEach((shape, index) => {
+        if (shapeNumbers.has(index)) {
+            const shapeNumber = shapeNumbers.get(index);
+            const shapeType = getShapeTypeDescription(shape.type);
+            annotations += `${shapeNumber}: ${shape.text} (${shapeType})\n`;
+        }
+    });
+
+    // Get user inputs
+    const diagramType = document.getElementById('diagram-type').value || 'process';
+    const additionalContext = document.getElementById('diagram-context').value;
+
+    // Build the final prompt
+    let prompt = `Here is my ${diagramType} represented as a diagram:
+
+${asciiOutput}
+
+Legend:
+${annotations}
+
+Arrows (-, |, \\, /) show the flow and connections between elements.`;
+
+    if (additionalContext) {
+        prompt += `\n\nAdditional context:\n${additionalContext}`;
+    }
+
+    return prompt;
+}
+
+function getShapeTypeDescription(shapeType) {
+    const descriptions = {
+        'rectangle': 'Process/Action',
+        'diamond': 'Decision Point', 
+        'circle': 'Start/End Point',
+        'arrow': 'Flow Direction'
+    };
+    return descriptions[shapeType] || 'Element';
+}
+
+// Wire up the Generate Prompt button
+document.getElementById('generate-prompt').addEventListener('click', function() {
+    if (shapes.length === 0) {
+        // Flash feedback for empty diagram
+        const originalText = this.textContent;
+        this.textContent = 'Draw something first!';
+        setTimeout(() => {
+            this.textContent = originalText;
+        }, 1500);
+        return;
+    }
+
+    const prompt = generateDiagramPrompt();
+    
+    // Copy to clipboard
+    navigator.clipboard.writeText(prompt).then(() => {
+        // Flash success feedback
+        const originalText = this.textContent;
+        this.textContent = 'Copied to Clipboard!';
+        this.style.backgroundColor = '#059669';
+
+        setTimeout(() => {
+            this.textContent = originalText;
+            this.style.backgroundColor = 'var(--button_bg)';
+        }, 1500);
+    }).catch(() => {
+        // Fallback if clipboard fails
+        this.textContent = 'Copy failed';
+        setTimeout(() => {
+            this.textContent = 'Generate Prompt';
+        }, 2000);
+    });
+});
