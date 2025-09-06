@@ -144,7 +144,8 @@ h1 {
     box-shadow: 0 2px 8px rgba(22, 101, 52, 0.2);
 }
 
-/* POLISHED: Better shape toolbar layout */
+/* Update the shape-toolbar styles in your CSS: */
+
 .shape-toolbar {
     display: flex;
     gap: 8px;
@@ -158,6 +159,25 @@ h1 {
     order: 1;
 }
 
+/* Desktop: less intrusive styling */
+@media (min-width: 768px) {
+    .shape-toolbar {
+        background: transparent;
+        border: 1px solid var(--border);
+        padding: 8px;
+        border-radius: 4px;
+    }
+}
+
+/* Mobile: keep the bold styling for better touch targets */
+@media (max-width: 767px) {
+    .shape-toolbar {
+        background: white;
+        border: 2px solid var(--border);
+        padding: 12px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+}
 /* POLISHED: Consistent action buttons */
 .action-btn {
     padding: 8px 12px;
