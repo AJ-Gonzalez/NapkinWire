@@ -134,14 +134,14 @@ document.addEventListener('mousemove', function (e) {
     }
 });
 
-
-
-
 function undoLastRectangle() {
-    undoLastShape(rectangles, redrawCanvas, updateLayout);
+    undoLastShape(
+        rectangles, 
+        () => redrawShapes(ctx, rectangles, snapSize),  // Proper callback with parameters
+        updateLayout
+    );
 }
 
-// New function that handles both ASCII and input field generation:
 function updateLayout() {
     // Call with the mapping
     const ascii_out = generateASCII(rectangles, canvas.width, canvas.height, snapSize, uiColorMapping);
