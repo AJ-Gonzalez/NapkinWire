@@ -116,13 +116,59 @@ h1 {
     background: #f0f0f0;
 }
 
+/* POLISHED: Better shape buttons for demo */
+.shape-btn {
+    padding: 12px 16px;
+    font-size: 20px;
+    min-width: 50px;
+    min-height: 50px;
+    border: 3px solid transparent;
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.shape-btn:hover {
+    border-color: var(--fg);
+    background: #f5f5f5;
+    transform: scale(1.05);
+}
+
+.shape-btn.active {
+    border-color: var(--fg);
+    background: var(--bg);
+    box-shadow: 0 2px 8px rgba(22, 101, 52, 0.2);
+}
+
+/* POLISHED: Better shape toolbar layout */
+.shape-toolbar {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 12px;
+    background: white;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 12px;
+    order: 1;
+}
+
+/* POLISHED: Consistent action buttons */
 .action-btn {
-    padding: 0.5rem 1rem;
+    padding: 8px 12px;
     background-color: var(--button_bg);
     color: var(--button_fg);
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    font-size: 14px;
+    min-height: 40px;
+    transition: background-color 0.2s;
 }
 
 .action-btn:hover {
@@ -222,24 +268,62 @@ h1 {
     background-color: var(--button_bg_clicked);
 }
 
-.action-btn {
-    padding: 1rem 2rem;
-    margin-bottom: 5px;
-    background-color: var(--button_bg);
-    color: var(--button_fg);
-    border: none;
+/* POLISHED: Better canvas container */
+.canvas-container {
+    border: 2px solid #c4c4c4;
     border-radius: 8px;
-    font-size: 0.9rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.2s;
+    background: white;
+    position: relative;
+    display: inline-block;
+    margin: 8px 0;
+    order: 2;
+    flex: 1;
 }
 
-.action-btn:hover {
-    background-color: var(--button_bg_clicked);
+#diagramCanvas {
+    display: block;
+    cursor: crosshair;
 }
 
+/* POLISHED: Text styling for shapes */
+.shape-text {
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+    color: #333;
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    line-height: 1.2;
+    max-width: 100%;
+    padding: 2px;
+}
 
+/* For text overlays - positioned absolutely over canvas */
+.text-overlay {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid #666;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 12px;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.diagram-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.diagram-actions {
+    order: 3;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
 
 /* Desktop Layout - Side by Side */
 @media (min-width: 768px) {
@@ -286,15 +370,27 @@ h1 {
     }
 }
 
-.github-btn {
+/* POLISHED: Mobile-friendly shape buttons */
+@media (max-width: 768px) {
+    .shape-btn {
+        padding: 10px 12px;
+        font-size: 18px;
+        min-width: 45px;
+        min-height: 45px;
+    }
+    
+    .shape-toolbar {
+        padding: 8px;
+        gap: 6px;
+    }
+}
 
+.github-btn {
     padding: 10px 12px;
     margin-bottom: 5px;
     background: #166534;
     margin-inline-end: 0px;
-    /* Your forest green */
     color: #fefce8;
-    /* Your cream */
     text-decoration: none;
     border-radius: 4px;
     font-weight: 500;
@@ -303,7 +399,6 @@ h1 {
 
 .github-btn:hover {
     background: #124a26;
-    /* Darker green on hover */
 }
 
 .input-group input,
@@ -317,51 +412,4 @@ h1 {
 
 .input-group textarea {
     resize: vertical;
-}
-
-.canvas-container {
-    border: 2px solid #c4c4c4;
-    border-radius: 8px;
-    background: white;
-    position: relative;
-    display: inline-block;
-}
-
-#diagramCanvas {
-    display: block;
-    cursor: crosshair;
-}
-
-/* For text overlays - positioned absolutely over canvas */
-.text-overlay {
-    position: absolute;
-    background: rgba(255, 255, 255, 0.9);
-    border: 1px solid #666;
-    border-radius: 4px;
-    padding: 4px 8px;
-    font-size: 12px;
-    pointer-events: none;
-    z-index: 10;
-}
-
-.diagram-container {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.shape-toolbar {
-    /* Move above canvas */
-    order: 1;
-}
-
-.canvas-container {
-    /* Canvas in middle */
-    order: 2;
-    flex: 1;
-}
-
-.diagram-actions {
-    /* Buttons below */
-    order: 3;
 }
