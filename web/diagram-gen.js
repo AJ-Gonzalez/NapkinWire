@@ -429,38 +429,50 @@ function resizeCanvas() {
     const containerBorder = 4; // 2px border on each side
     let availableWidth = containerRect.width - containerBorder;
     
-    // Use more screen width on desktop, keep mobile friendly
-    let maxWidth;
+    // CRITICAL FIX: Use the actual available container width, not target width
+    // This ensures internal canvas dimensions match display dimensions exactly
+    let canvasWidth = availableWidth;
+    
+    // Apply reasonable limits while respecting container constraints
     if (window.innerWidth >= 768) {
-        // Desktop: use the available container width, but with reasonable limits
-        const targetWidth = Math.min(window.innerWidth * 0.85, 1400);
-        // Make sure canvas fits in container and doesn't exceed our target
-        maxWidth = Math.min(targetWidth, availableWidth);
+        // Desktop: cap at reasonable maximum but don't exceed container
+        canvasWidth = Math.min(availableWidth, 1400);
     } else {
-        // Mobile: use available container width minus some padding
-        maxWidth = Math.min(window.innerWidth - 40, availableWidth);
+        // Mobile: use available space with some padding
+        canvasWidth = Math.min(availableWidth, window.innerWidth - 40);
     }
     
     const aspectRatio = 600 / 1000; // height/width
-    const canvasHeight = maxWidth * aspectRatio;
+    const canvasHeight = canvasWidth * aspectRatio;
 
-    // Set both internal canvas dimensions AND CSS display size
-    canvas.width = maxWidth;
+    // Set both internal canvas dimensions AND CSS display size to EXACT same values
+    canvas.width = canvasWidth;
     canvas.height = canvasHeight;
-    canvas.style.width = maxWidth + 'px';
+    canvas.style.width = canvasWidth + 'px';
     canvas.style.height = canvasHeight + 'px';
     
     // Force a reflow to ensure dimensions are applied
     canvas.offsetHeight; // trigger reflow
     
-    // Verify the dimensions match (debug check)
+    // Verify the dimensions match exactly (no tolerance for mismatch)
     const rect = canvas.getBoundingClientRect();
-    if (Math.abs(rect.width - maxWidth) > 1 || Math.abs(rect.height - canvasHeight) > 1) {
-        console.warn('Canvas size mismatch:', {
+    const widthDiff = Math.abs(rect.width - canvasWidth);
+    const heightDiff = Math.abs(rect.height - canvasHeight);
+    
+    if (widthDiff > 0.1 || heightDiff > 0.1) {
+        console.error('Canvas dimension mismatch - this will cause coordinate issues:', {
             internal: { width: canvas.width, height: canvas.height },
-            css: { width: maxWidth, height: canvasHeight },
+            css: { width: canvasWidth, height: canvasHeight },
             actual: { width: rect.width, height: rect.height },
-            container: { width: containerRect.width, available: availableWidth }
+            container: { width: containerRect.width, available: availableWidth },
+            diffs: { width: widthDiff, height: heightDiff }
+        });
+    } else {
+        console.log('Canvas dimensions aligned perfectly:', {
+            width: canvasWidth,
+            height: canvasHeight,
+            scaleX: canvas.width / rect.width,
+            scaleY: canvas.height / rect.height
         });
     }
     
