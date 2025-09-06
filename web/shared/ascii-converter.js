@@ -30,12 +30,11 @@ export function getTouchPos(e, canvas, snapSize) {
 }
 
 
-// Also update the undo function to auto-regenerate:
-function undoLastRectangle() {
+export function undoLastShape(shapes, redrawCallback, updateCallback) {
     if (shapes.length > 0) {
         shapes.pop();
-        redrawCanvas();
-        updateLayout(); // Auto-regenerate after undo
+        redrawCallback();
+        updateCallback();
     }
 }
 
@@ -135,7 +134,7 @@ export function generateInputFields(shapes, container, role) {
     } else if (role === "diagram") {
         placeholderText = "e.g., Process step, Decision point, Data flow";
     }
-    
+
     // Only generate fields for text areas (purple shapes)
     let textAreaCounter = 1;
 

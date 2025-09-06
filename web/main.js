@@ -5,6 +5,7 @@ import { isOnPerimeter } from './shared/ascii-converter.js';
 import { redrawCanvas } from './shared/ascii-converter.js';
 import { generateASCII } from './shared/ascii-converter.js';
 import { generateInputFields } from './shared/ascii-converter.js';
+import { undoLastShape } from './shared/ascii-converter.js';
 
 const canvas = document.getElementById('drawingCanvas');
 // Touch detection for adjusting snap grid
@@ -134,13 +135,10 @@ document.addEventListener('mousemove', function (e) {
 });
 
 
-// Also update the undo function to auto-regenerate:
+
+
 function undoLastRectangle() {
-    if (rectangles.length > 0) {
-        rectangles.pop();
-        redrawCanvas(ctx, rectangles);
-        updateLayout(); // Auto-regenerate after undo
-    }
+    undoLastShape(rectangles, redrawCanvas, updateLayout);
 }
 
 // New function that handles both ASCII and input field generation:
