@@ -36,18 +36,64 @@ I wanted the feeling of sketching ideas on the back of a napkin or whiteboard - 
 
 ## Examples
 
-### Input: Simple login form sketch
+### UI mockup
+
 ```
-[Rough ASCII representation of your layout]
+Create this GUI using Vanilla JS with Tailwind CSS, it will be used for a Login form for my landing page
+
+
+
+                                                     
+           ###########################               
+           # @@@@@@@@@@@@@@@@@@@@@@  #               
+           # @  11111111111       @  #               
+           # @@@@@@@@@@@@@@@@@@@@@@  #               
+           #                         #               
+           # @@@@@@@@@@@@@@@@@@@@@@  #               
+           # @  22222222222       @  #               
+           # @@@@@@@@@@@@@@@@@@@@@@  #               
+           #                         #               
+           #                         #               
+           # &&&&&&&&&&&&&&&&&&&&    #               
+           # &  333333333333    &    #               
+           # &                  &    #               
+           # &&&&&&&&&&&&&&&&&&&&    #               
+           #                         #               
+           #                         #               
+           #                         #               
+           # %%%%%%%    %%%%%%%%%    #               
+           # %     %    %       %    #               
+           # %444  %    % 5555  %    #               
+           # %4 4  %    % 5555  %    #               
+           # %444  %    %       %    #               
+           # %     %    %       %    #               
+           # %     %    %%%%%%%%%    #               
+           # %%%%%%%                 #               
+           #                         #               
+           ###########################               
+                                                     
+                                                     
+
+
 
 Content areas:
-1: Company logo
-2: Email input field  
-3: Password input field
-4: Login button
+Text Area 1: Username or email field
+Text Area 2: password field
+Text Area 3: captcha (will add later) use placeholder text
+Text Area 4: Log in button
+Text Area 5: Sign in button
+
+
+Please create a functional interface that matches this layout exactly. Use the visual structure shown in the ASCII art as your guide for positioning and proportions.
+
+Additional requirements: 
+
+Dark theme with blue accents. 
+No rounded corners. 
 ```
 
-### Output: Perfect LLM prompt
+### Diagram that the LLM can understand.
+
 ```
 Create a login form using React with the following layout:
 
