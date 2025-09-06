@@ -412,7 +412,7 @@ document.addEventListener('touchend', function (e) {
             width: Math.abs(width),
             height: Math.abs(height),
             color: currentColor,
-            type: "rectangles"
+            type: "rectangle"
         });
 
         // Auto-generate ASCII and input fields
