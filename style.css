@@ -29,7 +29,7 @@ h1 {
     font-family: 'Oswald', sans-serif;
     font-size: 2rem;
     margin: 0;
-    margin-left: 1%;
+    margin-left: 0px;
     display: inline-block;
 }
 
@@ -282,7 +282,7 @@ canvas {
     padding: 10px 12px;
     margin-bottom: 5px;
     background: #166534;
-    margin-inline-end: 1%;
+    margin-inline-end: 0px;
     /* Your forest green */
     color: #fefce8;
     /* Your cream */
