@@ -29,18 +29,18 @@ h1 {
     font-family: 'Oswald', sans-serif;
     font-size: 2rem;
     margin: 0;
-    margin-left: 5%;
+    margin-left: 3%;
     display: inline-block;
 }
 
 .tagline {
     margin: 0.5rem 0 0 0;
     margin-top: auto ;
-    margin-right: 35%;
     font-style: italic;
     color: #666;
     display: inline-block;
     justify-self: left;
+    align-self: left;
 }
 
 .app-container {
@@ -282,7 +282,7 @@ canvas {
     padding: 10px 12px;
     margin-bottom: 5px;
     background: #166534;
-    margin-inline-end: 5%;
+    margin-inline-end: 3%;
     /* Your forest green */
     color: #fefce8;
     /* Your cream */
