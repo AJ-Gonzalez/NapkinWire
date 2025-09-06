@@ -8,6 +8,10 @@ const ctx = canvas.getContext('2d');
 const isTouchDevice = ('ontouchstart' in window || navigator.maxTouchPoints > 0) &&
     !window.matchMedia('(pointer: fine)').matches;
 
+// Local mode detection for MCP integration
+const isLocalMode = window.location.protocol === 'file:';
+console.log('Local mode detected:', isLocalMode);
+
 
 // Wire it up in diagram-gen.js
 document.getElementById('undo-btn').addEventListener('click', function () {
@@ -835,8 +839,63 @@ function getShapeTypeDescription(shapeType) {
     return descriptions[shapeType] || 'Element';
 }
 
+// File System Access API helper functions
+async function saveToTempFile(content) {
+    const timestamp = Date.now();
+    const filename = `napkinwire_diagram_${timestamp}.txt`;
+    
+    try {
+        // Check if File System Access API is supported
+        if ('showSaveFilePicker' in window) {
+            const handle = await window.showSaveFilePicker({
+                suggestedName: filename,
+                types: [{
+                    description: 'Text files',
+                    accept: { 'text/plain': ['.txt'] }
+                }]
+            });
+            
+            const writable = await handle.createWritable();
+            await writable.write(content);
+            await writable.close();
+            
+            return { success: true, method: 'fsapi', filename: handle.name };
+        } else {
+            // Fallback to blob download
+            return await downloadAsBlob(content, filename);
+        }
+    } catch (error) {
+        if (error.name === 'AbortError') {
+            // User cancelled the file picker
+            return { success: false, error: 'cancelled' };
+        }
+        console.warn('File save failed, falling back to download:', error);
+        return await downloadAsBlob(content, filename);
+    }
+}
+
+async function downloadAsBlob(content, filename) {
+    try {
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        
+        return { success: true, method: 'download', filename };
+    } catch (error) {
+        console.error('Download fallback failed:', error);
+        return { success: false, error: error.message };
+    }
+}
+
 // Wire up the Generate Prompt button
-document.getElementById('generate-prompt').addEventListener('click', function () {
+document.getElementById('generate-prompt').addEventListener('click', async function () {
     if (shapes.length === 0) {
         // Flash feedback for empty diagram
         const originalText = this.textContent;
@@ -849,24 +908,70 @@ document.getElementById('generate-prompt').addEventListener('click', function ()
 
     const prompt = generateDiagramPrompt();
 
-    // Copy to clipboard
-    navigator.clipboard.writeText(prompt).then(() => {
-        // Flash success feedback
-        const originalText = this.textContent;
-        this.textContent = 'Copied to Clipboard!';
-        this.style.backgroundColor = '#059669';
+    if (isLocalMode) {
+        // Local mode: save to temp file for MCP integration
+        try {
+            const result = await saveToTempFile(prompt);
+            
+            if (result.success) {
+                // Flash success feedback
+                const originalText = this.textContent;
+                this.textContent = result.method === 'fsapi' ? 'Saved for processing!' : 'Downloaded!';
+                this.style.backgroundColor = '#059669';
 
-        setTimeout(() => {
-            this.textContent = originalText;
-            this.style.backgroundColor = 'var(--button_bg)';
-        }, 1500);
-    }).catch(() => {
-        // Fallback if clipboard fails
-        this.textContent = 'Copy failed';
-        setTimeout(() => {
-            this.textContent = 'Generate Prompt';
-        }, 2000);
-    });
+                setTimeout(() => {
+                    this.textContent = originalText;
+                    this.style.backgroundColor = 'var(--button_bg)';
+                }, 1500);
+            } else if (result.error === 'cancelled') {
+                // User cancelled - no feedback needed
+                return;
+            } else {
+                // Error occurred
+                const originalText = this.textContent;
+                this.textContent = 'Save failed';
+                setTimeout(() => {
+                    this.textContent = originalText;
+                }, 2000);
+            }
+        } catch (error) {
+            console.error('Unexpected error saving file:', error);
+            const originalText = this.textContent;
+            this.textContent = 'Save failed';
+            setTimeout(() => {
+                this.textContent = originalText;
+            }, 2000);
+        }
+    } else {
+        // Web mode: copy to clipboard (existing functionality)
+        try {
+            await navigator.clipboard.writeText(prompt);
+            // Flash success feedback
+            const originalText = this.textContent;
+            this.textContent = 'Copied to Clipboard!';
+            this.style.backgroundColor = '#059669';
+
+            setTimeout(() => {
+                this.textContent = originalText;
+                this.style.backgroundColor = 'var(--button_bg)';
+            }, 1500);
+        } catch (error) {
+            console.warn('Clipboard failed, falling back to download:', error);
+            // Fallback to download even in web mode
+            const result = await downloadAsBlob(prompt, `napkinwire_diagram_${Date.now()}.txt`);
+            
+            const originalText = this.textContent;
+            this.textContent = result.success ? 'Downloaded!' : 'Copy failed';
+            if (result.success) {
+                this.style.backgroundColor = '#059669';
+            }
+            
+            setTimeout(() => {
+                this.textContent = originalText;
+                this.style.backgroundColor = 'var(--button_bg)';
+            }, result.success ? 1500 : 2000);
+        }
+    }
 });
 
 // Add these variables at the top with your other declarations
