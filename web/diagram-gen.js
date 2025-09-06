@@ -338,20 +338,58 @@ function isPointInShape(x, y, shape) {
 }
 
 function showTextEditor(shape, clickX, clickY) {
-    // ... existing code ...
-
-    // Better mobile event handling
-    function saveText() {
-        if (textInput.parentNode) { // Only save if input still exists
-            shape.text = textInput.value;
-            textInput.remove();
-            redrawShapes();
-        }
+    // Remove any existing text editor
+    const existingEditor = document.querySelector('.text-editor');
+    if (existingEditor) {
+        existingEditor.remove();
     }
 
+    // Create text input element
+    const textInput = document.createElement('input');
+    textInput.type = 'text';
+    textInput.className = 'text-editor';
+    textInput.value = shape.text || '';
+
+    // Base styles
+    textInput.style.zIndex = '9999';
+    textInput.style.border = '2px solid #166534';
+    textInput.style.borderRadius = '4px';
+    textInput.style.padding = '4px 8px';
+    textInput.style.fontSize = '14px';
+    textInput.style.background = 'white';
+
+    // Platform-specific positioning
+    if (isTouchDevice) {
+        textInput.style.position = 'fixed';
+        textInput.style.left = '50%';
+        textInput.style.top = '50%';
+        textInput.style.transform = 'translate(-50%, -50%)';
+        textInput.style.width = '200px';
+    } else {
+        const canvasRect = canvas.getBoundingClientRect();
+        const centerX = shape.x + shape.width / 2;
+        const centerY = shape.y + shape.height / 2;
+        
+        textInput.style.position = 'absolute';
+        textInput.style.left = (canvasRect.left + centerX - 60) + 'px';
+        textInput.style.top = (canvasRect.top + centerY - 10) + 'px';
+        textInput.style.width = '120px';
+    }
+
+    document.body.appendChild(textInput);
+    textInput.focus();
+    textInput.select();
+
+    // Simple, working save function
+    function saveText() {
+        shape.text = textInput.value;
+        textInput.remove();
+        redrawShapes();
+    }
+
+    // Simple event handling that works on both platforms
     textInput.addEventListener('keydown', function (e) {
         if (e.key === 'Enter') {
-            e.preventDefault(); // Prevent form submission
             saveText();
         }
         if (e.key === 'Escape') {
@@ -359,23 +397,8 @@ function showTextEditor(shape, clickX, clickY) {
         }
     });
 
-    // Mobile-specific: use touchend instead of blur
-    if (isTouchDevice) {
-        // On mobile, save when user taps outside
-        setTimeout(() => {
-            document.addEventListener('touchstart', function outsideTouch(e) {
-                if (!textInput.contains(e.target)) {
-                    document.removeEventListener('touchstart', outsideTouch);
-                    saveText();
-                }
-            });
-        }, 100); // Small delay to avoid immediate trigger
-    } else {
-        // Desktop: use blur as normal
-        textInput.addEventListener('blur', saveText);
-    }
+    textInput.addEventListener('blur', saveText);
 }
-
 
 canvas.addEventListener('dblclick', function (e) {
     const pos = getMousePos(e, canvas, snapSize);
