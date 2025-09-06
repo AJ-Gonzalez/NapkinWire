@@ -1,6 +1,10 @@
 # NapkinWire
 
+![Napkinwire icon](icon-192.png)
+
 From sketch to prompt in seconds.
+
+[Try it here!](https://www.napkinwire.lat/)
 
 ## What it does
 
