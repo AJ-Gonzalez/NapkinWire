@@ -15,3 +15,16 @@ ctx.strokeRect(350, 150, 150, 80);
 ctx.strokeRect(600, 250, 150, 80);
 
 console.log('Canvas ready for diagram mockup');
+
+function resizeCanvas() {
+    const container = document.querySelector('.canvas-container');
+    const maxWidth = Math.min(window.innerWidth - 40, 1000);
+    const aspectRatio = 600/1000; // height/width
+    
+    canvas.width = maxWidth;
+    canvas.height = maxWidth * aspectRatio;
+}
+
+window.addEventListener('resize', resizeCanvas);
+
+resizeCanvas(); // Initial size
