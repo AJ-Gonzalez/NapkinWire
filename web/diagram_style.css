@@ -345,31 +345,28 @@ h1 {
     flex-wrap: wrap;
 }
 
-/* Desktop Layout - Side by Side */
+/* Desktop Layout - Single Column for Full Width Canvas */
 @media (min-width: 768px) {
     .app-container {
-        flex-direction: row;
-        gap: 2rem;
+        flex-direction: column;
+        gap: 1.5rem;
         padding: 2rem;
+        max-width: 1500px;
+        margin: 0 auto;
     }
 
-    .drawing-section {
-        flex: 1;
-        max-width: 50%;
+    .diagram-container {
+        width: 100%;
     }
 
-    .output-section {
-        flex: 1;
-        max-width: 50%;
+    .canvas-container {
+        width: 100%;
+        display: flex;
+        justify-content: center;
     }
 
     .controls {
         justify-content: flex-start;
-    }
-
-    .ascii-display {
-        max-height: 400px;
-        font-size: 11px;
     }
 
     canvas {
@@ -380,13 +377,9 @@ h1 {
 /* Large Desktop */
 @media (min-width: 1200px) {
     .app-container {
-        max-width: 1400px;
+        max-width: 1600px;
         margin: 0 auto;
         padding: 2rem;
-    }
-
-    .ascii-display {
-        font-size: 12px;
     }
 }
 
