@@ -125,19 +125,26 @@ export function generateASCII(shapes, canvasWidth, canvasHeight, snapSize, color
     return asciiOutput;
 }
 
-export function generateInputFields() {
-    const container = document.getElementById('rectangle-dropdowns');
+export function generateInputFields(shapes, container, role) {
     container.innerHTML = ''; // Clear existing fields
-
+    
+    let placeholderText = "e.g., Text content";  // Default
+    
+    if (role === "UI") {
+        placeholderText = "e.g., Article title, User message, Navigation links";
+    } else if (role === "diagram") {
+        placeholderText = "e.g., Process step, Decision point, Data flow";
+    }
+    
     // Only generate fields for text areas (purple shapes)
     let textAreaCounter = 1;
 
-    shapes.forEach((rect, index) => {
-        if (rect.color === '#ff00ff') {
+    shapes.forEach((shape, index) => {
+        if (shape.color === '#ff00ff') {
             const fieldDiv = document.createElement('div');
             fieldDiv.innerHTML = `
                 <label>Text Area ${textAreaCounter}:</label>
-                <input type="text" id="text_${index}" placeholder="e.g., Article title, User message, Navigation links">
+                <input type="text" id="text_${index}" placeholder="${placeholderText}">
             `;
             container.appendChild(fieldDiv);
             textAreaCounter++;
