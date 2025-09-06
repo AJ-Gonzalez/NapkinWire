@@ -7,6 +7,7 @@ import { generateASCII } from './shared/ascii-converter.js';
 import { generateInputFields } from './shared/ascii-converter.js';
 import { undoLastShape } from './shared/ascii-converter.js';
 import { updateLayout } from './shared/ascii-converter.js';
+import { generateAnnotatedASCII } from './shared/ascii-converter.js';
 
 const canvas = document.getElementById('drawingCanvas');
 // Touch detection for adjusting snap grid
@@ -105,7 +106,7 @@ document.addEventListener('mouseup', function (e) {
         });
 
         // Auto-generate ASCII and input fields immediately
-        updateLayout(rectangles,canvas.width,canvas.height,snapSize,uiColorMapping,document.getElementById('ascii-preview'),document.getElementById('rectangle-dropdowns'));
+        updateLayout(rectangles, canvas.width, canvas.height, snapSize, uiColorMapping, document.getElementById('ascii-preview'), document.getElementById('rectangle-dropdowns'));
     }
 
     isDrawing = false;
@@ -162,8 +163,11 @@ document.getElementById('tuiMode').addEventListener('change', function (e) {
 
 
 
-function generateFinalPrompt() {
-    const asciiLayout = generateASCII(rectangles, canvas.width, canvas.height, snapSize, uiColorMapping);
+function generateUIPrompt() {
+    const AsciiWithAnnotations = generateAnnotatedASCII(
+        generateASCII(rectangles, canvas.width, canvas.height, snapSize, uiColorMapping),
+        rectangles, document.getElementById('rectangle-dropdowns'), "Content areas"
+    )
     const overallPurpose = document.getElementById('overall-purpose').value || 'web interface';
     const platform = document.getElementById('platform').value || 'vanilla JS';
     const isTUI = document.getElementById("tuiMode").checked;
@@ -176,27 +180,11 @@ function generateFinalPrompt() {
         createStatement = `Create this GUI using ${platform}`;
     }
 
-    // Collect only text area descriptions
-    let textAreaDescriptions = '';
-    let textAreaCounter = 1;
-
-    rectangles.forEach((rect, index) => {
-        if (rect.color === '#ff00ff') {
-            const textInput = document.getElementById(`text_${index}`);
-            const description = textInput ? textInput.value : 'text content';
-            textAreaDescriptions += `\nText Area ${textAreaCounter}: ${description}`;
-            textAreaCounter++;
-        }
-    });
-
     // Build final prompt
     let finalPrompt = `${createStatement}, it will be used for a ${overallPurpose}
 
-Using the following layout:
-
-${asciiLayout}
-
-Content areas:${textAreaDescriptions}
+    
+${AsciiWithAnnotations}
 
 Please create a functional interface that matches this layout exactly. Use the visual structure shown in the ASCII art as your guide for positioning and proportions.`;
 
@@ -209,7 +197,7 @@ Please create a functional interface that matches this layout exactly. Use the v
 
 document.getElementById("get_prompt").addEventListener('click', function () {
     // Generate the prompt
-    const finalPrompt = generateFinalPrompt();
+    const finalPrompt = generateUIPrompt();
 
     // Copy to clipboard immediately
     navigator.clipboard.writeText(finalPrompt).then(() => {
@@ -321,7 +309,7 @@ document.addEventListener('touchend', function (e) {
         });
 
         // Auto-generate ASCII and input fields
-        updateLayout(rectangles,canvas.width,canvas.height,snapSize,uiColorMapping,document.getElementById('ascii-preview'),document.getElementById('rectangle-dropdowns'));
+        updateLayout(rectangles, canvas.width, canvas.height, snapSize, uiColorMapping, document.getElementById('ascii-preview'), document.getElementById('rectangle-dropdowns'));
     }
 
     isDrawing = false;
