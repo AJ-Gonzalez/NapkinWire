@@ -36,6 +36,8 @@ I wanted the feeling of sketching ideas on the back of a napkin or whiteboard - 
 
 ## Examples
 
+These are the sample of each demo Gif.
+
 ### UI mockup
 
 ```
@@ -95,17 +97,97 @@ No rounded corners.
 ### Diagram that the LLM can understand.
 
 ```
-Create a login form using React with the following layout:
+Here is my Customer onboarding for my SaaS represented as a diagram:
 
-[Generated ASCII layout]
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                          44444444444444444444444444                      999999    
+                                          4                        4                     999  999   
+                                          4                        4            666     99      99  
+                                          4                        4           66 66    99      99  
+                                          4                        4          66   66   99      99  
+                                          4                        4        66       66 99      99  
+                                          4                        4        66       66 99      99  
+                                          4                        4          66   66    999  999   
+                                          4                        4           66 66      999999    
+                                          4                        4            666                 
+                                          44444444444444444444444444                                
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+        1                                                                                           
+     1111111                                                           888888888888888888888        
+    111111111       2222222222222                                      8                   8        
+   111     111      2           2              33                      8                   8        
+   11       11      2           2             3333                     8                   8        
+   11       11      2           2           33    33                   8                   8        
+  111       111     2           2          33      33                  8                   8        
+   11       11      2           2        33          33                8                   8        
+   11       11      2           2        33          33                8                   8        
+   111     111      2           2          33      33                  8                   8        
+    111111111       2222222222222           33    33                   8                   8        
+     1111111                                  3333                     888888888888888888888        
+        1                                      33                                                   
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                           55555555555555555555555555           7                   
+                                           5                        5          777        1010101010     
+                                           5                        5         77 77      10101010101010    
+                                           5                        5        77   77    1010     1010   
+                                           5                        5       77     77   1010     1010   
+                                           5                        5       77     77   10       10   
+                                           5                        5        77   77    10       10   
+                                           5                        5         77 77     1010     1010   
+                                           5                        5          777      1010     1010   
+                                           55555555555555555555555555           7        10101010101010    
+                                                                                          1010101010     
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
 
-Content areas:
-1: Company logo - centered header branding
-2: Email input field - user email entry
-3: Password input field - secure password entry  
-4: Login button - primary action button
 
-Additional requirements: Clean, modern styling with proper form validation.
+Legend:
+1: Customer joins (Start/End Point)
+2: Send welcome email (Process/Action)
+3: is b2b? (Decision Point)
+4: B2B customer, connect with account rep (Process/Action)
+5: B2C, connect with AI chatbot rep (Process/Action)
+6: issue? (Decision Point)
+7: issue? (Decision Point)
+8: If there is an issue escalate to L2 rep (Process/Action)
+9: Success! (Start/End Point)
+10: Success! (Start/End Point)
+
+
+Connections:
+"Customer joins" → "Send welcome email"
+"is b2b?" → "B2B customer, connect with account rep"
+"is b2b?" → "B2C, connect with AI chatbot rep"
+"Send welcome email" → "is b2b?"
+"issue?" → "If there is an issue escalate to L2 rep"
+"B2B customer, connect with account rep" → "issue?"
+"Success!" → "Success!"
+"B2C, connect with AI chatbot rep" → "issue?"
+"issue?" → "If there is an issue escalate to L2 rep"
+"issue?" → "Success!"
+
+Additional context:
+This starts with a customer that just joined
 ```
 
 ## Features
