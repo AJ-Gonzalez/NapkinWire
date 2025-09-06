@@ -435,3 +435,19 @@ canvas.addEventListener('touchstart', function (e) {
 canvas.addEventListener('touchend', function (e) {
     clearTimeout(pressTimer);
 });
+
+
+
+
+// Add to diagram-gen.js
+document.getElementById('clear-diagram').addEventListener('click', function() {
+    shapes = [];
+    redrawShapes();
+    
+    // Flash feedback
+    const originalText = this.textContent;
+    this.textContent = 'Cleared!';
+    setTimeout(() => {
+        this.textContent = originalText;
+    }, 800);
+});
