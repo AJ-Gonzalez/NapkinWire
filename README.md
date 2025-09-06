@@ -30,12 +30,12 @@ I wanted the feeling of sketching ideas on the back of a napkin or whiteboard - 
 
 ### UI
 
-![UI Demo gif](napkinwire_demo_UI_.GIF)
+![UI Demo gif](ui_demo.GIF)
 
 
 ### Diagrams
 
-![UI Diagram gif](napkinwire_diagram_demo.GIF)
+![UI Diagram gif](diagram_demo.GIF)
 
 ## How it works
 
