@@ -40,6 +40,11 @@ These are the sample of each demo Gif.
 
 ### UI mockup
 
+<details>
+
+<summary>From the Login form demo, here is the prompt</summary>
+
+
 ```
 Create this GUI using Vanilla JS with Tailwind CSS, it will be used for a Login form for my landing page
 
@@ -94,7 +99,16 @@ Dark theme with blue accents.
 No rounded corners. 
 ```
 
+
+</details>
+
+
 ### Diagram that the LLM can understand.
+
+<details> 
+
+<summary>Here is a diagram example from the gif, it shows onboarding a customer</summary>
+
 
 ```
 Here is my Customer onboarding for my SaaS represented as a diagram:
@@ -189,6 +203,9 @@ Connections:
 Additional context:
 This starts with a customer that just joined
 ```
+
+</details>
+
 
 ## Features
 
