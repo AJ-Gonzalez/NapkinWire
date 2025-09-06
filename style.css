@@ -19,21 +19,28 @@ body {
 }
 
 header {
-    text-align: center;
     padding: 1rem;
     border-bottom: 2px solid var(--border);
+    display: flex;
+    justify-content: space-between;
 }
 
 h1 {
     font-family: 'Oswald', sans-serif;
     font-size: 2rem;
     margin: 0;
+    margin-left: 5%;
+    display: inline-block;
 }
 
 .tagline {
     margin: 0.5rem 0 0 0;
+    margin-top: auto ;
+    margin-right: 35%;
     font-style: italic;
     color: #666;
+    display: inline-block;
+    justify-self: left;
 }
 
 .app-container {
@@ -84,11 +91,25 @@ h1 {
     margin-right: 0.5rem;
 }
 
-.color-btn.red::before { color: #ff0000; }
-.color-btn.green::before { color: #00ff00; }
-.color-btn.blue::before { color: #0000ff; }
-.color-btn.yellow::before { color: #DAA520; }
-.color-btn.purple::before { color: #ff00ff; }
+.color-btn.red::before {
+    color: #ff0000;
+}
+
+.color-btn.green::before {
+    color: #00ff00;
+}
+
+.color-btn.blue::before {
+    color: #0000ff;
+}
+
+.color-btn.yellow::before {
+    color: #DAA520;
+}
+
+.color-btn.purple::before {
+    color: #ff00ff;
+}
 
 .color-btn.active {
     border-color: var(--fg);
@@ -167,7 +188,7 @@ canvas {
     gap: 0.5rem;
 }
 
-.text-areas > div {
+.text-areas>div {
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
@@ -218,26 +239,26 @@ canvas {
         gap: 2rem;
         padding: 2rem;
     }
-    
+
     .drawing-section {
         flex: 1;
         max-width: 50%;
     }
-    
+
     .output-section {
         flex: 1;
         max-width: 50%;
     }
-    
+
     .controls {
         justify-content: flex-start;
     }
-    
+
     .ascii-display {
         max-height: 400px;
         font-size: 11px;
     }
-    
+
     canvas {
         max-width: none;
     }
@@ -250,23 +271,28 @@ canvas {
         margin: 0 auto;
         padding: 2rem;
     }
-    
+
     .ascii-display {
         font-size: 12px;
     }
 }
 
 .github-btn {
-  display: inline-block;
-  padding: 10px 20px;
-  background: #166534; /* Your forest green */
-  color: #fefce8; /* Your cream */
-  text-decoration: none;
-  border-radius: 4px;
-  font-weight: 500;
-  transition: background 0.2s;
+
+    padding: 10px 12px;
+    margin-bottom: 5px;
+    background: #166534;
+    margin-inline-end: 5%;
+    /* Your forest green */
+    color: #fefce8;
+    /* Your cream */
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: 500;
+    transition: background 0.2s;
 }
 
 .github-btn:hover {
-  background: #124a26; /* Darker green on hover */
+    background: #124a26;
+    /* Darker green on hover */
 }
