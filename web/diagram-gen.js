@@ -26,7 +26,6 @@ document.querySelectorAll('.shape-btn').forEach(btn => {
 
 // Mouse events
 canvas.addEventListener('mousedown', function (e) {
-    if (currentShape === 'arrow') return; // Handle arrows separately
 
     const pos = getMousePos(e, canvas, snapSize);
     isDrawing = true;
@@ -72,7 +71,6 @@ document.addEventListener('mousemove', function (e) {
 // Touch events
 canvas.addEventListener('touchstart', function (e) {
     e.preventDefault();
-    if (currentShape === 'arrow') return;
 
     const pos = getTouchPos(e, canvas, snapSize);
     isDrawing = true;
