@@ -169,6 +169,18 @@ function redrawShapes() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     shapes.forEach(shape => {
         drawShape(shape.type, shape.x, shape.y, shape.width, shape.height);
+        
+        // Draw text if it exists
+        if (shape.text) {
+            ctx.fillStyle = '#333';
+            ctx.font = '14px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            const centerX = shape.x + shape.width / 2;
+            const centerY = shape.y + shape.height / 2;
+            ctx.fillText(shape.text, centerX, centerY);
+        }
     });
 }
 
@@ -287,13 +299,31 @@ function isPointInShape(x, y, shape) {
             return x >= shape.x && x <= shape.x + shape.width &&
                    y >= shape.y && y <= shape.y + shape.height;
         case 'circle':
-            // Circle bounds check
+            // Check if point is inside ellipse
+            const centerX = shape.x + shape.width / 2;
+            const centerY = shape.y + shape.height / 2;
+            const radiusX = Math.abs(shape.width / 2);
+            const radiusY = Math.abs(shape.height / 2);
+            
+            const dx = (x - centerX) / radiusX;
+            const dy = (y - centerY) / radiusY;
+            return (dx * dx + dy * dy) <= 1;
+            
         case 'diamond':
-            // Diamond bounds check
-        // etc
+            // Check if point is inside diamond
+            const dCenterX = shape.x + shape.width / 2;
+            const dCenterY = shape.y + shape.height / 2;
+            
+            const relX = Math.abs(x - dCenterX) / (shape.width / 2);
+            const relY = Math.abs(y - dCenterY) / (shape.height / 2);
+            return (relX + relY) <= 1;
+            
+        case 'arrow':
+            // Simple line hit detection - check if near line
+            return false; // Arrows don't need text for now
     }
+    return false;
 }
-
 
 function showTextEditor(shape, clickX, clickY) {
     // Remove any existing text editor
