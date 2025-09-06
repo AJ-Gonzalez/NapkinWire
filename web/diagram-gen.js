@@ -4,17 +4,29 @@ const canvas = document.getElementById('diagramCanvas');
 const ctx = canvas.getContext('2d');
 
 // Touch detection for snap grid
-const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+// Better touch detection - check for actual touch capability
+const isTouchDevice = ('ontouchstart' in window || navigator.maxTouchPoints > 0) && 
+                     !window.matchMedia('(pointer: fine)').matches;
+
+
+// Wire it up in diagram-gen.js
+document.getElementById('undo-btn').addEventListener('click', function () {
+    undoLastShape(
+        shapes,
+        () => redrawShapes(),
+        () => { } // No layout update needed for diagrams
+    );
+});
 
 // Show hint only when first shape is drawn
 function showEditHint() {
     if (shapes.length === 1) { // First shape added
         const hint = document.createElement('div');
         hint.className = 'edit-hint';
-        hint.textContent = isTouchDevice ? 
-            'Long press shapes to add text' : 
+        hint.textContent = isTouchDevice ?
+            'Long press shapes to add text' :
             'Double-click shapes to add text';
-        
+
         hint.style.position = 'fixed';
         hint.style.top = '20px';
         hint.style.right = '20px';
@@ -25,9 +37,9 @@ function showEditHint() {
         hint.style.fontSize = '14px';
         hint.style.zIndex = '1000';
         hint.style.animation = 'fadeInOut 4s ease-in-out';
-        
+
         document.body.appendChild(hint);
-        
+
         // Auto-remove after 4 seconds
         setTimeout(() => hint.remove(), 4000);
     }
@@ -92,7 +104,7 @@ document.addEventListener('mouseup', function (e) {
         });
 
         redrawShapes();
-        showEditHint(); 
+        showEditHint();
     }
 
     isDrawing = false;
@@ -146,7 +158,7 @@ document.addEventListener('touchend', function (e) {
         });
 
         redrawShapes();
-        showEditHint(); 
+        showEditHint();
     }
 
     isDrawing = false;
@@ -169,14 +181,14 @@ function redrawShapes() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     shapes.forEach(shape => {
         drawShape(shape.type, shape.x, shape.y, shape.width, shape.height);
-        
+
         // Draw text if it exists
         if (shape.text) {
             ctx.fillStyle = '#333';
             ctx.font = '14px Arial';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            
+
             const centerX = shape.x + shape.width / 2;
             const centerY = shape.y + shape.height / 2;
             ctx.fillText(shape.text, centerX, centerY);
@@ -297,27 +309,27 @@ function isPointInShape(x, y, shape) {
     switch (shape.type) {
         case 'rectangle':
             return x >= shape.x && x <= shape.x + shape.width &&
-                   y >= shape.y && y <= shape.y + shape.height;
+                y >= shape.y && y <= shape.y + shape.height;
         case 'circle':
             // Check if point is inside ellipse
             const centerX = shape.x + shape.width / 2;
             const centerY = shape.y + shape.height / 2;
             const radiusX = Math.abs(shape.width / 2);
             const radiusY = Math.abs(shape.height / 2);
-            
+
             const dx = (x - centerX) / radiusX;
             const dy = (y - centerY) / radiusY;
             return (dx * dx + dy * dy) <= 1;
-            
+
         case 'diamond':
             // Check if point is inside diamond
             const dCenterX = shape.x + shape.width / 2;
             const dCenterY = shape.y + shape.height / 2;
-            
+
             const relX = Math.abs(x - dCenterX) / (shape.width / 2);
             const relY = Math.abs(y - dCenterY) / (shape.height / 2);
             return (relX + relY) <= 1;
-            
+
         case 'arrow':
             // Simple line hit detection - check if near line
             return false; // Arrows don't need text for now
@@ -331,18 +343,18 @@ function showTextEditor(shape, clickX, clickY) {
     if (existingEditor) {
         existingEditor.remove();
     }
-    
+
     // Create text input element
     const textInput = document.createElement('input');
     textInput.type = 'text';
     textInput.className = 'text-editor';
     textInput.value = shape.text || ''; // Pre-fill existing text
-    
+
     // Position it over the shape
     const canvasRect = canvas.getBoundingClientRect();
     const centerX = shape.x + shape.width / 2;
     const centerY = shape.y + shape.height / 2;
-    
+
     textInput.style.position = 'absolute';
     textInput.style.left = (canvasRect.left + centerX - 60) + 'px'; // Center roughly
     textInput.style.top = (canvasRect.top + centerY - 10) + 'px';
@@ -353,20 +365,20 @@ function showTextEditor(shape, clickX, clickY) {
     textInput.style.padding = '4px 8px';
     textInput.style.fontSize = '14px';
     textInput.style.background = 'white';
-    
+
     // Add to page
     document.body.appendChild(textInput);
     textInput.focus();
     textInput.select(); // Select all text for easy editing
-    
+
     // Save on Enter or blur
     function saveText() {
         shape.text = textInput.value;
         textInput.remove();
         redrawShapes(); // Redraw with new text
     }
-    
-    textInput.addEventListener('keydown', function(e) {
+
+    textInput.addEventListener('keydown', function (e) {
         if (e.key === 'Enter') {
             saveText();
         }
@@ -374,14 +386,14 @@ function showTextEditor(shape, clickX, clickY) {
             textInput.remove(); // Cancel without saving
         }
     });
-    
+
     textInput.addEventListener('blur', saveText);
 }
 
-canvas.addEventListener('dblclick', function(e) {
+canvas.addEventListener('dblclick', function (e) {
     const pos = getMousePos(e, canvas, snapSize);
     const clickedShape = findShapeAtPosition(pos.x, pos.y);
-    
+
     if (clickedShape) {
         showTextEditor(clickedShape, pos.x, pos.y);
     }
@@ -389,20 +401,20 @@ canvas.addEventListener('dblclick', function(e) {
 
 let pressTimer;
 
-canvas.addEventListener('touchstart', function(e) {
+canvas.addEventListener('touchstart', function (e) {
     if (currentShape === 'text') return; // Don't interfere with drawing
-    
+
     pressTimer = setTimeout(() => {
         // Long press detected
         const pos = getTouchPos(e, canvas, snapSize);
         const clickedShape = findShapeAtPosition(pos.x, pos.y);
-        
+
         if (clickedShape) {
             showTextEditor(clickedShape, pos.x, pos.y);
         }
     }, 500); // 500ms long press
 });
 
-canvas.addEventListener('touchend', function(e) {
+canvas.addEventListener('touchend', function (e) {
     clearTimeout(pressTimer);
 });
