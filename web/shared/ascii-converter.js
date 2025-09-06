@@ -47,16 +47,16 @@ function updateLayout() {
 }
 
 
-export function redrawCanvas(ctx, shapes, snapSize) {
+export function redrawCanvas(ctx, shapes) {
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     shapes.forEach(shape => {
-        if (rect.color === '#ff00ff') { // Purple text shapes
-            ctx.fillStyle = rect.color;
-            ctx.fillRect(rect.x, rect.y, rect.width, rect.height);
+        if (shape.color === '#ff00ff') { // Purple text shapes
+            ctx.fillStyle = shape.color;
+            ctx.fillRect(shape.x, shape.y, shape.width, shape.height);
         } else {
-            ctx.strokeStyle = rect.color;
+            ctx.strokeStyle = shape.color;
             ctx.lineWidth = 2;
-            ctx.strokeRect(rect.x, rect.y, rect.width, rect.height);
+            ctx.strokeRect(shape.x, shape.y, shape.width, shape.height);
         }
     });
 }

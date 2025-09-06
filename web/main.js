@@ -2,6 +2,7 @@ import { snapToGrid } from './shared/ascii-converter.js';
 import { getMousePos } from './shared/ascii-converter.js';
 import { getTouchPos } from './shared/ascii-converter.js';
 import { isOnPerimeter } from './shared/ascii-converter.js';
+import { redrawCanvas } from './shared/ascii-converter.js';
 
 const canvas = document.getElementById('drawingCanvas');
 // Touch detection for adjusting snap grid
@@ -111,7 +112,7 @@ document.addEventListener('mouseup', function (e) {
     }
 
     isDrawing = false;
-    redrawCanvas();
+    redrawCanvas(ctx, rectangles);
 });
 
 document.addEventListener('mousemove', function (e) {
@@ -122,7 +123,7 @@ document.addEventListener('mousemove', function (e) {
     const height = pos.y - startY;
 
     // Redraw everything + show preview rectangle
-    redrawCanvas();
+    redrawCanvas(ctx, rectangles);
 
     // Draw the preview rectangle
     ctx.strokeStyle = currentColor;
@@ -142,7 +143,7 @@ document.addEventListener('mousemove', function (e) {
 function undoLastRectangle() {
     if (rectangles.length > 0) {
         rectangles.pop();
-        redrawCanvas();
+        redrawCanvas(ctx, rectangles);
         updateLayout(); // Auto-regenerate after undo
     }
 }
@@ -162,7 +163,7 @@ document.getElementById('tuiMode').addEventListener('change', function (e) {
     isTUIMode = e.target.checked;
 });
 
-function redrawCanvas() {
+function old_redrawCanvas() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     rectangles.forEach(rect => {
         if (rect.color === '#ff00ff') { // Purple text rectangles
@@ -300,8 +301,6 @@ Please create a functional interface that matches this layout exactly. Use the v
 
 
 
-
-
 document.getElementById("get_prompt").addEventListener('click', function () {
     // Generate the prompt
     const finalPrompt = generateFinalPrompt();
@@ -330,7 +329,7 @@ document.getElementById("get_prompt").addEventListener('click', function () {
 // Reset canvas functionality - add this to main.js
 document.getElementById("clear_canvas").addEventListener('click', function () {
     rectangles = [];
-    redrawCanvas();
+    redrawCanvas(ctx, rectangles);
     document.getElementById('ascii-preview').textContent = '';
     document.getElementById('rectangle-dropdowns').innerHTML = '';
 
@@ -370,7 +369,7 @@ document.addEventListener('touchmove', function (e) {
     const height = pos.y - startY;
 
     // Redraw everything + show preview rectangle
-    redrawCanvas();
+    redrawCanvas(ctx, rectangles);
 
     // Draw the preview rectangle
     ctx.strokeStyle = currentColor;
@@ -420,5 +419,5 @@ document.addEventListener('touchend', function (e) {
     }
 
     isDrawing = false;
-    redrawCanvas();
+    redrawCanvas(ctx, rectangles);
 });
