@@ -255,3 +255,18 @@ canvas {
         font-size: 12px;
     }
 }
+
+.github-btn {
+  display: inline-block;
+  padding: 10px 20px;
+  background: #166534; /* Your forest green */
+  color: #fefce8; /* Your cream */
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.github-btn:hover {
+  background: #124a26; /* Darker green on hover */
+}
