@@ -8,8 +8,8 @@ export function getMousePos(e, canvas, snapSize) {
     const y = (e.clientY - rect.top) * scaleY;
 
     return {
-        x: snapToGrid(x),
-        y: snapToGrid(y)
+        x: snapToGrid(x, snapSize),
+        y: snapToGrid(y, snapSize)
     };
 }
 
