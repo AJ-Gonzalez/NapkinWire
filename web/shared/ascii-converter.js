@@ -38,13 +38,11 @@ export function undoLastShape(shapes, redrawCallback, updateCallback) {
     }
 }
 
-// New function that handles both ASCII and input field generation:
-function updateLayout() {
-    const ascii_out = generateASCII();
-    document.getElementById('ascii-preview').textContent = ascii_out;
-    generateInputFields();
+export function updateLayout(shapes, canvasWidth, canvasHeight, snapSize, colorMapping, asciiElement, inputContainer, role) {
+    const asciiOutput = generateASCII(shapes, canvasWidth, canvasHeight, snapSize, colorMapping);
+    asciiElement.textContent = asciiOutput;
+    generateInputFields(shapes, inputContainer, role);
 }
-
 
 export function redrawCanvas(ctx, shapes) {
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);

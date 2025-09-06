@@ -6,6 +6,7 @@ import { redrawCanvas } from './shared/ascii-converter.js';
 import { generateASCII } from './shared/ascii-converter.js';
 import { generateInputFields } from './shared/ascii-converter.js';
 import { undoLastShape } from './shared/ascii-converter.js';
+import { updateLayout } from './shared/ascii-converter.js';
 
 const canvas = document.getElementById('drawingCanvas');
 // Touch detection for adjusting snap grid
@@ -104,7 +105,7 @@ document.addEventListener('mouseup', function (e) {
         });
 
         // Auto-generate ASCII and input fields immediately
-        updateLayout();
+        updateLayout(rectangles,canvas.width,canvas.height,snapSize,uiColorMapping,document.getElementById('ascii-preview'),document.getElementById('rectangle-dropdowns'));
     }
 
     isDrawing = false;
@@ -136,13 +137,13 @@ document.addEventListener('mousemove', function (e) {
 
 function undoLastRectangle() {
     undoLastShape(
-        rectangles, 
+        rectangles,
         () => redrawCanvas(ctx, rectangles),  // Proper callback with parameters
-        updateLayout
+        updateLayout(rectangles, canvas.width, canvas.height, snapSize, uiColorMapping, document.getElementById('ascii-preview'), document.getElementById('rectangle-dropdowns'))
     );
 }
 
-function updateLayout() {
+function oldupdateLayout() {
     // Call with the mapping
     const ascii_out = generateASCII(rectangles, canvas.width, canvas.height, snapSize, uiColorMapping);
     document.getElementById('ascii-preview').textContent = ascii_out;
@@ -157,25 +158,7 @@ document.getElementById('tuiMode').addEventListener('change', function (e) {
     isTUIMode = e.target.checked;
 });
 
-function old_generateInputFields() {
-    const container = document.getElementById('rectangle-dropdowns');
-    container.innerHTML = ''; // Clear existing fields
 
-    // Only generate fields for text areas (purple rectangles)
-    let textAreaCounter = 1;
-
-    rectangles.forEach((rect, index) => {
-        if (rect.color === '#ff00ff') {
-            const fieldDiv = document.createElement('div');
-            fieldDiv.innerHTML = `
-                <label>Text Area ${textAreaCounter}:</label>
-                <input type="text" id="text_${index}" placeholder="e.g., Article title, User message, Navigation links">
-            `;
-            container.appendChild(fieldDiv);
-            textAreaCounter++;
-        }
-    });
-}
 
 
 
@@ -338,7 +321,7 @@ document.addEventListener('touchend', function (e) {
         });
 
         // Auto-generate ASCII and input fields
-        updateLayout();
+        updateLayout(rectangles,canvas.width,canvas.height,snapSize,uiColorMapping,document.getElementById('ascii-preview'),document.getElementById('rectangle-dropdowns'));
     }
 
     isDrawing = false;
