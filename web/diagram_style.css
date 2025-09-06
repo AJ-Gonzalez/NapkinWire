@@ -222,7 +222,7 @@ h1 {
     background-color: var(--button_bg_clicked);
 }
 
-.primary-btn {
+.action-btn {
     padding: 1rem 2rem;
     margin-bottom: 5px;
     background-color: var(--button_bg);
@@ -235,7 +235,7 @@ h1 {
     transition: background-color 0.2s;
 }
 
-.primary-btn:hover {
+.action-btn:hover {
     background-color: var(--button_bg_clicked);
 }
 
