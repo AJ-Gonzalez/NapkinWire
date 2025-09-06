@@ -85,13 +85,6 @@ canvas.addEventListener('mousedown', function (e) {
     isDrawing = true;
     startX = pos.x;
     startY = pos.y;
-    
-    // Debug: Draw a small red dot where we think the mouse clicked
-    if (e.ctrlKey) { // Only when Ctrl is held to avoid spam
-        ctx.fillStyle = 'red';
-        ctx.fillRect(pos.x - 2, pos.y - 2, 4, 4);
-        console.log('Debug click at:', pos.x, pos.y, 'Raw click at:', e.clientX, e.clientY);
-    }
 });
 
 // FIXED: Mouse up handler with safe completion approach
@@ -429,18 +422,18 @@ function resizeCanvas() {
     const containerBorder = 4; // 2px border on each side
     let availableWidth = containerRect.width - containerBorder;
     
-    // CRITICAL FIX: Use the actual available container width, not target width
+    // CRITICAL FIX: Always use the full available container width
     // This ensures internal canvas dimensions match display dimensions exactly
     let canvasWidth = availableWidth;
     
-    // Apply reasonable limits while respecting container constraints
-    if (window.innerWidth >= 768) {
-        // Desktop: cap at reasonable maximum but don't exceed container
-        canvasWidth = Math.min(availableWidth, 1400);
-    } else {
-        // Mobile: use available space with some padding
+    // Only apply limits for mobile to ensure touch-friendly experience
+    if (window.innerWidth < 768) {
+        // Mobile: use available space with some padding for touch margins
         canvasWidth = Math.min(availableWidth, window.innerWidth - 40);
     }
+    
+    // Round to avoid sub-pixel issues
+    canvasWidth = Math.floor(canvasWidth);
     
     const aspectRatio = 600 / 1000; // height/width
     const canvasHeight = canvasWidth * aspectRatio;
@@ -459,20 +452,13 @@ function resizeCanvas() {
     const widthDiff = Math.abs(rect.width - canvasWidth);
     const heightDiff = Math.abs(rect.height - canvasHeight);
     
-    if (widthDiff > 0.1 || heightDiff > 0.1) {
+    // Only log errors if there's a significant mismatch
+    if (widthDiff > 0.5 || heightDiff > 0.5) {
         console.error('Canvas dimension mismatch - this will cause coordinate issues:', {
             internal: { width: canvas.width, height: canvas.height },
             css: { width: canvasWidth, height: canvasHeight },
             actual: { width: rect.width, height: rect.height },
-            container: { width: containerRect.width, available: availableWidth },
             diffs: { width: widthDiff, height: heightDiff }
-        });
-    } else {
-        console.log('Canvas dimensions aligned perfectly:', {
-            width: canvasWidth,
-            height: canvasHeight,
-            scaleX: canvas.width / rect.width,
-            scaleY: canvas.height / rect.height
         });
     }
     
