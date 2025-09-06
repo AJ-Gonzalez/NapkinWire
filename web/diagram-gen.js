@@ -5,8 +5,8 @@ const ctx = canvas.getContext('2d');
 
 // Touch detection for snap grid
 // Better touch detection - check for actual touch capability
-const isTouchDevice = ('ontouchstart' in window || navigator.maxTouchPoints > 0) && 
-                     !window.matchMedia('(pointer: fine)').matches;
+const isTouchDevice = ('ontouchstart' in window || navigator.maxTouchPoints > 0) &&
+    !window.matchMedia('(pointer: fine)').matches;
 
 
 // Wire it up in diagram-gen.js
@@ -338,58 +338,20 @@ function isPointInShape(x, y, shape) {
 }
 
 function showTextEditor(shape, clickX, clickY) {
-    // Remove any existing text editor
-    const existingEditor = document.querySelector('.text-editor');
-    if (existingEditor) {
-        existingEditor.remove();
-    }
+    // ... existing code ...
 
-    // Create text input element
-    const textInput = document.createElement('input');
-    textInput.type = 'text';
-    textInput.className = 'text-editor';
-    textInput.value = shape.text || ''; // Pre-fill existing text
-
-    // Base styles
-    textInput.style.zIndex = '9999';
-    textInput.style.border = '2px solid #166534';
-    textInput.style.borderRadius = '4px';
-    textInput.style.padding = '4px 8px';
-    textInput.style.fontSize = '14px';
-    textInput.style.background = 'white';
-
-    // Platform-specific positioning
-    if (isTouchDevice) {
-        textInput.style.position = 'fixed';
-        textInput.style.left = '50%';
-        textInput.style.top = '50%';
-        textInput.style.transform = 'translate(-50%, -50%)';
-        textInput.style.width = '200px';
-    } else {
-        // Desktop positioning
-        const canvasRect = canvas.getBoundingClientRect();
-        const centerX = shape.x + shape.width / 2;
-        const centerY = shape.y + shape.height / 2;
-        
-        textInput.style.position = 'absolute';
-        textInput.style.left = (canvasRect.left + centerX - 60) + 'px';
-        textInput.style.top = (canvasRect.top + centerY - 10) + 'px';
-        textInput.style.width = '120px';
-    }
-
-    // Rest of your function stays the same...
-    document.body.appendChild(textInput);
-    textInput.focus();
-    textInput.select();
-
+    // Better mobile event handling
     function saveText() {
-        shape.text = textInput.value;
-        textInput.remove();
-        redrawShapes();
+        if (textInput.parentNode) { // Only save if input still exists
+            shape.text = textInput.value;
+            textInput.remove();
+            redrawShapes();
+        }
     }
 
     textInput.addEventListener('keydown', function (e) {
         if (e.key === 'Enter') {
+            e.preventDefault(); // Prevent form submission
             saveText();
         }
         if (e.key === 'Escape') {
@@ -397,8 +359,24 @@ function showTextEditor(shape, clickX, clickY) {
         }
     });
 
-    textInput.addEventListener('blur', saveText);
+    // Mobile-specific: use touchend instead of blur
+    if (isTouchDevice) {
+        // On mobile, save when user taps outside
+        setTimeout(() => {
+            document.addEventListener('touchstart', function outsideTouch(e) {
+                if (!textInput.contains(e.target)) {
+                    document.removeEventListener('touchstart', outsideTouch);
+                    saveText();
+                }
+            });
+        }, 100); // Small delay to avoid immediate trigger
+    } else {
+        // Desktop: use blur as normal
+        textInput.addEventListener('blur', saveText);
+    }
 }
+
+
 canvas.addEventListener('dblclick', function (e) {
     const pos = getMousePos(e, canvas, snapSize);
     const clickedShape = findShapeAtPosition(pos.x, pos.y);
@@ -432,10 +410,10 @@ canvas.addEventListener('touchend', function (e) {
 
 
 // Add to diagram-gen.js
-document.getElementById('clear-diagram').addEventListener('click', function() {
+document.getElementById('clear-diagram').addEventListener('click', function () {
     shapes = [];
     redrawShapes();
-    
+
     // Flash feedback
     const originalText = this.textContent;
     this.textContent = 'Cleared!';
@@ -443,3 +421,91 @@ document.getElementById('clear-diagram').addEventListener('click', function() {
         this.textContent = originalText;
     }, 800);
 });
+
+
+function generateDiagramASCII(shapes, canvasWidth, canvasHeight, snapSize) {
+    const gridWidth = Math.floor(canvasWidth / snapSize);
+    const gridHeight = Math.floor(canvasHeight / snapSize);
+    let asciiOutput = '';
+
+    // Step 1: Create numbering system for shapes with text
+    let shapeNumbers = new Map(); // Maps shape index -> display number
+    let counter = 1;
+
+    shapes.forEach((shape, index) => {
+        // Only assign numbers to shapes that have text labels
+        if (shape.text && shape.text.trim()) {
+            shapeNumbers.set(index, counter++);
+        }
+        // Arrows and unlabeled shapes get no number (will show as connections)
+    });
+
+    // Step 2: Generate ASCII grid row by row
+    for (let y = 0; y < gridHeight; y++) {
+        let row = '';
+
+        // Step 3: For each position in the row, check what should be displayed
+        for (let x = 0; x < gridWidth; x++) {
+            let char = ' '; // Default: empty space
+
+            // Step 4: Check each shape to see if it touches this grid position
+            for (let shapeIndex = 0; shapeIndex < shapes.length; shapeIndex++) {
+                const shape = shapes[shapeIndex];
+
+                // Step 5: Use existing perimeter detection to see if shape border is here
+                if (isOnPerimeter(x, y, shape, snapSize)) {
+
+                    // Step 6: Decide what character to show based on shape type
+                    if (shape.type === 'arrow') {
+                        // Arrows show as directional lines with diagonal support
+                        char = getArrowChar(shape, x, y, snapSize);
+                    } else if (shapeNumbers.has(shapeIndex)) {
+                        // Labeled shapes show their assigned number
+                        char = shapeNumbers.get(shapeIndex).toString();
+                    } else {
+                        // Unlabeled shapes (rare) show generic border
+                        char = '#';
+                    }
+
+                    break; // Found a shape at this position, stop checking others
+                }
+            }
+
+            row += char;
+        }
+
+        asciiOutput += row + '\n';
+    }
+
+    return asciiOutput;
+}
+
+// Enhanced helper function with full diagonal support
+function getArrowChar(shape, gridX, gridY, snapSize) {
+    const deltaX = shape.width;
+    const deltaY = shape.height;
+
+    // Calculate the angle of the arrow in degrees
+    const angle = Math.atan2(deltaY, deltaX) * 180 / Math.PI;
+
+    // Choose character based on 8-directional angle ranges (45° each)
+    if (angle >= -22.5 && angle < 22.5) {
+        return '-';        // Horizontal right →
+    } else if (angle >= 22.5 && angle < 67.5) {
+        return '\\';       // Diagonal down-right ↘
+    } else if (angle >= 67.5 && angle < 112.5) {
+        return '|';        // Vertical down ↓
+    } else if (angle >= 112.5 && angle < 157.5) {
+        return '/';        // Diagonal down-left ↙
+    } else if (angle >= 157.5 || angle < -157.5) {
+        return '-';        // Horizontal left ←
+    } else if (angle >= -157.5 && angle < -112.5) {
+        return '\\';       // Diagonal up-left ↖
+    } else if (angle >= -112.5 && angle < -67.5) {
+        return '|';        // Vertical up ↑
+    } else if (angle >= -67.5 && angle < -22.5) {
+        return '/';        // Diagonal up-right ↗
+    }
+
+    return '-'; // Fallback to horizontal
+}
