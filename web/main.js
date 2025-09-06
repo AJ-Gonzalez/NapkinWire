@@ -190,7 +190,7 @@ ${AsciiWithAnnotations}
 Please create a functional interface that matches this layout exactly. Use the visual structure shown in the ASCII art as your guide for positioning and proportions.`;
     const additionalNotes = document.getElementById('additional-notes').value;
     if (additionalNotes) {
-        finalPrompt += `\n\nAdditional requirements: ${additionalNotes}`;
+        finalPrompt += `\n\nAdditional requirements: \n\n${additionalNotes}`;
     }
 
     return finalPrompt;
