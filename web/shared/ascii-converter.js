@@ -4,8 +4,32 @@ export function getMousePos(e, canvas, snapSize) {
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
 
-    const x = (e.clientX - rect.left) * scaleX;
-    const y = (e.clientY - rect.top) * scaleY;
+    const rawX = e.clientX - rect.left;
+    const rawY = e.clientY - rect.top;
+    const x = rawX * scaleX;
+    const y = rawY * scaleY;
+
+    // Debug logging for deadzone investigation
+    if (Math.random() < 0.01) { // Log 1% of mouse events to avoid spam
+        console.log('Mouse debug:', {
+            clientX: e.clientX,
+            clientY: e.clientY,
+            rectLeft: rect.left,
+            rectTop: rect.top,
+            rectWidth: rect.width,
+            rectHeight: rect.height,
+            canvasWidth: canvas.width,
+            canvasHeight: canvas.height,
+            scaleX: scaleX,
+            scaleY: scaleY,
+            rawX: rawX,
+            rawY: rawY,
+            scaledX: x,
+            scaledY: y,
+            snappedX: snapToGrid(x, snapSize),
+            snappedY: snapToGrid(y, snapSize)
+        });
+    }
 
     return {
         x: snapToGrid(x, snapSize),
