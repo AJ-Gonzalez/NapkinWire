@@ -1,5 +1,5 @@
 import { snapToGrid } from './shared/ascii-converter.js';
-
+import { getMousePos } from './shared/ascii-converter.js';
 
 const canvas = document.getElementById('drawingCanvas');
 // Touch detection for adjusting snap grid
@@ -76,24 +76,10 @@ let isDrawing = false;
 let startX, startY;
 let currentRect = null;
 
-// Get mouse position relative to canvas
-function getMousePos(e) {
-    const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
-
-    const x = (e.clientX - rect.left) * scaleX;
-    const y = (e.clientY - rect.top) * scaleY;
-
-    return {
-        x: snapToGrid(x,snapSize),
-        y: snapToGrid(y,snapSize)
-    };
-}
 
 // Mouse down - start drawing
 canvas.addEventListener('mousedown', function (e) {
-    const pos = getMousePos(e);
+    const pos = getMousePos(e, canvas, snapSize);
     isDrawing = true;
     startX = pos.x;
     startY = pos.y;
@@ -103,7 +89,7 @@ canvas.addEventListener('mousedown', function (e) {
 document.addEventListener('mouseup', function (e) {
     if (!isDrawing) return;
 
-    const pos = getMousePos(e);
+    const pos = getMousePos(e, canvas, snapSize);
     const width = pos.x - startX;
     const height = pos.y - startY;
 
@@ -128,7 +114,7 @@ document.addEventListener('mouseup', function (e) {
 document.addEventListener('mousemove', function (e) {
     if (!isDrawing) return;
 
-    const pos = getMousePos(e);
+    const pos = getMousePos(e, canvas, snapSize);
     const width = pos.x - startX;
     const height = pos.y - startY;
 
@@ -372,7 +358,6 @@ document.getElementById("clear_canvas").addEventListener('click', function () {
 });
 
 
-// Get touch position (similar to getMousePos but for touch)
 function getTouchPos(e) {
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
@@ -383,7 +368,7 @@ function getTouchPos(e) {
     const y = (touch.clientY - rect.top) * scaleY;
 
     return {
-        x: snapToGrid(x,snapSize),
+        x: snapToGrid(x, snapSize),
         y: snapToGrid(y, snapSize)
     };
 }

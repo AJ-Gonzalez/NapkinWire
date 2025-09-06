@@ -1,5 +1,5 @@
 // Get mouse position relative to canvas
-function getMousePos(e) {
+export function getMousePos(e, canvas, snapSize) {
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
@@ -56,6 +56,9 @@ function isOnPerimeter(x, y, rect) {
 
     return onLeftOrRight || onTopOrBottom;
 }
+
+
+
 
 
 export function generateASCII(shapes, canvasWidth, canvasHeight, snapSize, colorMapping) {
@@ -131,7 +134,7 @@ export function generateInputFields() {
 }
 
 
-function getColorName(color) {
+export function getColorName(color) {
     const names = {
         '#ff0000': 'Red', '#00ff00': 'Green', '#0000ff': 'Blue',
         '#DAA520': 'Yellow', '#ff00ff': 'Purple'
