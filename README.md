@@ -1,6 +1,6 @@
 # NapkinWire
 
-![Napkinwire icon](icon-192.png)
+![Napkinwire icon](web/icon-192.png)
 
 From sketch to prompt in seconds.
 
