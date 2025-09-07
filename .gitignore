@@ -16,3 +16,4 @@ notes.md
 mcp/crud.log
 config.yaml
 mcp/config.yaml
+mcp/local_config.py
