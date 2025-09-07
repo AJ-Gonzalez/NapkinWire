@@ -111,18 +111,23 @@ document.addEventListener('mouseup', function (e) {
     isDrawing = false;
 });
 
+let lastMouseX = 0, lastMouseY = 0;
+
 document.addEventListener('mousemove', function (e) {
     if (!isDrawing) return;
-
+    
     const pos = getMousePos(e, canvas, snapSize);
-    const width = pos.x - startX;
-    const height = pos.y - startY;
-
-    // Redraw everything + preview
-    redrawShapes();
-    drawShapePreview(currentShape, startX, startY, width, height);
+    
+    // Only redraw if mouse moved significantly
+    if (Math.abs(pos.x - lastMouseX) < 5 && Math.abs(pos.y - lastMouseY) < 5) {
+        return;
+    }
+    
+    lastMouseX = pos.x;
+    lastMouseY = pos.y;
+    
+    // Rest of the function...
 });
-
 // Touch events
 canvas.addEventListener('touchstart', function (e) {
     e.preventDefault();
