@@ -28,3 +28,18 @@ function resizeCanvas() {
 window.addEventListener('resize', resizeCanvas);
 
 resizeCanvas(); // Initial size
+
+function saveAsPNG() {
+    // Create download link
+    const link = document.createElement('a');
+    link.download = 'diagram.png';
+    link.href = canvas.toDataURL('image/png');
+    
+    // Trigger download
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+// Hook it up to your button
+document.getElementById('save-png').addEventListener('click', saveAsPNG);
