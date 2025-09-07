@@ -35,7 +35,7 @@ h1 {
 
 .tagline {
     margin: 0.5rem 0 0 0;
-    margin-top: auto ;
+    margin-top: auto;
     font-style: italic;
     color: #666;
     display: inline-block;
@@ -307,4 +307,29 @@ canvas {
 
 .input-group textarea {
     resize: vertical;
+}
+
+.canvas-container {
+    border: 2px solid #c4c4c4;
+    border-radius: 8px;
+    background: white;
+    position: relative;
+    display: inline-block;
+}
+
+#diagramCanvas {
+    display: block;
+    cursor: crosshair;
+}
+
+/* For text overlays - positioned absolutely over canvas */
+.text-overlay {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid #666;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 12px;
+    pointer-events: none;
+    z-index: 10;
 }
