@@ -93,15 +93,28 @@ document.addEventListener('mouseup', function (e) {
     const width = pos.x - startX;
     const height = pos.y - startY;
 
+
+
     // Only add if shape has actual size
     if (Math.abs(width) >= 10 && Math.abs(height) >= 10) {
-        shapes.push({
-            type: currentShape,
-            x: Math.min(startX, pos.x),
-            y: Math.min(startY, pos.y),
-            width: Math.abs(width),
-            height: Math.abs(height)
-        });
+        if (currentShape === 'arrow') {
+            shapes.push({
+                type: currentShape,
+                x: startX,           // Keep original start point
+                y: startY,           // Keep original start point  
+                width: width,        // Keep original direction (can be negative)
+                height: height       // Keep original direction (can be negative)
+            });
+        } else {
+            // Normal normalization for other shapes
+            shapes.push({
+                type: currentShape,
+                x: Math.min(startX, pos.x),
+                y: Math.min(startY, pos.y),
+                width: Math.abs(width),
+                height: Math.abs(height)
+            });
+        }
         currentPreview = null;
 
         redrawShapes();
@@ -138,13 +151,24 @@ document.addEventListener('touchend', function (e) {
     const height = pos.y - startY;
 
     if (Math.abs(width) >= snapSize && Math.abs(height) >= snapSize) {
-        shapes.push({
-            type: currentShape,
-            x: Math.min(startX, pos.x),
-            y: Math.min(startY, pos.y),
-            width: Math.abs(width),
-            height: Math.abs(height)
-        });
+        if (currentShape === 'arrow') {
+            shapes.push({
+                type: currentShape,
+                x: startX,           // Keep original start point
+                y: startY,           // Keep original start point  
+                width: width,        // Keep original direction (can be negative)
+                height: height       // Keep original direction (can be negative)
+            });
+        } else {
+            // Normal normalization for other shapes
+            shapes.push({
+                type: currentShape,
+                x: Math.min(startX, pos.x),
+                y: Math.min(startY, pos.y),
+                width: Math.abs(width),
+                height: Math.abs(height)
+            });
+        }
         currentPreview = null;
 
         redrawShapes();
@@ -702,7 +726,7 @@ function findShapeAtPoint(x, y, excludeIndex = -1) {
 
 // Helper function to check if a point is near a shape
 function isPointNearShape(x, y, shape) {
-    const tolerance = 15; // pixels
+    const tolerance = 50; // pixels
 
     switch (shape.type) {
         case 'rectangle':
@@ -736,7 +760,6 @@ function isPointNearShape(x, y, shape) {
     }
 }
 
-// Add this function to generate connection relationships
 function generateConnections() {
     let connections = [];
 
@@ -747,28 +770,30 @@ function generateConnections() {
             const endX = shape.x + shape.width;
             const endY = shape.y + shape.height;
 
+            console.log(`Arrow ${index}: start(${startX}, ${startY}) -> end(${endX}, ${endY})`);
+
             const startShape = findShapeAtPoint(startX, startY, index);
             const endShape = findShapeAtPoint(endX, endY, index);
+
+            console.log(`  Start shape:`, startShape);
+            console.log(`  End shape:`, endShape);
 
             if (startShape && endShape) {
                 const startLabel = getShapeLabel(startShape.shape, startShape.index);
                 const endLabel = getShapeLabel(endShape.shape, endShape.index);
 
-                // Add decision labels for diamonds
                 let connection = `${startLabel} → ${endLabel}`;
-                if (startShape.shape.type === 'diamond') {
-                    // Could add logic here to detect Yes/No based on arrow position
-                    connection = `${startLabel} → ${endLabel}`;
-                }
-
                 connections.push(connection);
+                console.log(`  Connection: ${connection}`);
+            } else {
+                console.log(`  No connection found - missing start or end shape`);
             }
         }
     });
 
+    console.log('Final connections:', connections);
     return connections;
 }
-
 // Helper to get a readable label for a shape
 function getShapeLabel(shape, index) {
     if (shape.text && shape.text.trim()) {
