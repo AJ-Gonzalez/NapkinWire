@@ -4,6 +4,7 @@ import { getTouchPos } from './shared/ascii-converter.js';
 import { isOnPerimeter } from './shared/ascii-converter.js';
 import { redrawCanvas } from './shared/ascii-converter.js';
 import { generateASCII } from './shared/ascii-converter.js';
+import { generateInputFields } from './shared/ascii-converter.js';
 
 const canvas = document.getElementById('drawingCanvas');
 // Touch detection for adjusting snap grid
@@ -147,7 +148,7 @@ function updateLayout() {
     // Call with the mapping
     const ascii_out = generateASCII(rectangles, canvas.width, canvas.height, snapSize, uiColorMapping);
     document.getElementById('ascii-preview').textContent = ascii_out;
-    generateInputFields();
+    generateInputFields(rectangles, document.getElementById('rectangle-dropdowns'), "UI");
 }
 
 document.getElementById('undoBtn').addEventListener('click', undoLastRectangle);
@@ -158,58 +159,7 @@ document.getElementById('tuiMode').addEventListener('change', function (e) {
     isTUIMode = e.target.checked;
 });
 
-function old_generateASCII() {
-    const colorToChar = {
-        '#ff0000': '#',  // Red
-        '#00ff00': '@',  // Green
-        '#0000ff': '%',  // Blue
-        '#DAA520': '&',  // Yellow
-        '#ff00ff': '.'   // Purple - will be replaced with numbers
-    };
-
-    const gridWidth = Math.floor(canvas.width / 10);
-    const gridHeight = Math.floor(canvas.height / 10);
-    let asciiOutput = '';
-
-    // Track text areas for numbering
-    let textAreaCounter = 1;
-    const textAreaNumbers = new Map(); // rect index -> number
-
-    // Assign numbers to text areas first
-    rectangles.forEach((rect, index) => {
-        if (rect.color === '#ff00ff') {
-            textAreaNumbers.set(index, textAreaCounter++);
-        }
-    });
-
-    for (let y = 0; y < gridHeight; y++) {
-        let row = '';
-        for (let x = 0; x < gridWidth; x++) {
-            let char = ' '; // default empty space
-
-            for (let rectIndex = 0; rectIndex < rectangles.length; rectIndex++) {
-                const rect = rectangles[rectIndex];
-
-                if (isOnPerimeter(x, y, rect, snapSize)) {
-                    if (rect.color === '#ff00ff') {
-                        // Use the assigned number for this text area
-                        char = textAreaNumbers.get(rectIndex).toString();
-                    } else {
-                        char = colorToChar[rect.color] || '?';
-                    }
-                    break;
-                }
-            }
-            row += char;
-        }
-        asciiOutput += row + '\n';
-    }
-
-    return asciiOutput;
-
-}
-
-function generateInputFields() {
+function old_generateInputFields() {
     const container = document.getElementById('rectangle-dropdowns');
     container.innerHTML = ''; // Clear existing fields
 
@@ -228,13 +178,7 @@ function generateInputFields() {
         }
     });
 }
-function getColorName(color) {
-    const names = {
-        '#ff0000': 'Red', '#00ff00': 'Green', '#0000ff': 'Blue',
-        '#DAA520': 'Yellow', '#ff00ff': 'Purple'
-    };
-    return names[color] || 'Unknown';
-}
+
 
 
 function generateFinalPrompt() {
