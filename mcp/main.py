@@ -14,7 +14,7 @@ import threading
 import subprocess
 import tempfile
 from pathlib import Path
-from config import TICKETS, config_manager
+from config import TICKETS
 from datetime import datetime, timedelta
 from typing import List, Dict, Any, Optional
 try:
