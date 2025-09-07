@@ -170,6 +170,7 @@ function generateUIPrompt() {
     )
     const overallPurpose = document.getElementById('overall-purpose').value || 'web interface';
     const platform = document.getElementById('platform').value || 'vanilla JS';
+
     const isTUI = document.getElementById("tuiMode").checked;
 
     // Build create statement
@@ -183,11 +184,14 @@ function generateUIPrompt() {
     // Build final prompt
     let finalPrompt = `${createStatement}, it will be used for a ${overallPurpose}
 
-    
+
 ${AsciiWithAnnotations}
 
 Please create a functional interface that matches this layout exactly. Use the visual structure shown in the ASCII art as your guide for positioning and proportions.`;
-
+    const additionalNotes = document.getElementById('additional-notes').value;
+    if (additionalNotes) {
+        finalPrompt += `\n\nAdditional requirements: ${additionalNotes}`;
+    }
 
     return finalPrompt;
 }
