@@ -5,3 +5,4 @@ napkinwire-mcp/node_modules/*
 setpath.ps1
 mcp_template/*
 mcp/.venv/*
+mcp/claude_desktop_config.json
