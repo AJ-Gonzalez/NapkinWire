@@ -140,13 +140,20 @@ function drawShapePreview(type, x, y, width, height) {
 function drawShape(type, x, y, width, height) {
     switch(type) {
         case 'rectangle':
+            ctx.strokeStyle = '#2563eb'; // Blue - processes
             ctx.strokeRect(x, y, width, height);
             break;
         case 'circle':
+            ctx.strokeStyle = '#16a34a'; // Green - start/end
             drawCircle(x, y, width, height);
             break;
         case 'diamond':
+            ctx.strokeStyle = '#dc2626'; // Red - decisions
             drawDiamond(x, y, width, height);
+            break;
+        case 'arrow':
+            console.log("not implemented yet")
+            ctx.strokeStyle = '#7c3aed'; // Purple - flow
             break;
     }
 }
