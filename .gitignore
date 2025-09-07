@@ -9,3 +9,7 @@ mcp/claude_desktop_config.json
 mcp.log
 TICKETS.md
 .mcp.json
+Ticket2.md
+tickets.json
+old.mcp.json
+mcp/__pycache__/*
