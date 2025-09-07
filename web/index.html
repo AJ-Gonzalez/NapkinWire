@@ -1,112 +1,272 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="description"
-            content="Sketch UI layouts, get LLM prompts instantly">
-        <title>NapkinWire - Sketch to Prompt</title>
-        <link href='https://fonts.googleapis.com/css?family=Oswald'
-            rel='stylesheet'>
-        <link rel="icon" type="image/png" sizes="32x32"
-            href="./favicon-32x32.png">
-        <link rel="apple-touch-icon" href="./icon-192.png">
-        <link rel="stylesheet" href="style.css">
-        <link rel="manifest" href="manifest.json">
-        <meta name="theme-color" content="#166534">
-    </head>
-    <body>
-        <header>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Sketch UI layouts and diagrams, get LLM prompts instantly">
+    <title>NapkinWire - From sketch to prompt in seconds</title>
+    <link href='https://fonts.googleapis.com/css?family=Oswald' rel='stylesheet'>
+    <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32x32.png">
+    <link rel="apple-touch-icon" href="./icon-192.png">
+    <meta name="theme-color" content="#166534">
+    <style>
+        :root {
+            --fg: #166534;
+            --bg: #fefce8;
+            --button_fg: #fefce8;
+            --button_bg: #166534;
+            --button_bg_clicked: #0d4322;
+            --border: #c4c4c4;
+        }
 
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background-color: var(--bg);
+            color: var(--fg);
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        header {
+            padding: 1rem;
+            border-bottom: 2px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 2rem;
+            margin: 0;
+            margin-right: 2%;
+            display: inline-block;
+        }
+
+        .tagline {
+            margin: 0.5rem 0 0 0;
+            margin-top: auto;
+            font-style: italic;
+            color: #666;
+            display: inline-block;
+            justify-self: left;
+            align-self: left;
+        }
+
+        .github-btn {
+            padding: 10px 12px;
+            margin-bottom: 5px;
+            background: #166534;
+            margin-inline-end: 0px;
+            color: #fefce8;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        .github-btn:hover {
+            background: #124a26;
+        }
+
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            min-height: calc(100vh - 120px);
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .cards-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            flex: 1;
+        }
+
+        .tool-card {
+            background: white;
+            border: 3px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            text-decoration: none;
+            color: var(--fg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            min-height: 300px;
+            justify-content: center;
+        }
+
+        .tool-card:hover {
+            border-color: var(--fg);
+            background: #f9f9f9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .tool-card:active {
+            transform: translateY(0);
+        }
+
+        .card-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--button_bg);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+            color: var(--button_fg);
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            font-family: 'Oswald', sans-serif;
+        }
+
+        .card-description {
+            font-size: 1rem;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        /* Mobile Layout */
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 1rem;
+            }
+
+            .cards-container {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .tool-card {
+                padding: 1.5rem;
+                min-height: 250px;
+            }
+
+            .card-icon {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5rem;
+            }
+
+            .card-title {
+                font-size: 1.3rem;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .tagline {
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Touch-friendly sizing */
+        @media (pointer: coarse) {
+            .tool-card {
+                min-height: 280px;
+                padding: 2.5rem;
+            }
+
+            .card-icon {
+                width: 90px;
+                height: 90px;
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Reused header from original -->
+    <header>
+        <div>
             <h1>NapkinWire</h1>
             <p class="tagline">From sketch to prompt in seconds</p>
+        </div>
 
-            <a href="https://github.com/AJ-Gonzalez/NapkinWire"
-                class="github-btn">
-                <svg width="16" height="16" fill="currentColor"
-                    viewBox="0 0 16 16">
-                    <path
-                        d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z" />
-                </svg>
-                View Source
+        <a href="https://github.com/AJ-Gonzalez/NapkinWire" class="github-btn">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z" />
+            </svg>
+            View Source
+        </a>
+    </header>
+
+    <main class="main-container">
+        <div class="cards-container">
+            <!-- UI Layout Tool Card -->
+            <a href="ui.html" class="tool-card" id="ui-card">
+                <div class="card-icon">
+                    <svg width="40" height="40" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M1 2a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2zm1 0v1h12V2H2zm0 2v10h12V4H2z"/>
+                        <path d="M3 5h2v1H3V5zm3 0h6v1H6V5zM3 7h2v1H3V7zm3 0h6v1H6V7zM3 9h2v1H3V9zm3 0h6v1H6V9z"/>
+                    </svg>
+                </div>
+                <div class="card-title">UI Mockups</div>
+                <div class="card-description">
+                    Sketch web interfaces, mobile apps, and dashboards. 
+                    Get React, Vue, or HTML prompts instantly.
+                </div>
             </a>
 
-        </header>
-
-        <main class="app-container">
-            <!-- Left side: Drawing -->
-            <section class="drawing-section">
-                <div class="controls">
-                    <select title="Pick Layout" id="layoutPicker"
-                        class="layout-select">
-                        <option value="desktop">Desktop (16:9)</option>
-                        <option value="mobile">Mobile (9:16)</option>
-                        <option value="square">Square (1:1)</option>
-                    </select>
-
-                    <div class="color-palette">
-                        <button data-color="#ff0000"
-                            class="color-btn red">Red</button>
-                        <button data-color="#00ff00"
-                            class="color-btn green">Green</button>
-                        <button data-color="#0000ff"
-                            class="color-btn blue">Blue</button>
-                        <button data-color="#DAA520"
-                            class="color-btn yellow">Yellow</button>
-                        <button data-color="#ff00ff"
-                            class="color-btn purple">[TEXT]</button>
-                        <button id="undoBtn" class="action-btn">Undo</button>
-                        <button id="clear_canvas"
-                            class="action-btn">Clear</button>
-                    </div>
+            <!-- Diagram Editor Card -->
+            <a href="diagram.html" class="tool-card" id="diagram-card">
+                <div class="card-icon">
+                    <svg width="40" height="40" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M6 12.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5ZM3 8a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 8Zm0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5Z"/>
+                        <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm2-1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H4z"/>
+                        <circle cx="4" cy="4" r="1"/>
+                        <circle cx="12" cy="4" r="1"/>
+                    </svg>
                 </div>
-
-                <canvas id="drawingCanvas" width="800" height="450"></canvas>
-            </section>
-
-            <!-- Right side: ASCII + Inputs -->
-            <section class="output-section">
-                <div id="ascii-preview" class="ascii-display"></div>
-
-                <div class="input-section">
-                    <div class="input-group">
-                        <label for="overall-purpose">What are you
-                            building?</label>
-                        <input type="text" id="overall-purpose"
-                            placeholder="Dashboard, blog, chat app...">
-                    </div>
-
-                    <div class="input-group">
-                        <label for="platform">Framework/Language</label>
-                        <input type="text" id="platform"
-                            placeholder="React, Vue, Python...">
-                    </div>
-
-                    <div id="rectangle-dropdowns" class="text-areas">
-                        <!-- Text area inputs generated here -->
-                    </div>
-
-                    <div class="input-group">
-                        <label for="additional-notes">Additional Notes
-                            (optional)</label>
-                        <textarea id="additional-notes" rows="3"
-                            placeholder="e.g., Dark theme, mobile-first, carousel auto-advance, use Tailwind CSS..."></textarea>
-                    </div>
-
-                    <div class="checkbox-group">
-                        <label>
-                            <input type="checkbox" id="tuiMode">
-                            Terminal UI instead of GUI
-                        </label>
-                    </div>
-
-                    <button id="get_prompt" class="primary-btn">
-                        Copy Prompt to Clipboard
-                    </button>
+                <div class="card-title">Diagrams</div>
+                <div class="card-description">
+                    Create flowcharts, network diagrams, and process maps. 
+                    Perfect for documentation and presentations.
                 </div>
-            </section>
-        </main>
+            </a>
+        </div>
+    </main>
 
-        <script type="module" src="main.js"></script>
-    </body>
+    <script>
+        // Add click analytics or any interactive behavior here
+        document.getElementById('ui-card').addEventListener('click', function(e) {
+            // Could track analytics here
+            console.log('UI Card clicked');
+        });
+
+        document.getElementById('diagram-card').addEventListener('click', function(e) {
+            // Could track analytics here  
+            console.log('Diagram Card clicked');
+        });
+
+        // Add subtle hover animations
+        document.querySelectorAll('.tool-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.borderColor = 'var(--fg)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.borderColor = 'var(--border)';
+            });
+        });
+    </script>
+</body>
 </html>
