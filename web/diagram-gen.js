@@ -501,12 +501,13 @@ function generateDiagramASCII(shapes, canvasWidth, canvasHeight, snapSize) {
 
                 // Step 5: Use existing perimeter detection to see if shape border is here
                 if (isOnPerimeter(x, y, shape, snapSize)) {
-
                     // Step 6: Decide what character to show based on shape type
                     if (shape.type === 'arrow') {
-                        // Arrows show as directional lines with diagonal support
-                        char = getArrowChar(shape, x, y, snapSize);
+                        // Skip arrows - they'll be handled as connections instead
+                        continue;
                     } else if (shapeNumbers.has(shapeIndex)) {
+
+
                         // Labeled shapes show their assigned number
                         char = shapeNumbers.get(shapeIndex).toString();
                     } else {
@@ -566,7 +567,8 @@ ${asciiOutput}
 Legend:
 ${annotations}
 
-Arrows (-, |, \\, /) show the flow and connections between elements.`;
+Connections:
+${generateConnections().join('\n')}`;
 
     if (additionalContext) {
         prompt += `\n\nAdditional context:\n${additionalContext}`;
