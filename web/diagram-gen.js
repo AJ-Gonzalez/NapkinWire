@@ -62,6 +62,7 @@ const snapSize = isTouchDevice ? 15 : 10;
 
 let currentShape = 'rectangle';
 let isDrawing = false;
+let isCurrentlyDrawing = false; // Add drawing state flag
 let startX, startY;
 let shapes = []; // Store all drawn shapes
 
@@ -130,13 +131,31 @@ canvas.addEventListener('touchstart', function (e) {
 
     const pos = getTouchPos(e, canvas, snapSize);
     isDrawing = true;
+    isCurrentlyDrawing = true; // Set drawing flag
     startX = pos.x;
     startY = pos.y;
+
+    // Only start long press timer if we're not drawing arrows
+    if (currentShape !== 'arrow') {
+        pressTimer = setTimeout(() => {
+            // Long press detected - but only if we're still not drawing
+            if (!isCurrentlyDrawing) {
+                const clickedShape = findShapeAtPosition(pos.x, pos.y);
+                if (clickedShape) {
+                    showTextEditor(clickedShape, pos.x, pos.y);
+                }
+            }
+        }, 500); // 500ms long press
+    }
 });
 
 document.addEventListener('touchend', function (e) {
     if (!isDrawing) return;
     e.preventDefault();
+
+    // Clear the long press timer
+    clearTimeout(pressTimer);
+    isCurrentlyDrawing = false; // Clear drawing flag
 
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
@@ -523,16 +542,20 @@ canvas.addEventListener('dblclick', function (e) {
 
 let pressTimer;
 
+// Updated touch handling for long press
 canvas.addEventListener('touchstart', function (e) {
-    if (currentShape === 'text') return; // Don't interfere with drawing
+    // Only handle long press for non-drawing interactions
+    if (isDrawing) return;
 
     pressTimer = setTimeout(() => {
-        // Long press detected
-        const pos = getTouchPos(e, canvas, snapSize);
-        const clickedShape = findShapeAtPosition(pos.x, pos.y);
+        // Long press detected - only if we're not currently drawing
+        if (!isCurrentlyDrawing) {
+            const pos = getTouchPos(e, canvas, snapSize);
+            const clickedShape = findShapeAtPosition(pos.x, pos.y);
 
-        if (clickedShape) {
-            showTextEditor(clickedShape, pos.x, pos.y);
+            if (clickedShape) {
+                showTextEditor(clickedShape, pos.x, pos.y);
+            }
         }
     }, 500); // 500ms long press
 });
@@ -745,6 +768,9 @@ document.addEventListener('mousemove', function (e) {
 document.addEventListener('touchmove', function (e) {
     if (!isDrawing) return;
     e.preventDefault();
+
+    // Clear long press timer when moving (indicates drawing, not long press)
+    clearTimeout(pressTimer);
 
     const pos = getTouchPos(e, canvas, snapSize);
     const width = pos.x - startX;
