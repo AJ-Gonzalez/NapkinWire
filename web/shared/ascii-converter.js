@@ -16,8 +16,8 @@ function getMousePos(e) {
 
 // Also update the undo function to auto-regenerate:
 function undoLastRectangle() {
-    if (rectangles.length > 0) {
-        rectangles.pop();
+    if (shapes.length > 0) {
+        shapes.pop();
         redrawCanvas();
         updateLayout(); // Auto-regenerate after undo
     }
@@ -34,7 +34,7 @@ function updateLayout() {
 export function redrawCanvas(ctx, shapes, snapSize)  {
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     shapes.forEach(shape => {
-         if (rect.color === '#ff00ff') { // Purple text rectangles
+         if (rect.color === '#ff00ff') { // Purple text shapes
             ctx.fillStyle = rect.color;
             ctx.fillRect(rect.x, rect.y, rect.width, rect.height);
         } else {
@@ -76,7 +76,7 @@ export function generateASCII(shapes, canvasWidth, canvasHeight, snapSize, color
     const textAreaNumbers = new Map(); // rect index -> number
 
     // Assign numbers to text areas first
-    rectangles.forEach((rect, index) => {
+    shapes.forEach((rect, index) => {
         if (rect.color === '#ff00ff') {
             textAreaNumbers.set(index, textAreaCounter++);
         }
@@ -87,8 +87,8 @@ export function generateASCII(shapes, canvasWidth, canvasHeight, snapSize, color
         for (let x = 0; x < gridWidth; x++) {
             let char = ' '; // default empty space
 
-            for (let rectIndex = 0; rectIndex < rectangles.length; rectIndex++) {
-                const rect = rectangles[rectIndex];
+            for (let rectIndex = 0; rectIndex < shapes.length; rectIndex++) {
+                const rect = shapes[rectIndex];
 
                 if (isOnPerimeter(x, y, rect)) {
                     if (rect.color === '#ff00ff') {
@@ -114,10 +114,10 @@ export function generateInputFields() {
     const container = document.getElementById('rectangle-dropdowns');
     container.innerHTML = ''; // Clear existing fields
 
-    // Only generate fields for text areas (purple rectangles)
+    // Only generate fields for text areas (purple shapes)
     let textAreaCounter = 1;
 
-    rectangles.forEach((rect, index) => {
+    shapes.forEach((rect, index) => {
         if (rect.color === '#ff00ff') {
             const fieldDiv = document.createElement('div');
             fieldDiv.innerHTML = `
@@ -158,7 +158,7 @@ export function generateFinalPrompt() {
     let textAreaDescriptions = '';
     let textAreaCounter = 1;
 
-    rectangles.forEach((rect, index) => {
+    shapes.forEach((rect, index) => {
         if (rect.color === '#ff00ff') {
             const textInput = document.getElementById(`text_${index}`);
             const description = textInput ? textInput.value : 'text content';
@@ -183,24 +183,6 @@ Please create a functional interface that matches this layout exactly. Use the v
 }
 
 
-
-// Updated snap function
-function snapToGrid(coord) {
+export function snapToGrid(coord, snapSize) {
     return Math.floor(coord / snapSize) * snapSize;
-}
-
-// Get touch position (similar to getMousePos but for touch)
-function getTouchPos(e) {
-    const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
-
-    const touch = e.touches[0]; // First finger
-    const x = (touch.clientX - rect.left) * scaleX;
-    const y = (touch.clientY - rect.top) * scaleY;
-
-    return {
-        x: snapToGrid(x),
-        y: snapToGrid(y)
-    };
 }

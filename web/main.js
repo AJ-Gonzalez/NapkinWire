@@ -1,4 +1,11 @@
+import { snapToGrid } from './shared/ascii-converter.js';
+
+
 const canvas = document.getElementById('drawingCanvas');
+// Touch detection for adjusting snap grid
+const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+const snapSize = isTouchDevice ? 15 : 10; // Bigger grid for touch
+const ctx = canvas.getContext('2d');
 
 document.getElementById('layoutPicker').addEventListener('change', function (e) {
     const layout = e.target.value;
@@ -63,16 +70,11 @@ document.querySelectorAll('.color-btn').forEach(button => {
     });
 });
 
-const ctx = canvas.getContext('2d');
+
 let rectangles = [];
 let isDrawing = false;
 let startX, startY;
 let currentRect = null;
-
-// Snap coordinates to 10px grid
-function snapToGrid(coord) {
-    return Math.floor(coord / 10) * 10;
-}
 
 // Get mouse position relative to canvas
 function getMousePos(e) {
@@ -84,8 +86,8 @@ function getMousePos(e) {
     const y = (e.clientY - rect.top) * scaleY;
 
     return {
-        x: snapToGrid(x),
-        y: snapToGrid(y)
+        x: snapToGrid(x,snapSize),
+        y: snapToGrid(y,snapSize)
     };
 }
 
@@ -369,16 +371,6 @@ document.getElementById("clear_canvas").addEventListener('click', function () {
     }, 800);
 });
 
-// Add these touch event listeners to your main.js, after your existing mouse events
-
-// Touch detection for adjusting snap grid
-const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-const snapSize = isTouchDevice ? 15 : 10; // Bigger grid for touch
-
-// Updated snap function
-function snapToGrid(coord) {
-    return Math.floor(coord / snapSize) * snapSize;
-}
 
 // Get touch position (similar to getMousePos but for touch)
 function getTouchPos(e) {
@@ -391,8 +383,8 @@ function getTouchPos(e) {
     const y = (touch.clientY - rect.top) * scaleY;
 
     return {
-        x: snapToGrid(x),
-        y: snapToGrid(y)
+        x: snapToGrid(x,snapSize),
+        y: snapToGrid(y, snapSize)
     };
 }
 
@@ -446,7 +438,7 @@ document.addEventListener('touchend', function (e) {
     const x = (touch.clientX - rect.left) * scaleX;
     const y = (touch.clientY - rect.top) * scaleY;
 
-    const pos = { x: snapToGrid(x), y: snapToGrid(y) };
+    const pos = { x: snapToGrid(x, snapSize), y: snapToGrid(y, snapSize) };
     const width = pos.x - startX;
     const height = pos.y - startY;
 
