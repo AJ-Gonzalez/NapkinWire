@@ -124,9 +124,9 @@ export function generateASCII(shapes, canvasWidth, canvasHeight, snapSize, color
 
 export function generateInputFields(shapes, container, role) {
     container.innerHTML = ''; // Clear existing fields
-    
+
     let placeholderText = "e.g., Text content";  // Default
-    
+
     if (role === "UI") {
         placeholderText = "e.g., Article title, User message, Navigation links";
     } else if (role === "diagram") {
@@ -158,28 +158,21 @@ export function getColorName(color) {
     return names[color] || 'Unknown';
 }
 
-
-export function generateFinalPrompt() {
-    const asciiLayout = generateASCII();
-    const overallPurpose = document.getElementById('overall-purpose').value || 'web interface';
-    const platform = document.getElementById('platform').value || 'vanilla JS';
-    const isTUI = document.getElementById("tuiMode").checked;
-
-    // Build create statement
-    let createStatement = '';
-    if (isTUI) {
-        createStatement = `Create this TUI (Terminal User Interface) using ${platform}`;
-    } else {
-        createStatement = `Create this GUI using ${platform}`;
-    }
-
-    // Collect only text area descriptions
+/**
+ * Generates ASCII layout with text annotations from input fields
+ * @param {string} asciiLayout - The ASCII art layout
+ * @param {Array} shapes - Array of shape objects
+ * @param {HTMLElement} inputContainer - Container element with text inputs
+ * @param {string} - Context, e.g. Content areas, Diagram block text
+ * @returns {string} Formatted ASCII with annotations
+ */
+export function generateAnnotatedASCII(asciiLayout, shapes, inputContainer, annotationContext) {
     let textAreaDescriptions = '';
     let textAreaCounter = 1;
 
-    shapes.forEach((rect, index) => {
-        if (rect.color === '#ff00ff') {
-            const textInput = document.getElementById(`text_${index}`);
+    shapes.forEach((shape, index) => {
+        if (shape.color === '#ff00ff') {
+            const textInput = inputContainer.querySelector(`#text_${index}`);
             const description = textInput ? textInput.value : 'text content';
             textAreaDescriptions += `\nText Area ${textAreaCounter}: ${description}`;
             textAreaCounter++;
@@ -187,17 +180,12 @@ export function generateFinalPrompt() {
     });
 
     // Build final prompt
-    let finalPrompt = `${createStatement}, it will be used for a ${overallPurpose}
-
-Using the following layout:
-
+    let finalPrompt = `
 ${asciiLayout}
 
-Content areas:${textAreaDescriptions}
 
-Please create a functional interface that matches this layout exactly. Use the visual structure shown in the ASCII art as your guide for positioning and proportions.`;
-
-
+${annotationContext}:${textAreaDescriptions}
+`
     return finalPrompt;
 }
 
