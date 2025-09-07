@@ -61,20 +61,22 @@ export function redrawCanvas(ctx, shapes, snapSize) {
     });
 }
 
-function isOnPerimeter(x, y, rect) {
-    const pixelX = x * snapSize; // Use snapSize instead of hardcoded 10
-    const pixelY = y * snapSize;
-
-    const onLeftOrRight = (pixelX === rect.x || pixelX === rect.x + rect.width - snapSize) &&
-        (pixelY >= rect.y && pixelY < rect.y + rect.height);
-    const onTopOrBottom = (pixelY === rect.y || pixelY === rect.y + rect.height - snapSize) &&
-        (pixelX >= rect.x && pixelX < rect.x + rect.width);
-
-    return onLeftOrRight || onTopOrBottom;
+export function isOnPerimeter(x, y, shape, snapSize) {
+    if (shape.type === 'rectangle') {
+        const pixelX = x * snapSize;
+        const pixelY = y * snapSize;
+        
+        const onLeftOrRight = (pixelX === shape.x || pixelX === shape.x + shape.width - snapSize) &&
+            (pixelY >= shape.y && pixelY < shape.y + shape.height);
+        const onTopOrBottom = (pixelY === shape.y || pixelY === shape.y + shape.height - snapSize) &&
+            (pixelX >= shape.x && pixelX < shape.x + shape.width);
+            
+        return onLeftOrRight || onTopOrBottom;
+    }
+    
+    // TODO: Add diamond, circle, arrow logic later
+    return false;
 }
-
-
-
 
 
 export function generateASCII(shapes, canvasWidth, canvasHeight, snapSize, colorMapping) {

@@ -1,6 +1,7 @@
 import { snapToGrid } from './shared/ascii-converter.js';
 import { getMousePos } from './shared/ascii-converter.js';
 import { getTouchPos } from './shared/ascii-converter.js';
+import { isOnPerimeter } from './shared/ascii-converter.js';
 
 const canvas = document.getElementById('drawingCanvas');
 // Touch detection for adjusting snap grid
@@ -101,7 +102,8 @@ document.addEventListener('mouseup', function (e) {
             y: Math.min(startY, pos.y),
             width: Math.abs(width),
             height: Math.abs(height),
-            color: currentColor
+            color: currentColor,
+            type: "rectangle"
         });
 
         // Auto-generate ASCII and input fields immediately
@@ -206,7 +208,7 @@ function generateASCII() {
             for (let rectIndex = 0; rectIndex < rectangles.length; rectIndex++) {
                 const rect = rectangles[rectIndex];
 
-                if (isOnPerimeter(x, y, rect)) {
+                if (isOnPerimeter(x, y, rect, snapSize)) {
                     if (rect.color === '#ff00ff') {
                         // Use the assigned number for this text area
                         char = textAreaNumbers.get(rectIndex).toString();
@@ -223,17 +225,6 @@ function generateASCII() {
 
     return asciiOutput;
 
-    function isOnPerimeter(x, y, rect) {
-        const pixelX = x * snapSize; // Use snapSize instead of hardcoded 10
-        const pixelY = y * snapSize;
-
-        const onLeftOrRight = (pixelX === rect.x || pixelX === rect.x + rect.width - snapSize) &&
-            (pixelY >= rect.y && pixelY < rect.y + rect.height);
-        const onTopOrBottom = (pixelY === rect.y || pixelY === rect.y + rect.height - snapSize) &&
-            (pixelX >= rect.x && pixelX < rect.x + rect.width);
-
-        return onLeftOrRight || onTopOrBottom;
-    }
 }
 
 function generateInputFields() {
@@ -420,7 +411,8 @@ document.addEventListener('touchend', function (e) {
             y: Math.min(startY, pos.y),
             width: Math.abs(width),
             height: Math.abs(height),
-            color: currentColor
+            color: currentColor,
+            type: "rectangles"
         });
 
         // Auto-generate ASCII and input fields
