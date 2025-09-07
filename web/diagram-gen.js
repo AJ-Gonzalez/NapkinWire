@@ -170,11 +170,22 @@ document.addEventListener('touchend', function (e) {
     isDrawing = false;
 });
 
+let lastTouchX = 0, lastTouchY = 0;
+
 document.addEventListener('touchmove', function (e) {
     if (!isDrawing) return;
     e.preventDefault();
 
     const pos = getTouchPos(e, canvas, snapSize);
+    
+    // Only redraw if touch moved significantly
+    if (Math.abs(pos.x - lastTouchX) < 10 && Math.abs(pos.y - lastTouchY) < 10) {
+        return;
+    }
+    
+    lastTouchX = pos.x;
+    lastTouchY = pos.y;
+
     const width = pos.x - startX;
     const height = pos.y - startY;
 
