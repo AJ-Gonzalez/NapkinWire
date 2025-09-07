@@ -245,7 +245,7 @@ Just start drawing. Everything updates automatically as you sketch.
 
 ## Roadmap
 
-- [ ] **MCP Server** - Claude Desktop integration for seamless sketch → code workflow
+- [*] **MCP Server** - Claude Desktop integration for seamless sketch → code workflow (In development!)
 - [ ] **Template library** - Common UI patterns for faster sketching
 - [ ] **Advanced export options** - SVG, and more format support
 
