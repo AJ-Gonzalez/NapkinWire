@@ -14,6 +14,22 @@ export function getMousePos(e, canvas, snapSize) {
 }
 
 
+export function getTouchPos(e, canvas, snapSize) {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+
+    const touch = e.touches[0]; // First finger
+    const x = (touch.clientX - rect.left) * scaleX;
+    const y = (touch.clientY - rect.top) * scaleY;
+
+    return {
+        x: snapToGrid(x, snapSize),
+        y: snapToGrid(y, snapSize)
+    };
+}
+
+
 // Also update the undo function to auto-regenerate:
 function undoLastRectangle() {
     if (shapes.length > 0) {
@@ -31,10 +47,10 @@ function updateLayout() {
 }
 
 
-export function redrawCanvas(ctx, shapes, snapSize)  {
+export function redrawCanvas(ctx, shapes, snapSize) {
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     shapes.forEach(shape => {
-         if (rect.color === '#ff00ff') { // Purple text shapes
+        if (rect.color === '#ff00ff') { // Purple text shapes
             ctx.fillStyle = rect.color;
             ctx.fillRect(rect.x, rect.y, rect.width, rect.height);
         } else {

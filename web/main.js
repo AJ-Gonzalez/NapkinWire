@@ -1,5 +1,6 @@
 import { snapToGrid } from './shared/ascii-converter.js';
 import { getMousePos } from './shared/ascii-converter.js';
+import { getTouchPos } from './shared/ascii-converter.js';
 
 const canvas = document.getElementById('drawingCanvas');
 // Touch detection for adjusting snap grid
@@ -358,26 +359,11 @@ document.getElementById("clear_canvas").addEventListener('click', function () {
 });
 
 
-function getTouchPos(e) {
-    const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
-
-    const touch = e.touches[0]; // First finger
-    const x = (touch.clientX - rect.left) * scaleX;
-    const y = (touch.clientY - rect.top) * scaleY;
-
-    return {
-        x: snapToGrid(x, snapSize),
-        y: snapToGrid(y, snapSize)
-    };
-}
-
 // Touch start - same as mouse down
 canvas.addEventListener('touchstart', function (e) {
     e.preventDefault(); // Prevent scrolling
 
-    const pos = getTouchPos(e);
+    const pos = getTouchPos(e, canvas, snapSize);
     isDrawing = true;
     startX = pos.x;
     startY = pos.y;
@@ -388,7 +374,7 @@ document.addEventListener('touchmove', function (e) {
     if (!isDrawing) return;
     e.preventDefault(); // Prevent scrolling
 
-    const pos = getTouchPos(e);
+    const pos = getTouchPos(e, canvas, snapSize);
     const width = pos.x - startX;
     const height = pos.y - startY;
 
