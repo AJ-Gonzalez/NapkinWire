@@ -90,3 +90,8 @@ Maintain project philosophy, coding standards, and architectural decisions in a 
 *Added: 2025-09-12 16:33 UTC*
 Automated documentation generator that creates and maintains project docs. Should generate API docs from code, README updates from tickets, architecture diagrams from code structure, and decision records from commit messages. Keep documentation in sync with code automatically. Output in markdown for easy reading and version control.
 ---
+
+## [Later] NapkinWire Ultimate TUI Orchestration Interface
+*Added: 2025-09-13 03:54 UTC*
+Build complete NapkinWire TUI using Textual - the ultimate orchestration interface. Six-panel layout: (1) Chat input with voice hotkey, (2) Scrollable chat with TTS, (3) Initiative feed summary, (4) Ticket status dashboard, (5) Security/quality alerts, (6) Git-aware project tree with file status coloring. Designed for thin clients and SSH access - run on cheap ARM laptop, orchestrate beefy desktop remotely. No GUI needed, pure terminal interface. This is the endgame interface where all NapkinWire components come together in one unified TUI. Must be lightweight, responsive, and work over slow connections. Future: TUI diagram editors for complete terminal-only workflow.
+---
