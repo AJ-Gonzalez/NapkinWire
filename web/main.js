@@ -139,7 +139,7 @@ function undoLastRectangle() {
     undoLastShape(
         rectangles,
         () => redrawCanvas(ctx, rectangles),  // Proper callback with parameters
-        updateLayout(rectangles, canvas.width, canvas.height, snapSize, uiColorMapping, document.getElementById('ascii-preview'), document.getElementById('rectangle-dropdowns'))
+        () => updateLayout(rectangles, canvas.width, canvas.height, snapSize, uiColorMapping, document.getElementById('ascii-preview'), document.getElementById('rectangle-dropdowns'))
     );
 }
 
