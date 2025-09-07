@@ -137,7 +137,7 @@ document.addEventListener('mousemove', function (e) {
 function undoLastRectangle() {
     undoLastShape(
         rectangles, 
-        () => redrawShapes(ctx, rectangles, snapSize),  // Proper callback with parameters
+        () => redrawCanvas(ctx, rectangles),  // Proper callback with parameters
         updateLayout
     );
 }
