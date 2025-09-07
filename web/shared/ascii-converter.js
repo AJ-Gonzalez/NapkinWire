@@ -31,10 +31,10 @@ function updateLayout() {
 }
 
 
-function redrawCanvas() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    rectangles.forEach(rect => {
-        if (rect.color === '#ff00ff') { // Purple text rectangles
+export function redrawCanvas(ctx, shapes, snapSize)  {
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    shapes.forEach(shape => {
+         if (rect.color === '#ff00ff') { // Purple text rectangles
             ctx.fillStyle = rect.color;
             ctx.fillRect(rect.x, rect.y, rect.width, rect.height);
         } else {
@@ -45,7 +45,20 @@ function redrawCanvas() {
     });
 }
 
-function generateASCII() {
+function isOnPerimeter(x, y, rect) {
+    const pixelX = x * snapSize; // Use snapSize instead of hardcoded 10
+    const pixelY = y * snapSize;
+
+    const onLeftOrRight = (pixelX === rect.x || pixelX === rect.x + rect.width - snapSize) &&
+        (pixelY >= rect.y && pixelY < rect.y + rect.height);
+    const onTopOrBottom = (pixelY === rect.y || pixelY === rect.y + rect.height - snapSize) &&
+        (pixelX >= rect.x && pixelX < rect.x + rect.width);
+
+    return onLeftOrRight || onTopOrBottom;
+}
+
+
+export function generateASCII(shapes, canvasWidth, canvasHeight, snapSize, colorMapping) {
     const colorToChar = {
         '#ff0000': '#',  // Red
         '#00ff00': '@',  // Green
@@ -94,20 +107,10 @@ function generateASCII() {
 
     return asciiOutput;
 
-    function isOnPerimeter(x, y, rect) {
-        const pixelX = x * snapSize; // Use snapSize instead of hardcoded 10
-        const pixelY = y * snapSize;
 
-        const onLeftOrRight = (pixelX === rect.x || pixelX === rect.x + rect.width - snapSize) &&
-            (pixelY >= rect.y && pixelY < rect.y + rect.height);
-        const onTopOrBottom = (pixelY === rect.y || pixelY === rect.y + rect.height - snapSize) &&
-            (pixelX >= rect.x && pixelX < rect.x + rect.width);
-
-        return onLeftOrRight || onTopOrBottom;
-    }
 }
 
-function generateInputFields() {
+export function generateInputFields() {
     const container = document.getElementById('rectangle-dropdowns');
     container.innerHTML = ''; // Clear existing fields
 
@@ -137,7 +140,7 @@ function getColorName(color) {
 }
 
 
-function generateFinalPrompt() {
+export function generateFinalPrompt() {
     const asciiLayout = generateASCII();
     const overallPurpose = document.getElementById('overall-purpose').value || 'web interface';
     const platform = document.getElementById('platform').value || 'vanilla JS';
