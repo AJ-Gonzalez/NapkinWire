@@ -10,7 +10,12 @@ const isTouchDevice = ('ontouchstart' in window || navigator.maxTouchPoints > 0)
 
 // Local mode detection for MCP integration
 const isLocalMode = window.location.protocol === 'file:';
+
+// PyWebView mode detection
+const isPyWebView = window.pywebview !== undefined;
+
 console.log('Local mode detected:', isLocalMode);
+console.log('PyWebView mode detected:', isPyWebView);
 
 
 // Wire it up in diagram-gen.js
@@ -908,7 +913,39 @@ document.getElementById('generate-prompt').addEventListener('click', async funct
 
     const prompt = generateDiagramPrompt();
 
-    if (isLocalMode) {
+    if (isPyWebView) {
+        // PyWebView mode: send data directly to Python via bridge
+        try {
+            console.log('Sending diagram data to PyWebView bridge...');
+            const success = await window.pywebview.api.send_diagram(prompt);
+            
+            if (success) {
+                // Flash success feedback
+                const originalText = this.textContent;
+                this.textContent = 'Sent to Claude!';
+                this.style.backgroundColor = '#059669';
+
+                setTimeout(() => {
+                    // Close the window after successful send
+                    window.close();
+                }, 1000);
+            } else {
+                // Error occurred
+                const originalText = this.textContent;
+                this.textContent = 'Send failed';
+                setTimeout(() => {
+                    this.textContent = originalText;
+                }, 2000);
+            }
+        } catch (error) {
+            console.error('Error sending diagram to PyWebView:', error);
+            const originalText = this.textContent;
+            this.textContent = 'Send failed';
+            setTimeout(() => {
+                this.textContent = originalText;
+            }, 2000);
+        }
+    } else if (isLocalMode) {
         // Local mode: save to temp file for MCP integration
         try {
             const result = await saveToTempFile(prompt);

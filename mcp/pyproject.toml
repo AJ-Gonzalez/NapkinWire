@@ -7,4 +7,6 @@ requires-python = ">=3.13"
 dependencies = [
     "fastmcp>=2.12.2",
     "mcp[cli]>=1.13.1",
+    "pyaudio>=0.2.14",
+    "pywebview>=5.0.0",
 ]

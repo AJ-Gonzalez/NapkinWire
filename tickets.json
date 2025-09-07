@@ -1,0 +1,226 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "last_updated": "2025-09-12T05:44:28Z",
+    "next_id": 7,
+    "project": "napkinwire"
+  },
+  "tickets": [
+    {
+      "id": "TICKET-001",
+      "title": "Implement Claude usage analyzer from log files",
+      "status": "done",
+      "priority": "high",
+      "created_at": "2025-09-12T01:35:57Z",
+      "updated_at": "2025-09-12T05:09:20Z",
+      "description": "Complete the stub in mcp/usage_analysis.py to analyze Claude Desktop logs and track API usage patterns, window resets, and model usage",
+      "requirements": [
+        "Parse Claude Desktop log files from %APPDATA%/Claude/logs or %LOCALAPPDATA%/Claude/logs",
+        "Extract message timestamps and identify model used (Opus vs Sonnet)",
+        "Detect rate limit messages and session boundaries",
+        "Calculate usage windows (5 hours every 5 hours pattern)",
+        "Track burn rate for different models",
+        "Identify when window resets occur",
+        "Return current window status and estimated remaining time"
+      ],
+      "acceptance_criteria": [
+        "Successfully finds and parses Claude log files",
+        "Accurately identifies usage patterns and window resets",
+        "Returns dict with window_started, time_elapsed, estimated_remaining, messages_this_window",
+        "Handles missing or malformed log files gracefully",
+        "Performance: analyzes logs in under 2 seconds"
+      ],
+      "files_affected": [
+        "mcp/usage_analysis.py"
+      ],
+      "dependencies": [],
+      "outcome": null,
+      "notes": null
+    },
+    {
+      "id": "TICKET-002",
+      "title": "Port config.py to YAML with safe loading and validation",
+      "status": "todo",
+      "priority": "high",
+      "created_at": "2025-09-12T01:38:35Z",
+      "updated_at": "2025-09-12T01:38:35Z",
+      "description": "Replace hardcoded config.py with a YAML configuration file that supports safe loading, validation, and environment overrides",
+      "requirements": [
+        "Create config.yaml with paths section (tickets_path, logs_path, project_root)",
+        "Use PyYAML with safe_load to prevent code injection",
+        "Implement ConfigManager class with validation",
+        "Support environment variable overrides (e.g. NAPKINWIRE_TICKETS_PATH)",
+        "Add config schema validation using pydantic or dataclasses",
+        "Include example.config.yaml for reference",
+        "Handle missing config gracefully with sensible defaults",
+        "Log config loading for debugging without stdout pollution"
+      ],
+      "acceptance_criteria": [
+        "All hardcoded paths moved to config.yaml",
+        "YAML loads without security vulnerabilities using safe_load",
+        "Config validates required fields on load",
+        "Graceful fallback to defaults if config missing",
+        "Environment variable override support (NAPKINWIRE_CONFIG)",
+        "Config hot-reload detection for development mode"
+      ],
+      "files_affected": [
+        "config.py",
+        "config.yaml",
+        "main.py"
+      ],
+      "dependencies": [],
+      "outcome": null,
+      "notes": null
+    },
+    {
+      "id": "TICKET-003",
+      "title": "Add MCP tool for Claude usage analysis with summary and detailed modes",
+      "status": "done",
+      "priority": "high",
+      "created_at": "2025-09-12T01:45:56Z",
+      "updated_at": "2025-09-12T05:09:36Z",
+      "description": "Create MCP tool that leverages the existing usage analysis logic from usage_analysis.py to provide usage reports at different detail levels",
+      "requirements": [
+        "Import and use existing analyze_usage() function from usage_analysis.py",
+        "Add parameter detail_level with options: summary, detailed, both",
+        "Summary format: current window status, time remaining, messages this session, current burn rate",
+        "Detailed format: last 5 sessions, model usage breakdown, peak usage times, rate limit events, recommendations",
+        "Both format: summary section followed by detailed section",
+        "Return dict with clear structure based on detail level",
+        "Format timestamps in human-readable format",
+        "Include helpful context like 'You have ~2.5 hours remaining' instead of just numbers"
+      ],
+      "acceptance_criteria": [
+        "Tool successfully analyzes logs using existing usage_analysis.py logic",
+        "Summary mode returns concise stats in under 1 second",
+        "Detailed mode provides comprehensive usage patterns",
+        "Both mode combines summary and detailed cleanly",
+        "Handles missing or empty logs gracefully",
+        "Returns user-friendly formatted output",
+        "No stdout pollution or MCP communication issues"
+      ],
+      "files_affected": [
+        "main.py",
+        "mcp/usage_analysis.py"
+      ],
+      "dependencies": [],
+      "outcome": null,
+      "notes": null
+    },
+    {
+      "id": "TICKET-004",
+      "title": "Create project awareness tool with file tree and documentation extraction",
+      "status": "done",
+      "priority": "high",
+      "created_at": "2025-09-12T05:10:58Z",
+      "updated_at": "2025-09-12T06:15:00Z",
+      "description": "Create MCP tool that provides instant project awareness by showing file structure with extracted documentation and purpose for each file",
+      "requirements": [
+        "Scan project directory recursively from configured project root",
+        "Extract Python module docstrings, class docstrings, and main function docs",
+        "Extract JavaScript/TypeScript file-level comments, JSDoc, and export descriptions",
+        "Parse README files for project overview",
+        "Extract package.json descriptions for Node projects",
+        "Generate tree structure with inline descriptions like 'main.py - MCP server with ticket tools'",
+        "Support .napkinignore file for custom exclusions",
+        "Include file stats (size, last modified) as optional parameter",
+        "Identify hot files (recently modified) with optional highlighting",
+        "Cache results with smart invalidation on file changes"
+      ],
+      "acceptance_criteria": [
+        "Tool returns complete file tree with descriptions in under 3 seconds",
+        "Successfully extracts module/class/function docstrings from Python files",
+        "Extracts top-level comments and JSDoc from JavaScript/TypeScript files",
+        "Handles missing docstrings gracefully with fallback descriptions",
+        "Ignores common non-code directories (venv, node_modules, __pycache__, .git)",
+        "Output is clean and hierarchical for easy AI parsing",
+        "Supports filtering by file type or directory",
+        "Handles large projects without memory issues"
+      ],
+      "files_affected": [
+        "main.py"
+      ],
+      "dependencies": [],
+      "outcome": null,
+      "notes": null
+    },
+    {
+      "id": "TICKET-005",
+      "title": "Implement PyWebView for seamless diagram editor integration",
+      "status": "done",
+      "priority": "high",
+      "created_at": "2025-09-12T05:35:04Z",
+      "updated_at": "2025-09-12T06:45:00Z",
+      "description": "Replace temp file approach with PyWebView for seamless diagram input flow - spawn native window, draw, send directly to Claude without copy-paste",
+      "requirements": [
+        "Add PyWebView dependency to pyproject.toml",
+        "Create spawn_diagram_editor MCP tool that creates PyWebView window",
+        "Expose Python callback function to JavaScript bridge for receiving ASCII data",
+        "Modify diagram.html to detect window.pywebview availability",
+        "Change 'Generate' button logic to call window.pywebview.api.send_diagram(data) when in PyWebView mode",
+        "Keep existing clipboard mode for regular web access",
+        "Remove file:// protocol temp file saving logic",
+        "Window size 1200x800 with title 'NapkinWire Diagram'",
+        "Tool waits for window close and returns received ASCII or error message",
+        "Add 30 second timeout with graceful handling"
+      ],
+      "acceptance_criteria": [
+        "Diagram editor opens in native PyWebView window on tool call",
+        "ASCII diagram data passes directly from JS to Python via bridge",
+        "Window closes automatically after send",
+        "No temp files created or needed",
+        "Works on Windows and Linux",
+        "Existing web/clipboard modes remain functional",
+        "Clean error handling if window closed without sending",
+        "Tool returns ASCII diagram with full annotations to Claude"
+      ],
+      "files_affected": [
+        "main.py",
+        "web/diagram.html",
+        "web/diagram-gen.js",
+        "pyproject.toml"
+      ],
+      "dependencies": [],
+      "outcome": null,
+      "notes": null
+    },
+    {
+      "id": "TICKET-006",
+      "title": "Create roadmap append and list tools for idea capture",
+      "status": "todo",
+      "priority": "medium",
+      "created_at": "2025-09-12T05:44:28Z",
+      "updated_at": "2025-09-12T05:44:28Z",
+      "description": "Create simple roadmap tools for capturing ideas quickly without formal ticket overhead - just append ideas and view them",
+      "requirements": [
+        "Create append_roadmap_idea tool accepting title, description, and optional category",
+        "Categories: now, next, soon, later, ideas (default: ideas)",
+        "Append format: '## [Category] Title\\n*Added: timestamp*\\nDescription\\n---'",
+        "Create list_roadmap_ideas tool with optional category filter",
+        "Return formatted string suitable for display",
+        "Create roadmap.md if doesn't exist with header",
+        "Use file locking to prevent corruption",
+        "Ideas should append to end of their category section",
+        "Include idea count in list output"
+      ],
+      "acceptance_criteria": [
+        "Both tools work without errors",
+        "Ideas persist to roadmap.md file",
+        "Append tool adds with timestamp and proper formatting",
+        "List tool returns readable formatted output",
+        "File created automatically if doesn't exist",
+        "Handles concurrent appends gracefully",
+        "No duplicate ideas added if called twice rapidly",
+        "Clean markdown formatting maintained"
+      ],
+      "files_affected": [
+        "main.py",
+        "roadmap.md"
+      ],
+      "dependencies": [],
+      "outcome": null,
+      "notes": null
+    }
+  ],
+  "templates": {}
+}
