@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NapkinWire - UI Mockup Tool (Standalone)</title>
+    <link href='https://fonts.googleapis.com/css?family=Oswald' rel='stylesheet'>
+    <style>
+        :root {
+            --fg: #166534;
+            --bg: #fefce8;
+            --button_fg: #fefce8;
+            --button_bg: #166534;
+            --button_bg_clicked: #0d4322;
+            --border: #c4c4c4;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background-color: var(--bg);
+            color: var(--fg);
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        header {
+            padding: 1rem;
+            border-bottom: 2px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 2rem;
+            margin: 0;
+            margin-right: 2%;
+            display: inline-block;
+        }
+
+        .tagline {
+            margin: 0.5rem 0 0 0;
+            margin-top: auto;
+            font-style: italic;
+            color: #666;
+            display: inline-block;
+            justify-self: left;
+            align-self: left;
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            min-height: calc(100vh - 120px);
+            gap: 1rem;
+            padding: 1rem;
+        }
+
+        .drawing-section {
+            flex: 1;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            align-items: center;
+        }
+
+        .layout-select {
+            padding: 0.5rem;
+            border: 2px solid var(--border);
+            border-radius: 4px;
+            background: white;
+        }
+
+        .color-palette {
+            display: flex;
+            gap: 0.25rem;
+            flex-wrap: wrap;
+        }
+
+        .color-btn {
+            padding: 0.5rem 0.75rem;
+            border: 2px solid transparent;
+            cursor: pointer;
+            background: white;
+            border-radius: 4px;
+        }
+
+        .color-btn::before {
+            content: '●';
+            font-size: 16px;
+            margin-right: 0.5rem;
+        }
+
+        .color-btn.red::before {
+            color: #ff0000;
+        }
+
+        .color-btn.green::before {
+            color: #00ff00;
+        }
+
+        .color-btn.blue::before {
+            color: #0000ff;
+        }
+
+        .color-btn.yellow::before {
+            color: #DAA520;
+        }
+
+        .color-btn.purple::before {
+            color: #ff00ff;
+        }
+
+        .color-btn.active {
+            border-color: var(--fg);
+            background: #f0f0f0;
+        }
+
+        .action-btn {
+            padding: 0.5rem 1rem;
+            background-color: var(--button_bg);
+            color: var(--button_fg);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .action-btn:hover {
+            background-color: var(--button_bg_clicked);
+        }
+
+        canvas {
+            width: 100%;
+            max-width: 800px;
+            background-color: #ffffff;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .output-section {
+            flex: 1;
+        }
+
+        .context-display {
+            background: #f0f0f0;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .context-display h3 {
+            margin: 0 0 8px 0;
+            font-size: 1rem;
+        }
+
+        .context-display p {
+            margin: 0;
+            font-style: italic;
+            color: #666;
+        }
+
+        .ascii-display {
+            font-family: 'Courier New', monospace;
+            font-size: 10px;
+            background-color: #f8f8f8;
+            border: 2px solid var(--border);
+            padding: 1rem;
+            white-space: pre;
+            overflow-x: auto;
+            max-height: 300px;
+            overflow-y: auto;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .input-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .input-group label {
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .input-group input,
+        .input-group textarea {
+            padding: 0.75rem;
+            border: 2px solid var(--border);
+            border-radius: 4px;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        .input-group textarea {
+            resize: vertical;
+        }
+
+        .text-areas {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .text-areas > div {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .text-areas label {
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .text-areas input {
+            padding: 0.5rem;
+            border: 2px solid var(--border);
+            border-radius: 4px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+        }
+
+        .primary-btn {
+            padding: 1rem 2rem;
+            background-color: var(--button_bg);
+            color: var(--button_fg);
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .primary-btn:hover {
+            background-color: var(--button_bg_clicked);
+        }
+
+        .result-area {
+            margin-top: 20px;
+        }
+
+        .result-area textarea {
+            width: 100%;
+            height: 200px;
+            font-family: monospace;
+            padding: 10px;
+            border: 2px solid var(--border);
+            border-radius: 4px;
+            resize: vertical;
+        }
+
+        @media (min-width: 768px) {
+            .app-container {
+                flex-direction: row;
+                gap: 2rem;
+                padding: 2rem;
+            }
+
+            .drawing-section {
+                flex: 1;
+                max-width: 50%;
+            }
+
+            .output-section {
+                flex: 1;
+                max-width: 50%;
+            }
+
+            .controls {
+                justify-content: flex-start;
+            }
+
+            .ascii-display {
+                max-height: 400px;
+                font-size: 11px;
+            }
+
+            canvas {
+                max-width: none;
+            }
+        }
+
+        @media (min-width: 1200px) {
+            .app-container {
+                max-width: 1400px;
+                margin: 0 auto;
+                padding: 2rem;
+            }
+
+            .ascii-display {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div>
+            <h1>NapkinWire</h1>
+            <p class="tagline">Standalone UI Mockup Tool</p>
+        </div>
+    </header>
+
+    <main class="app-container">
+        <!-- Left side: Drawing -->
+        <section class="drawing-section">
+            <div class="context-display">
+                <h3>Context:</h3>
+                <p id="contextText">Loading context...</p>
+                <h3>Focus:</h3>
+                <p id="focusText">Loading focus...</p>
+            </div>
+
+            <div class="controls">
+                <select title="Pick Layout" id="layoutPicker" class="layout-select">
+                    <option value="desktop">Desktop (16:9)</option>
+                    <option value="mobile">Mobile (9:16)</option>
+                    <option value="square">Square (1:1)</option>
+                </select>
+
+                <div class="color-palette">
+                    <button data-color="#ff0000" class="color-btn red">Red</button>
+                    <button data-color="#00ff00" class="color-btn green">Green</button>
+                    <button data-color="#0000ff" class="color-btn blue">Blue</button>
+                    <button data-color="#DAA520" class="color-btn yellow">Yellow</button>
+                    <button data-color="#ff00ff" class="color-btn purple">[TEXT]</button>
+                    <button id="undoBtn" class="action-btn">Undo</button>
+                    <button id="clear_canvas" class="action-btn">Clear</button>
+                </div>
+            </div>
+
+            <canvas id="drawingCanvas" width="800" height="450"></canvas>
+        </section>
+
+        <!-- Right side: ASCII + Inputs -->
+        <section class="output-section">
+            <div id="ascii-preview" class="ascii-display"></div>
+
+            <div class="input-section">
+                <div class="input-group">
+                    <label for="overall-purpose">What are you building?</label>
+                    <input type="text" id="overall-purpose" placeholder="Dashboard, blog, chat app...">
+                </div>
+
+                <div class="input-group">
+                    <label for="platform">Framework/Language</label>
+                    <input type="text" id="platform" placeholder="React, Vue, Python...">
+                </div>
+
+                <div id="rectangle-dropdowns" class="text-areas">
+                    <!-- Text area inputs generated here -->
+                </div>
+
+                <div class="input-group">
+                    <label for="additional-notes">Additional Notes (optional)</label>
+                    <textarea id="additional-notes" rows="3" placeholder="e.g., Dark theme, mobile-first, carousel auto-advance, use Tailwind CSS..."></textarea>
+                </div>
+
+                <div class="checkbox-group">
+                    <label>
+                        <input type="checkbox" id="tuiMode">
+                        Terminal UI instead of GUI
+                    </label>
+                </div>
+
+                <button id="get_prompt" class="primary-btn">Generate Prompt</button>
+                
+                <div class="result-area">
+                    <h3>Generated Prompt:</h3>
+                    <textarea id="resultText" readonly placeholder="Draw your mockup and click 'Generate Prompt'"></textarea>
+                    <button id="saveResult" class="primary-btn" style="background: green; margin-top: 10px;">Save & Return to Claude</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Constants and variables
+        const canvas = document.getElementById('drawingCanvas');
+        const ctx = canvas.getContext('2d');
+        const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        const snapSize = isTouchDevice ? 15 : 10;
+
+        const uiColorMapping = {
+            '#ff0000': '#',  // Red
+            '#00ff00': '@',  // Green  
+            '#0000ff': '%',  // Blue
+            '#DAA520': '&',  // Yellow
+            '#ff00ff': '.'   // Purple
+        };
+
+        let rectangles = [];
+        let isDrawing = false;
+        let startX, startY;
+        let currentColor = '#ff0000';
+
+        // Utility functions
+        function snapToGrid(coord, snapSize) {
+            return Math.floor(coord / snapSize) * snapSize;
+        }
+
+        function getMousePos(e, canvas, snapSize) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+
+            const x = (e.clientX - rect.left) * scaleX;
+            const y = (e.clientY - rect.top) * scaleY;
+
+            return {
+                x: snapToGrid(x, snapSize),
+                y: snapToGrid(y, snapSize)
+            };
+        }
+
+        function getTouchPos(e, canvas, snapSize) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+
+            const touch = e.touches[0];
+            const x = (touch.clientX - rect.left) * scaleX;
+            const y = (touch.clientY - rect.top) * scaleY;
+
+            return {
+                x: snapToGrid(x, snapSize),
+                y: snapToGrid(y, snapSize)
+            };
+        }
+
+        function redrawCanvas(ctx, shapes) {
+            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            shapes.forEach(shape => {
+                if (shape.type === 'rectangle') {
+                    if (shape.color === '#ff00ff') {
+                        ctx.fillStyle = shape.color;
+                        ctx.fillRect(shape.x, shape.y, shape.width, shape.height);
+                    } else {
+                        ctx.strokeStyle = shape.color;
+                        ctx.lineWidth = 2;
+                        ctx.strokeRect(shape.x, shape.y, shape.width, shape.height);
+                    }
+                }
+            });
+        }
+
+        function isOnPerimeter(x, y, shape, snapSize) {
+            const pixelX = x * snapSize;
+            const pixelY = y * snapSize;
+
+            if (shape.type === 'rectangle') {
+                const onLeftOrRight = (pixelX === shape.x || pixelX === shape.x + shape.width - snapSize) &&
+                    (pixelY >= shape.y && pixelY < shape.y + shape.height);
+                const onTopOrBottom = (pixelY === shape.y || pixelY === shape.y + shape.height - snapSize) &&
+                    (pixelX >= shape.x && pixelX < shape.x + shape.width);
+
+                return onLeftOrRight || onTopOrBottom;
+            }
+            return false;
+        }
+
+        function generateASCII(shapes, canvasWidth, canvasHeight, snapSize, colorMapping) {
+            const gridWidth = Math.floor(canvasWidth / snapSize);
+            const gridHeight = Math.floor(canvasHeight / snapSize);
+            let asciiOutput = '';
+
+            let textAreaCounter = 1;
+            const textAreaNumbers = new Map();
+
+            shapes.forEach((shape, index) => {
+                if (shape.color === '#ff00ff') {
+                    textAreaNumbers.set(index, textAreaCounter++);
+                }
+            });
+
+            for (let y = 0; y < gridHeight; y++) {
+                let row = '';
+                for (let x = 0; x < gridWidth; x++) {
+                    let char = ' ';
+
+                    for (let shapeIndex = 0; shapeIndex < shapes.length; shapeIndex++) {
+                        const shape = shapes[shapeIndex];
+
+                        if (isOnPerimeter(x, y, shape, snapSize)) {
+                            if (shape.color === '#ff00ff') {
+                                char = textAreaNumbers.get(shapeIndex).toString();
+                            } else {
+                                char = colorMapping[shape.color] || '?';
+                            }
+                            break;
+                        }
+                    }
+                    row += char;
+                }
+                asciiOutput += row + '\\n';
+            }
+
+            return asciiOutput;
+        }
+
+        function generateInputFields(shapes, container) {
+            container.innerHTML = '';
+
+            const placeholderText = "e.g., Article title, User message, Navigation links";
+            let textAreaCounter = 1;
+
+            shapes.forEach((shape, index) => {
+                if (shape.color === '#ff00ff') {
+                    const fieldDiv = document.createElement('div');
+                    fieldDiv.innerHTML = `
+                        <label>Text Area ${textAreaCounter}:</label>
+                        <input type="text" id="text_${index}" placeholder="${placeholderText}">
+                    `;
+                    container.appendChild(fieldDiv);
+                    textAreaCounter++;
+                }
+            });
+        }
+
+        function updateLayout(shapes, canvasWidth, canvasHeight, snapSize, colorMapping, asciiElement, inputContainer) {
+            const asciiOutput = generateASCII(shapes, canvasWidth, canvasHeight, snapSize, colorMapping);
+            asciiElement.textContent = asciiOutput;
+            generateInputFields(shapes, inputContainer);
+        }
+
+        function generateAnnotatedASCII(asciiLayout, shapes, inputContainer) {
+            let textAreaDescriptions = '';
+            let textAreaCounter = 1;
+
+            shapes.forEach((shape, index) => {
+                if (shape.color === '#ff00ff') {
+                    const textInput = inputContainer.querySelector(`#text_${index}`);
+                    const description = textInput ? textInput.value : 'text content';
+                    textAreaDescriptions += `\\nText Area ${textAreaCounter}: ${description}`;
+                    textAreaCounter++;
+                }
+            });
+
+            return `${asciiLayout}\\n\\nContent areas:${textAreaDescriptions}`;
+        }
+
+        function generateUIPrompt() {
+            const asciiArt = generateASCII(rectangles, canvas.width, canvas.height, snapSize, uiColorMapping);
+            const annotatedASCII = generateAnnotatedASCII(
+                asciiArt,
+                rectangles, 
+                document.getElementById('rectangle-dropdowns')
+            );
+            
+            const overallPurpose = document.getElementById('overall-purpose').value || 'web interface';
+            const platform = document.getElementById('platform').value || 'vanilla JS';
+            const isTUI = document.getElementById("tuiMode").checked;
+
+            let createStatement = '';
+            if (isTUI) {
+                createStatement = `Create this TUI (Terminal User Interface) using ${platform}`;
+            } else {
+                createStatement = `Create this GUI using ${platform}`;
+            }
+
+            let finalPrompt = `${createStatement}, it will be used for a ${overallPurpose}
+
+${annotatedASCII}
+
+Please create a functional interface that matches this layout exactly. Use the visual structure shown in the ASCII art as your guide for positioning and proportions.`;
+
+            const additionalNotes = document.getElementById('additional-notes').value;
+            if (additionalNotes) {
+                finalPrompt += `\\n\\nAdditional requirements: \\n\\n${additionalNotes}`;
+            }
+
+            return finalPrompt;
+        }
+
+        // Load context from temp file (simplified for browser limitations)
+        async function loadContext() {
+            try {
+                // In a real implementation, this would need to read from the temp file
+                // For now, we'll show placeholder text
+                document.getElementById('contextText').textContent = 'Context will be loaded from temp file';
+                document.getElementById('focusText').textContent = 'Focus will be loaded from temp file';
+            } catch (error) {
+                console.error('Failed to load context:', error);
+                document.getElementById('contextText').textContent = 'Failed to load context';
+                document.getElementById('focusText').textContent = 'Failed to load focus';
+            }
+        }
+
+        // Event listeners
+        document.getElementById('layoutPicker').addEventListener('change', function (e) {
+            const layout = e.target.value;
+
+            switch (layout) {
+                case 'desktop':
+                    canvas.width = 800;
+                    canvas.height = 450;
+                    break;
+                case 'mobile':
+                    canvas.width = 450;
+                    canvas.height = 800;
+                    break;
+                case 'square':
+                    canvas.width = 600;
+                    canvas.height = 600;
+                    break;
+            }
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            rectangles = [];
+        });
+
+        // Set initial active state
+        document.querySelector('.color-btn[data-color="#ff0000"]').classList.add('active');
+
+        // Handle color button clicks
+        document.querySelectorAll('.color-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                document.querySelectorAll('.color-btn').forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                currentColor = this.dataset.color;
+            });
+        });
+
+        // Mouse events
+        canvas.addEventListener('mousedown', function (e) {
+            const pos = getMousePos(e, canvas, snapSize);
+            isDrawing = true;
+            startX = pos.x;
+            startY = pos.y;
+        });
+
+        document.addEventListener('mouseup', function (e) {
+            if (!isDrawing) return;
+
+            const pos = getMousePos(e, canvas, snapSize);
+            const width = pos.x - startX;
+            const height = pos.y - startY;
+
+            if (Math.abs(width) >= 10 && Math.abs(height) >= 10) {
+                rectangles.push({
+                    x: Math.min(startX, pos.x),
+                    y: Math.min(startY, pos.y),
+                    width: Math.abs(width),
+                    height: Math.abs(height),
+                    color: currentColor,
+                    type: "rectangle"
+                });
+
+                updateLayout(rectangles, canvas.width, canvas.height, snapSize, uiColorMapping, 
+                    document.getElementById('ascii-preview'), document.getElementById('rectangle-dropdowns'));
+            }
+
+            isDrawing = false;
+            redrawCanvas(ctx, rectangles);
+        });
+
+        document.addEventListener('mousemove', function (e) {
+            if (!isDrawing) return;
+
+            const pos = getMousePos(e, canvas, snapSize);
+            const width = pos.x - startX;
+            const height = pos.y - startY;
+
+            redrawCanvas(ctx, rectangles);
+
+            ctx.strokeStyle = currentColor;
+            ctx.lineWidth = 2;
+            if (currentColor === '#ff00ff') {
+                ctx.fillStyle = currentColor;
+                ctx.fillRect(startX, startY, width, height);
+            } else {
+                ctx.strokeRect(startX, startY, width, height);
+            }
+        });
+
+        // Touch events
+        canvas.addEventListener('touchstart', function (e) {
+            e.preventDefault();
+            const pos = getTouchPos(e, canvas, snapSize);
+            isDrawing = true;
+            startX = pos.x;
+            startY = pos.y;
+        });
+
+        document.addEventListener('touchmove', function (e) {
+            if (!isDrawing) return;
+            e.preventDefault();
+
+            const pos = getTouchPos(e, canvas, snapSize);
+            const width = pos.x - startX;
+            const height = pos.y - startY;
+
+            redrawCanvas(ctx, rectangles);
+
+            ctx.strokeStyle = currentColor;
+            ctx.lineWidth = 2;
+            if (currentColor === '#ff00ff') {
+                ctx.fillStyle = currentColor;
+                ctx.fillRect(startX, startY, width, height);
+            } else {
+                ctx.strokeRect(startX, startY, width, height);
+            }
+        });
+
+        document.addEventListener('touchend', function (e) {
+            if (!isDrawing) return;
+            e.preventDefault();
+
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+
+            const touch = e.changedTouches[0];
+            const x = (touch.clientX - rect.left) * scaleX;
+            const y = (touch.clientY - rect.top) * scaleY;
+
+            const pos = { x: snapToGrid(x, snapSize), y: snapToGrid(y, snapSize) };
+            const width = pos.x - startX;
+            const height = pos.y - startY;
+
+            if (Math.abs(width) >= snapSize && Math.abs(height) >= snapSize) {
+                rectangles.push({
+                    x: Math.min(startX, pos.x),
+                    y: Math.min(startY, pos.y),
+                    width: Math.abs(width),
+                    height: Math.abs(height),
+                    color: currentColor,
+                    type: "rectangle"
+                });
+
+                updateLayout(rectangles, canvas.width, canvas.height, snapSize, uiColorMapping, 
+                    document.getElementById('ascii-preview'), document.getElementById('rectangle-dropdowns'));
+            }
+
+            isDrawing = false;
+            redrawCanvas(ctx, rectangles);
+        });
+
+        // Button event listeners
+        document.getElementById('undoBtn').addEventListener('click', function() {
+            if (rectangles.length > 0) {
+                rectangles.pop();
+                redrawCanvas(ctx, rectangles);
+                updateLayout(rectangles, canvas.width, canvas.height, snapSize, uiColorMapping, 
+                    document.getElementById('ascii-preview'), document.getElementById('rectangle-dropdowns'));
+            }
+        });
+
+        document.getElementById("clear_canvas").addEventListener('click', function () {
+            rectangles = [];
+            redrawCanvas(ctx, rectangles);
+            document.getElementById('ascii-preview').textContent = '';
+            document.getElementById('rectangle-dropdowns').innerHTML = '';
+            document.getElementById('overall-purpose').value = '';
+            document.getElementById('platform').value = '';
+            document.getElementById('additional-notes').value = '';
+            document.getElementById('tuiMode').checked = false;
+            document.getElementById('resultText').value = '';
+
+            const originalText = this.textContent;
+            this.textContent = 'Cleared!';
+            setTimeout(() => {
+                this.textContent = originalText;
+            }, 800);
+        });
+
+        document.getElementById("get_prompt").addEventListener('click', function () {
+            const finalPrompt = generateUIPrompt();
+            document.getElementById('resultText').value = finalPrompt;
+
+            const originalText = this.textContent;
+            this.textContent = 'Prompt Generated!';
+            this.style.backgroundColor = '#059669';
+
+            setTimeout(() => {
+                this.textContent = originalText;
+                this.style.backgroundColor = 'var(--button_bg)';
+            }, 1500);
+        });
+
+        document.getElementById('saveResult').addEventListener('click', function() {
+            const result = document.getElementById('resultText').value;
+            if (result) {
+                // In a real implementation, this would write to the temp file
+                // For now, just copy to clipboard as fallback
+                navigator.clipboard.writeText(result).then(() => {
+                    this.textContent = 'Copied to Clipboard!';
+                    this.style.backgroundColor = '#059669';
+                    setTimeout(() => {
+                        this.textContent = 'Save & Return to Claude';
+                        this.style.backgroundColor = 'green';
+                    }, 2000);
+                }).catch(() => {
+                    alert('Result ready! Copy the text manually and return to Claude.');
+                });
+            } else {
+                alert('Please generate a prompt first!');
+            }
+        });
+
+        // Initialize
+        loadContext();
+    </script>
+</body>
+</html>
