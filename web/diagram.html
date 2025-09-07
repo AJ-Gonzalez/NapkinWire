@@ -34,6 +34,35 @@
         </header>
 
         <main class="app-container">
+
+            <div class="canvas-container">
+        <canvas id="diagramCanvas" width="1000" height="600"></canvas>
+        
+        <!-- Example text overlays - you'll generate these dynamically -->
+        <div class="text-overlay" style="left: 150px; top: 80px;">Start Process</div>
+        <div class="text-overlay" style="left: 400px; top: 180px;">Customer Verified?</div>
+        <div class="text-overlay" style="left: 650px; top: 280px;">Send Email</div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('diagramCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Example shapes drawn on canvas
+        ctx.strokeStyle = '#ff0000';
+        ctx.lineWidth = 2;
+        
+        // Rectangle (Start Process)
+        ctx.strokeRect(100, 50, 150, 80);
+        
+        // Diamond (Decision) - simplified as rotated square
+        ctx.strokeRect(350, 150, 150, 80);
+        
+        // Rectangle (Action)
+        ctx.strokeRect(600, 250, 150, 80);
+        
+        console.log('Canvas ready for diagram mockup');
+    </script>
         </main>
 
         <script type="module" src="main.js"></script>
