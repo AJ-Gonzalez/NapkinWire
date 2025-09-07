@@ -296,3 +296,16 @@ canvas {
     background: #124a26;
     /* Darker green on hover */
 }
+
+.input-group input,
+.input-group textarea {
+    padding: 0.75rem;
+    border: 2px solid var(--border);
+    border-radius: 4px;
+    font-size: 1rem;
+    font-family: inherit;
+}
+
+.input-group textarea {
+    resize: vertical;
+}
