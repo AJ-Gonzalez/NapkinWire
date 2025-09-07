@@ -350,6 +350,7 @@ function isPointInShape(x, y, shape) {
 }
 
 
+
 function showTextEditor(shape, clickX, clickY) {
     // Remove any existing text editor
     const existingEditor = document.querySelector('.text-editor');
@@ -363,28 +364,54 @@ function showTextEditor(shape, clickX, clickY) {
     textInput.className = 'text-editor';
     textInput.value = shape.text || '';
 
-    // Base styles - same for both platforms
-    textInput.style.zIndex = '9999';
-    textInput.style.border = '2px solid #166534';
-    textInput.style.borderRadius = '4px';
-    textInput.style.padding = '8px 12px';  // More generous padding
-    textInput.style.fontSize = '16px';     // Larger, more readable font
-    textInput.style.background = 'white';
-    textInput.style.fontFamily = 'Arial, sans-serif';
-    textInput.style.outline = 'none';      // Remove browser default outline
-    textInput.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)'; // Subtle shadow
+    // Apply styling
+    applyTextInputStyles(textInput, shape);
 
-    // Platform-specific positioning
+    document.body.appendChild(textInput);
+    textInput.focus();
+    textInput.select();
+
+    // State management
+    let isBeingRemoved = false;
+    let popStateHandler = null;
+
+    // Setup mobile back button handling
     if (isTouchDevice) {
-        // Mobile: centered overlay (keep existing logic)
-        textInput.style.position = 'fixed';
-        textInput.style.left = '50%';
-        textInput.style.top = '50%';
-        textInput.style.transform = 'translate(-50%, -50%)';
-        textInput.style.width = '250px';
-        textInput.style.maxWidth = '80vw';
-    } else {
-        // Desktop: positioned near the shape but larger and better positioned
+        setupMobileBackButton();
+    }
+
+    function applyTextInputStyles(input, shape) {
+        // Base styles - same for both platforms
+        Object.assign(input.style, {
+            zIndex: '9999',
+            border: '2px solid #166534',
+            borderRadius: '4px',
+            padding: '8px 12px',
+            fontSize: '16px',
+            background: 'white',
+            fontFamily: 'Arial, sans-serif',
+            outline: 'none',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
+        });
+
+        // Platform-specific positioning
+        if (isTouchDevice) {
+            // Mobile: centered overlay
+            Object.assign(input.style, {
+                position: 'fixed',
+                left: '50%',
+                top: '50%',
+                transform: 'translate(-50%, -50%)',
+                width: '250px',
+                maxWidth: '80vw'
+            });
+        } else {
+            // Desktop: positioned near the shape
+            positionDesktopInput(input, shape);
+        }
+    }
+
+    function positionDesktopInput(input, shape) {
         const canvasRect = canvas.getBoundingClientRect();
         const centerX = shape.x + shape.width / 2;
         const centerY = shape.y + shape.height / 2;
@@ -396,56 +423,93 @@ function showTextEditor(shape, clickX, clickY) {
         const screenX = centerX * scaleX;
         const screenY = centerY * scaleY;
 
-        textInput.style.position = 'fixed';  // Use fixed to avoid scroll issues
-        textInput.style.left = (canvasRect.left + screenX - 100) + 'px';  // Center on shape
-        textInput.style.top = (canvasRect.top + screenY - 15) + 'px';     // Center vertically
-        textInput.style.width = '200px';      // Wider input
-        textInput.style.minWidth = '150px';   // Minimum width
+        Object.assign(input.style, {
+            position: 'fixed',
+            left: (canvasRect.left + screenX - 100) + 'px',
+            top: (canvasRect.top + screenY - 15) + 'px',
+            width: '200px',
+            minWidth: '150px'
+        });
 
         // Keep input on screen
-        const inputRect = textInput.getBoundingClientRect();
         if (canvasRect.left + screenX + 100 > window.innerWidth - 20) {
-            textInput.style.left = (window.innerWidth - 220) + 'px';  // Push left if too far right
+            input.style.left = (window.innerWidth - 220) + 'px';
         }
         if (canvasRect.left + screenX - 100 < 20) {
-            textInput.style.left = '20px';  // Push right if too far left
+            input.style.left = '20px';
         }
     }
 
-    document.body.appendChild(textInput);
-    textInput.focus();
-    textInput.select();
+    function setupMobileBackButton() {
+        // Add history state for mobile back button handling
+        history.pushState({ textEditorOpen: true }, '', window.location.href);
 
-    let isBeingRemoved = false;
+        popStateHandler = (e) => {
+            if (!isBeingRemoved && document.querySelector('.text-editor')) {
+                e.preventDefault();
+                closeEditor();
+            }
+        };
+        
+        window.addEventListener('popstate', popStateHandler);
+    }
 
-    function saveText() {
+    function closeEditor() {
         if (isBeingRemoved) return;
         isBeingRemoved = true;
 
+        // Save the text
         shape.text = textInput.value;
 
+        // Remove the input element
         if (textInput && textInput.parentNode) {
             textInput.remove();
         }
 
+        // Clean up mobile back button handling
+        if (popStateHandler) {
+            window.removeEventListener('popstate', popStateHandler);
+            // Only go back if we added a history state
+            if (window.history.state && window.history.state.textEditorOpen) {
+                history.back();
+            }
+        }
+
+        // Redraw the canvas
         redrawShapes();
+    }
+
+    function cancelEditor() {
+        if (isBeingRemoved) return;
+        isBeingRemoved = true;
+
+        // Remove without saving
+        if (textInput && textInput.parentNode) {
+            textInput.remove();
+        }
+
+        // Clean up mobile back button handling
+        if (popStateHandler) {
+            window.removeEventListener('popstate', popStateHandler);
+            if (window.history.state && window.history.state.textEditorOpen) {
+                history.back();
+            }
+        }
     }
 
     // Event handling
     textInput.addEventListener('keydown', function (e) {
         if (e.key === 'Enter') {
-            e.preventDefault();  // Prevent form submission behavior
-            saveText();
+            e.preventDefault();
+            closeEditor();
         }
         if (e.key === 'Escape') {
             e.preventDefault();
-            if (textInput && textInput.parentNode) {
-                textInput.remove();
-            }
+            cancelEditor();
         }
     });
 
-    textInput.addEventListener('blur', saveText);
+    textInput.addEventListener('blur', closeEditor);
 }
 
 canvas.addEventListener('dblclick', function (e) {
