@@ -52,12 +52,27 @@
 
                     <button id="undo-btn" class="action-btn">Undo</button>
 
-            
                     <button id="clear-diagram" class="action-btn">Clear</button>
                 </div>
 
                 <div class="canvas-container">
                     <canvas id="diagramCanvas"></canvas>
+                </div>
+
+                <div class="input-section">
+                    <div class="input-group">
+                        <label for="diagram-type">What does this diagram
+                            represent?</label>
+                        <input type="text" id="diagram-type"
+                            placeholder="workflow, sales process, data pipeline, decision tree...">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="diagram-context">Additional context
+                            (optional)</label>
+                        <textarea id="diagram-context" rows="3"
+                            placeholder="e.g., This starts when a customer emails us... The data comes from our CRM... This process happens weekly..."></textarea>
+                    </div>
                 </div>
 
                 <div class="diagram-actions">
