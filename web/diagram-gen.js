@@ -14,7 +14,7 @@ let shapes = []; // Store all drawn shapes
 
 // Shape toolbar handling
 document.querySelectorAll('.shape-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
+    btn.addEventListener('click', function () {
         // Clear all active states
         document.querySelectorAll('.shape-btn').forEach(b => b.classList.remove('active'));
         // Set this button as active
@@ -25,22 +25,22 @@ document.querySelectorAll('.shape-btn').forEach(btn => {
 });
 
 // Mouse events
-canvas.addEventListener('mousedown', function(e) {
+canvas.addEventListener('mousedown', function (e) {
     if (currentShape === 'arrow') return; // Handle arrows separately
-    
+
     const pos = getMousePos(e, canvas, snapSize);
     isDrawing = true;
     startX = pos.x;
     startY = pos.y;
 });
 
-document.addEventListener('mouseup', function(e) {
+document.addEventListener('mouseup', function (e) {
     if (!isDrawing) return;
-    
+
     const pos = getMousePos(e, canvas, snapSize);
     const width = pos.x - startX;
     const height = pos.y - startY;
-    
+
     // Only add if shape has actual size
     if (Math.abs(width) >= 10 && Math.abs(height) >= 10) {
         shapes.push({
@@ -50,52 +50,52 @@ document.addEventListener('mouseup', function(e) {
             width: Math.abs(width),
             height: Math.abs(height)
         });
-        
+
         redrawShapes();
     }
-    
+
     isDrawing = false;
 });
 
-document.addEventListener('mousemove', function(e) {
+document.addEventListener('mousemove', function (e) {
     if (!isDrawing) return;
-    
+
     const pos = getMousePos(e, canvas, snapSize);
     const width = pos.x - startX;
     const height = pos.y - startY;
-    
+
     // Redraw everything + preview
     redrawShapes();
     drawShapePreview(currentShape, startX, startY, width, height);
 });
 
 // Touch events
-canvas.addEventListener('touchstart', function(e) {
+canvas.addEventListener('touchstart', function (e) {
     e.preventDefault();
     if (currentShape === 'arrow') return;
-    
+
     const pos = getTouchPos(e, canvas, snapSize);
     isDrawing = true;
     startX = pos.x;
     startY = pos.y;
 });
 
-document.addEventListener('touchend', function(e) {
+document.addEventListener('touchend', function (e) {
     if (!isDrawing) return;
     e.preventDefault();
-    
+
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
-    
+
     const touch = e.changedTouches[0];
     const x = (touch.clientX - rect.left) * scaleX;
     const y = (touch.clientY - rect.top) * scaleY;
-    
+
     const pos = { x: snapToGrid(x, snapSize), y: snapToGrid(y, snapSize) };
     const width = pos.x - startX;
     const height = pos.y - startY;
-    
+
     if (Math.abs(width) >= snapSize && Math.abs(height) >= snapSize) {
         shapes.push({
             type: currentShape,
@@ -104,21 +104,21 @@ document.addEventListener('touchend', function(e) {
             width: Math.abs(width),
             height: Math.abs(height)
         });
-        
+
         redrawShapes();
     }
-    
+
     isDrawing = false;
 });
 
-document.addEventListener('touchmove', function(e) {
+document.addEventListener('touchmove', function (e) {
     if (!isDrawing) return;
     e.preventDefault();
-    
+
     const pos = getTouchPos(e, canvas, snapSize);
     const width = pos.x - startX;
     const height = pos.y - startY;
-    
+
     redrawShapes();
     drawShapePreview(currentShape, startX, startY, width, height);
 });
@@ -138,7 +138,7 @@ function drawShapePreview(type, x, y, width, height) {
 }
 
 function drawShape(type, x, y, width, height) {
-    switch(type) {
+    switch (type) {
         case 'rectangle':
             ctx.strokeStyle = '#2563eb'; // Blue - processes
             ctx.strokeRect(x, y, width, height);
@@ -152,24 +152,50 @@ function drawShape(type, x, y, width, height) {
             drawDiamond(x, y, width, height);
             break;
         case 'arrow':
-            console.log("not implemented yet")
             ctx.strokeStyle = '#7c3aed'; // Purple - flow
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(x + width, y + height);
+            ctx.stroke();
+
+            // Draw arrowhead at the end point
+            drawArrowhead(ctx, x + width, y + height, x, y);
             break;
     }
 }
 
+// Add this function here
+function drawArrowhead(ctx, toX, toY, fromX, fromY) {
+    const angle = Math.atan2(toY - fromY, toX - fromX);
+    const headlen = 15; // Length of arrowhead
+
+    ctx.beginPath();
+    ctx.moveTo(toX, toY);
+    ctx.lineTo(
+        toX - headlen * Math.cos(angle - Math.PI / 6),
+        toY - headlen * Math.sin(angle - Math.PI / 6)
+    );
+    ctx.moveTo(toX, toY);
+    ctx.lineTo(
+        toX - headlen * Math.cos(angle + Math.PI / 6),
+        toY - headlen * Math.sin(angle + Math.PI / 6)
+    );
+    ctx.stroke();
+}
+
 function drawCircle(x, y, width, height) {
     ctx.beginPath();
-    ctx.ellipse(x + width/2, y + height/2, Math.abs(width/2), Math.abs(height/2), 0, 0, 2 * Math.PI);
+    ctx.ellipse(x + width / 2, y + height / 2, Math.abs(width / 2), Math.abs(height / 2), 0, 0, 2 * Math.PI);
     ctx.stroke();
 }
 
 function drawDiamond(x, y, width, height) {
     ctx.beginPath();
-    ctx.moveTo(x + width/2, y);           // top
-    ctx.lineTo(x + width, y + height/2);  // right
-    ctx.lineTo(x + width/2, y + height);  // bottom
-    ctx.lineTo(x, y + height/2);          // left
+    ctx.moveTo(x + width / 2, y);           // top
+    ctx.lineTo(x + width, y + height / 2);  // right
+    ctx.lineTo(x + width / 2, y + height);  // bottom
+    ctx.lineTo(x, y + height / 2);          // left
     ctx.closePath();
     ctx.stroke();
 }
@@ -177,8 +203,8 @@ function drawDiamond(x, y, width, height) {
 function resizeCanvas() {
     const container = document.querySelector('.canvas-container');
     const maxWidth = Math.min(window.innerWidth - 40, 1000);
-    const aspectRatio = 600/1000; // height/width
-    
+    const aspectRatio = 600 / 1000; // height/width
+
     canvas.width = maxWidth;
     canvas.height = maxWidth * aspectRatio;
 }
@@ -192,7 +218,7 @@ function saveAsPNG() {
     const link = document.createElement('a');
     link.download = 'diagram.png';
     link.href = canvas.toDataURL('image/png');
-    
+
     // Trigger download
     document.body.appendChild(link);
     link.click();
