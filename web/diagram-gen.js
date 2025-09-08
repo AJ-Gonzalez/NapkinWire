@@ -1,4 +1,4 @@
-import { getMousePos, getTouchPos, snapToGrid } from './shared/ascii-converter.js';
+import { getMousePos, getTouchPos, snapToGrid, undoLastShape } from './shared/ascii-converter.js';
 
 const canvas = document.getElementById('diagramCanvas');
 const ctx = canvas.getContext('2d');
