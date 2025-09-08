@@ -350,6 +350,8 @@ function showTextEditor(shape, clickX, clickY) {
     textInput.className = 'text-editor';
     textInput.value = shape.text || ''; // Pre-fill existing text
 
+    
+
     // Position it over the shape
     const canvasRect = canvas.getBoundingClientRect();
     const centerX = shape.x + shape.width / 2;
@@ -365,6 +367,21 @@ function showTextEditor(shape, clickX, clickY) {
     textInput.style.padding = '4px 8px';
     textInput.style.fontSize = '14px';
     textInput.style.background = 'white';
+
+
+     // Better mobile positioning
+    if (isTouchDevice) {
+        textInput.style.left = '50%';
+        textInput.style.top = '50%';
+        textInput.style.transform = 'translate(-50%, -50%)';
+        textInput.style.position = 'fixed'; // Fixed instead of absolute
+        textInput.style.zIndex = '9999';
+        textInput.style.width = '200px'; // Bigger on mobile
+    } else {
+        // Desktop positioning (your current code)
+        textInput.style.left = (canvasRect.left + centerX - 60) + 'px';
+        textInput.style.top = (canvasRect.top + centerY - 10) + 'px';
+    }
 
     // Add to page
     document.body.appendChild(textInput);
