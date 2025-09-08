@@ -5,6 +5,47 @@ const ctx = canvas.getContext('2d');
 
 // Touch detection for snap grid
 const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+// Show hint only when first shape is drawn
+function showEditHint() {
+    if (shapes.length === 1) { // First shape added
+        const hint = document.createElement('div');
+        hint.className = 'edit-hint';
+        hint.textContent = isTouchDevice ? 
+            'Long press shapes to add text' : 
+            'Double-click shapes to add text';
+        
+        hint.style.position = 'fixed';
+        hint.style.top = '20px';
+        hint.style.right = '20px';
+        hint.style.background = 'rgba(22, 101, 52, 0.9)';
+        hint.style.color = 'white';
+        hint.style.padding = '8px 12px';
+        hint.style.borderRadius = '4px';
+        hint.style.fontSize = '14px';
+        hint.style.zIndex = '1000';
+        hint.style.animation = 'fadeInOut 4s ease-in-out';
+        
+        document.body.appendChild(hint);
+        
+        // Auto-remove after 4 seconds
+        setTimeout(() => hint.remove(), 4000);
+    }
+}
+
+// Add this CSS for the fade animation
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes fadeInOut {
+        0% { opacity: 0; transform: translateY(-10px); }
+        20% { opacity: 1; transform: translateY(0); }
+        80% { opacity: 1; transform: translateY(0); }
+        100% { opacity: 0; transform: translateY(-10px); }
+    }
+`;
+document.head.appendChild(style);
+
+
 const snapSize = isTouchDevice ? 15 : 10;
 
 let currentShape = 'rectangle';
@@ -51,6 +92,7 @@ document.addEventListener('mouseup', function (e) {
         });
 
         redrawShapes();
+        showEditHint(); 
     }
 
     isDrawing = false;
@@ -104,6 +146,7 @@ document.addEventListener('touchend', function (e) {
         });
 
         redrawShapes();
+        showEditHint(); 
     }
 
     isDrawing = false;
@@ -225,3 +268,111 @@ function saveAsPNG() {
 
 // Hook it up to your button
 document.getElementById('save-png').addEventListener('click', saveAsPNG);
+
+
+function findShapeAtPosition(x, y) {
+    // Check each shape to see if point is inside
+    for (let i = shapes.length - 1; i >= 0; i--) {
+        const shape = shapes[i];
+        if (isPointInShape(x, y, shape)) {
+            return shape;
+        }
+    }
+    return null;
+}
+
+function isPointInShape(x, y, shape) {
+    switch (shape.type) {
+        case 'rectangle':
+            return x >= shape.x && x <= shape.x + shape.width &&
+                   y >= shape.y && y <= shape.y + shape.height;
+        case 'circle':
+            // Circle bounds check
+        case 'diamond':
+            // Diamond bounds check
+        // etc
+    }
+}
+
+
+function showTextEditor(shape, clickX, clickY) {
+    // Remove any existing text editor
+    const existingEditor = document.querySelector('.text-editor');
+    if (existingEditor) {
+        existingEditor.remove();
+    }
+    
+    // Create text input element
+    const textInput = document.createElement('input');
+    textInput.type = 'text';
+    textInput.className = 'text-editor';
+    textInput.value = shape.text || ''; // Pre-fill existing text
+    
+    // Position it over the shape
+    const canvasRect = canvas.getBoundingClientRect();
+    const centerX = shape.x + shape.width / 2;
+    const centerY = shape.y + shape.height / 2;
+    
+    textInput.style.position = 'absolute';
+    textInput.style.left = (canvasRect.left + centerX - 60) + 'px'; // Center roughly
+    textInput.style.top = (canvasRect.top + centerY - 10) + 'px';
+    textInput.style.width = '120px';
+    textInput.style.zIndex = '1000';
+    textInput.style.border = '2px solid #166534';
+    textInput.style.borderRadius = '4px';
+    textInput.style.padding = '4px 8px';
+    textInput.style.fontSize = '14px';
+    textInput.style.background = 'white';
+    
+    // Add to page
+    document.body.appendChild(textInput);
+    textInput.focus();
+    textInput.select(); // Select all text for easy editing
+    
+    // Save on Enter or blur
+    function saveText() {
+        shape.text = textInput.value;
+        textInput.remove();
+        redrawShapes(); // Redraw with new text
+    }
+    
+    textInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            saveText();
+        }
+        if (e.key === 'Escape') {
+            textInput.remove(); // Cancel without saving
+        }
+    });
+    
+    textInput.addEventListener('blur', saveText);
+}
+
+canvas.addEventListener('dblclick', function(e) {
+    const pos = getMousePos(e, canvas, snapSize);
+    const clickedShape = findShapeAtPosition(pos.x, pos.y);
+    
+    if (clickedShape) {
+        showTextEditor(clickedShape, pos.x, pos.y);
+    }
+});
+
+let pressTimer;
+
+canvas.addEventListener('touchstart', function(e) {
+    if (currentShape === 'text') return; // Don't interfere with drawing
+    
+    pressTimer = setTimeout(() => {
+        // Long press detected
+        const pos = getTouchPos(e, canvas, snapSize);
+        const clickedShape = findShapeAtPosition(pos.x, pos.y);
+        
+        if (clickedShape) {
+            showTextEditor(clickedShape, pos.x, pos.y);
+        }
+    }, 500); // 500ms long press
+});
+
+canvas.addEventListener('touchend', function(e) {
+    clearTimeout(pressTimer);
+});
