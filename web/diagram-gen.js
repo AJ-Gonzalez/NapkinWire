@@ -350,49 +350,42 @@ function showTextEditor(shape, clickX, clickY) {
     textInput.className = 'text-editor';
     textInput.value = shape.text || ''; // Pre-fill existing text
 
-    
-
-    // Position it over the shape
-    const canvasRect = canvas.getBoundingClientRect();
-    const centerX = shape.x + shape.width / 2;
-    const centerY = shape.y + shape.height / 2;
-
-    textInput.style.position = 'absolute';
-    textInput.style.left = (canvasRect.left + centerX - 60) + 'px'; // Center roughly
-    textInput.style.top = (canvasRect.top + centerY - 10) + 'px';
-    textInput.style.width = '120px';
-    textInput.style.zIndex = '1000';
+    // Base styles
+    textInput.style.zIndex = '9999';
     textInput.style.border = '2px solid #166534';
     textInput.style.borderRadius = '4px';
     textInput.style.padding = '4px 8px';
     textInput.style.fontSize = '14px';
     textInput.style.background = 'white';
 
-
-     // Better mobile positioning
+    // Platform-specific positioning
     if (isTouchDevice) {
+        textInput.style.position = 'fixed';
         textInput.style.left = '50%';
         textInput.style.top = '50%';
         textInput.style.transform = 'translate(-50%, -50%)';
-        textInput.style.position = 'fixed'; // Fixed instead of absolute
-        textInput.style.zIndex = '9999';
-        textInput.style.width = '200px'; // Bigger on mobile
+        textInput.style.width = '200px';
     } else {
-        // Desktop positioning (your current code)
+        // Desktop positioning
+        const canvasRect = canvas.getBoundingClientRect();
+        const centerX = shape.x + shape.width / 2;
+        const centerY = shape.y + shape.height / 2;
+        
+        textInput.style.position = 'absolute';
         textInput.style.left = (canvasRect.left + centerX - 60) + 'px';
         textInput.style.top = (canvasRect.top + centerY - 10) + 'px';
+        textInput.style.width = '120px';
     }
 
-    // Add to page
+    // Rest of your function stays the same...
     document.body.appendChild(textInput);
     textInput.focus();
-    textInput.select(); // Select all text for easy editing
+    textInput.select();
 
-    // Save on Enter or blur
     function saveText() {
         shape.text = textInput.value;
         textInput.remove();
-        redrawShapes(); // Redraw with new text
+        redrawShapes();
     }
 
     textInput.addEventListener('keydown', function (e) {
@@ -400,13 +393,12 @@ function showTextEditor(shape, clickX, clickY) {
             saveText();
         }
         if (e.key === 'Escape') {
-            textInput.remove(); // Cancel without saving
+            textInput.remove();
         }
     });
 
     textInput.addEventListener('blur', saveText);
 }
-
 canvas.addEventListener('dblclick', function (e) {
     const pos = getMousePos(e, canvas, snapSize);
     const clickedShape = findShapeAtPosition(pos.x, pos.y);
