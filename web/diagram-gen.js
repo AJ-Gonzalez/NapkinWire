@@ -1,17 +1,5 @@
 import { getMousePos, getTouchPos, snapToGrid, undoLastShape, isOnPerimeter } from './shared/ascii-converter.js';
 
-
-function saveText() {
-    shape.text = textInput.value;
-    
-    // Safe removal - check if element still exists and has a parent
-    if (textInput && textInput.parentNode) {
-        textInput.remove();
-    }
-    
-    redrawShapes();
-}
-
 const canvas = document.getElementById('diagramCanvas');
 const ctx = canvas.getContext('2d');
 
@@ -349,6 +337,8 @@ function isPointInShape(x, y, shape) {
     return false;
 }
 
+// Replace the showTextEditor function in diagram-gen.js with this:
+
 function showTextEditor(shape, clickX, clickY) {
     // Remove any existing text editor
     const existingEditor = document.querySelector('.text-editor');
@@ -381,7 +371,7 @@ function showTextEditor(shape, clickX, clickY) {
         const canvasRect = canvas.getBoundingClientRect();
         const centerX = shape.x + shape.width / 2;
         const centerY = shape.y + shape.height / 2;
-        
+
         textInput.style.position = 'absolute';
         textInput.style.left = (canvasRect.left + centerX - 60) + 'px';
         textInput.style.top = (canvasRect.top + centerY - 10) + 'px';
@@ -392,6 +382,17 @@ function showTextEditor(shape, clickX, clickY) {
     textInput.focus();
     textInput.select();
 
+    // Define saveText function with proper scope
+    function saveText() {
+        shape.text = textInput.value;
+
+        // Safe removal - check if element still exists and has a parent
+        if (textInput && textInput.parentNode) {
+            textInput.remove();
+        }
+
+        redrawShapes();
+    }
 
     // Simple event handling that works on both platforms
     textInput.addEventListener('keydown', function (e) {
@@ -399,7 +400,9 @@ function showTextEditor(shape, clickX, clickY) {
             saveText();
         }
         if (e.key === 'Escape') {
-            textInput.remove();
+            if (textInput && textInput.parentNode) {
+                textInput.remove();
+            }
         }
     });
 
@@ -544,7 +547,7 @@ function getArrowChar(shape, gridX, gridY, snapSize) {
 function generateDiagramPrompt() {
     // Get the ASCII representation
     const asciiOutput = generateDiagramASCII(shapes, canvas.width, canvas.height, snapSize);
-    
+
     // Build annotations for numbered shapes
     let annotations = '';
     let shapeNumbers = new Map();
@@ -590,7 +593,7 @@ Arrows (-, |, \\, /) show the flow and connections between elements.`;
 function getShapeTypeDescription(shapeType) {
     const descriptions = {
         'rectangle': 'Process/Action',
-        'diamond': 'Decision Point', 
+        'diamond': 'Decision Point',
         'circle': 'Start/End Point',
         'arrow': 'Flow Direction'
     };
@@ -598,7 +601,7 @@ function getShapeTypeDescription(shapeType) {
 }
 
 // Wire up the Generate Prompt button
-document.getElementById('generate-prompt').addEventListener('click', function() {
+document.getElementById('generate-prompt').addEventListener('click', function () {
     if (shapes.length === 0) {
         // Flash feedback for empty diagram
         const originalText = this.textContent;
@@ -610,7 +613,7 @@ document.getElementById('generate-prompt').addEventListener('click', function() 
     }
 
     const prompt = generateDiagramPrompt();
-    
+
     // Copy to clipboard
     navigator.clipboard.writeText(prompt).then(() => {
         // Flash success feedback
