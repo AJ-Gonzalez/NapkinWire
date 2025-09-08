@@ -1,4 +1,16 @@
-import { getMousePos, getTouchPos, snapToGrid, undoLastShape } from './shared/ascii-converter.js';
+import { getMousePos, getTouchPos, snapToGrid, undoLastShape, isOnPerimeter } from './shared/ascii-converter.js';
+
+
+function saveText() {
+    shape.text = textInput.value;
+    
+    // Safe removal - check if element still exists and has a parent
+    if (textInput && textInput.parentNode) {
+        textInput.remove();
+    }
+    
+    redrawShapes();
+}
 
 const canvas = document.getElementById('diagramCanvas');
 const ctx = canvas.getContext('2d');
@@ -380,12 +392,6 @@ function showTextEditor(shape, clickX, clickY) {
     textInput.focus();
     textInput.select();
 
-    // Simple, working save function
-    function saveText() {
-        shape.text = textInput.value;
-        textInput.remove();
-        redrawShapes();
-    }
 
     // Simple event handling that works on both platforms
     textInput.addEventListener('keydown', function (e) {
