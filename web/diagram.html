@@ -35,25 +35,28 @@
 
         <main class="app-container">
 
-            <div class="shape-toolbar">
-                <button data-shape="rectangle"
-                    class="shape-btn active">⬜</button>
-                <button data-shape="circle" class="shape-btn">⭕</button>
-                <button data-shape="diamond" class="shape-btn">◆</button>
-                <button data-shape="arrow" class="shape-btn">➡️</button>
-                <button data-shape="text" class="shape-btn">T</button>
-            </div>
+            <div class="diagram-container">
+                <div class="shape-toolbar">
+                    <button data-shape="rectangle"
+                        class="shape-btn active">⬜</button>
+                    <button data-shape="circle" class="shape-btn">⭕</button>
+                    <button data-shape="diamond" class="shape-btn">◆</button>
+                    <button data-shape="arrow" class="shape-btn">➡️</button>
+                    <button data-shape="text" class="shape-btn">T</button>
+                </div>
 
-            <div class="canvas-container">
-                <canvas id="diagramCanvas"></canvas>
-            </div>
+                <div class="canvas-container">
+                    <canvas id="diagramCanvas"></canvas>
+                </div>
 
-            <div class="diagram-actions">
-                <button id="save-png" class="action-btn">Save as PNG</button>
-                <button id="generate-prompt" class="primary-btn">Generate
-                    Prompt</button>
-            </div>
+                <div class="diagram-actions">
+                    <button id="save-png" class="action-btn">Save as
+                        PNG</button>
+                    <button id="generate-prompt" class="primary-btn">Generate
+                        Prompt</button>
+                </div>
 
+            </div>
         </main>
 
         <script type="module" src="diagram-gen.js"></script>
