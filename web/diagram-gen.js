@@ -102,7 +102,7 @@ document.addEventListener('mouseup', function (e) {
             width: Math.abs(width),
             height: Math.abs(height)
         });
-        console.log(shapes.length, shapes)
+        currentPreview = null;
 
         redrawShapes();
         showEditHint();
@@ -111,23 +111,6 @@ document.addEventListener('mouseup', function (e) {
     isDrawing = false;
 });
 
-let lastMouseX = 0, lastMouseY = 0;
-
-document.addEventListener('mousemove', function (e) {
-    if (!isDrawing) return;
-    
-    const pos = getMousePos(e, canvas, snapSize);
-    
-    // Only redraw if mouse moved significantly
-    if (Math.abs(pos.x - lastMouseX) < 5 && Math.abs(pos.y - lastMouseY) < 5) {
-        return;
-    }
-    
-    lastMouseX = pos.x;
-    lastMouseY = pos.y;
-    
-    // Rest of the function...
-});
 // Touch events
 canvas.addEventListener('touchstart', function (e) {
     e.preventDefault();
@@ -162,6 +145,7 @@ document.addEventListener('touchend', function (e) {
             width: Math.abs(width),
             height: Math.abs(height)
         });
+        currentPreview = null;
 
         redrawShapes();
         showEditHint();
@@ -679,3 +663,67 @@ document.getElementById('generate-prompt').addEventListener('click', function ()
         }, 2000);
     });
 });
+
+// Add these variables at the top with your other declarations
+let animationFrameId = null;
+let currentPreview = null;
+
+// Replace your existing mousemove handler with this:
+document.addEventListener('mousemove', function (e) {
+    if (!isDrawing) return;
+
+    const pos = getMousePos(e, canvas, snapSize);
+    const width = pos.x - startX;
+    const height = pos.y - startY;
+
+    // Store the preview data
+    currentPreview = { 
+        type: currentShape, 
+        x: startX, 
+        y: startY, 
+        width: width, 
+        height: height 
+    };
+    
+    // Only schedule one redraw per frame (60fps max)
+    if (animationFrameId) return;
+    
+    animationFrameId = requestAnimationFrame(() => {
+        redrawShapes();
+        if (currentPreview) {
+            drawShapePreview(currentPreview.type, currentPreview.x, currentPreview.y, currentPreview.width, currentPreview.height);
+        }
+        animationFrameId = null;
+    });
+});
+
+// Replace your existing touchmove handler with this:
+document.addEventListener('touchmove', function (e) {
+    if (!isDrawing) return;
+    e.preventDefault();
+
+    const pos = getTouchPos(e, canvas, snapSize);
+    const width = pos.x - startX;
+    const height = pos.y - startY;
+
+    // Store the preview data
+    currentPreview = { 
+        type: currentShape, 
+        x: startX, 
+        y: startY, 
+        width: width, 
+        height: height 
+    };
+
+    // Only schedule one redraw per frame (60fps max)
+    if (animationFrameId) return;
+    
+    animationFrameId = requestAnimationFrame(() => {
+        redrawShapes();
+        if (currentPreview) {
+            drawShapePreview(currentPreview.type, currentPreview.x, currentPreview.y, currentPreview.width, currentPreview.height);
+        }
+        animationFrameId = null;
+    });
+});
+
