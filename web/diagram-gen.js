@@ -577,14 +577,6 @@ canvas.addEventListener('dblclick', function (e) {
 });
 
 
-
-canvas.addEventListener('touchend', function (e) {
-    clearTimeout(pressTimer);
-});
-
-
-
-
 // Add to diagram-gen.js
 document.getElementById('clear-diagram').addEventListener('click', function () {
     shapes = [];
