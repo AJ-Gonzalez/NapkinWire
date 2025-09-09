@@ -161,12 +161,12 @@ document.addEventListener('touchmove', function (e) {
     e.preventDefault();
 
     const pos = getTouchPos(e, canvas, snapSize);
-    
+
     // Only redraw if touch moved significantly
     if (Math.abs(pos.x - lastTouchX) < 10 && Math.abs(pos.y - lastTouchY) < 10) {
         return;
     }
-    
+
     lastTouchX = pos.x;
     lastTouchY = pos.y;
 
@@ -219,16 +219,25 @@ function drawShape(type, x, y, width, height) {
             ctx.strokeStyle = '#dc2626'; // Red - decisions
             drawDiamond(x, y, width, height);
             break;
+
+        // Replace the arrow case in drawShape() function with this:
         case 'arrow':
             ctx.strokeStyle = '#7c3aed'; // Purple - flow
             ctx.lineWidth = 2;
             ctx.beginPath();
-            ctx.moveTo(x, y);
-            ctx.lineTo(x + width, y + height);
+
+            // Calculate actual start and end points based on drawing direction
+            const startX = shape.x;
+            const startY = shape.y;
+            const endX = shape.x + shape.width;
+            const endY = shape.y + shape.height;
+
+            ctx.moveTo(startX, startY);
+            ctx.lineTo(endX, endY);
             ctx.stroke();
 
-            // Draw arrowhead at the end point
-            drawArrowhead(ctx, x + width, y + height, x, y);
+            // Draw arrowhead at the END point (where user finished drawing)
+            drawArrowhead(ctx, endX, endY, startX, startY);
             break;
     }
 }
@@ -677,17 +686,17 @@ document.addEventListener('mousemove', function (e) {
     const height = pos.y - startY;
 
     // Store the preview data
-    currentPreview = { 
-        type: currentShape, 
-        x: startX, 
-        y: startY, 
-        width: width, 
-        height: height 
+    currentPreview = {
+        type: currentShape,
+        x: startX,
+        y: startY,
+        width: width,
+        height: height
     };
-    
+
     // Only schedule one redraw per frame (60fps max)
     if (animationFrameId) return;
-    
+
     animationFrameId = requestAnimationFrame(() => {
         redrawShapes();
         if (currentPreview) {
@@ -707,17 +716,17 @@ document.addEventListener('touchmove', function (e) {
     const height = pos.y - startY;
 
     // Store the preview data
-    currentPreview = { 
-        type: currentShape, 
-        x: startX, 
-        y: startY, 
-        width: width, 
-        height: height 
+    currentPreview = {
+        type: currentShape,
+        x: startX,
+        y: startY,
+        width: width,
+        height: height
     };
 
     // Only schedule one redraw per frame (60fps max)
     if (animationFrameId) return;
-    
+
     animationFrameId = requestAnimationFrame(() => {
         redrawShapes();
         if (currentPreview) {
@@ -727,3 +736,104 @@ document.addEventListener('touchmove', function (e) {
     });
 });
 
+
+
+// Add this function to find what shape a point is touching
+function findShapeAtPoint(x, y, excludeIndex = -1) {
+    for (let i = shapes.length - 1; i >= 0; i--) {
+        if (i === excludeIndex) continue; // Skip the arrow itself
+
+        const shape = shapes[i];
+
+        // Check if point is on or near the perimeter
+        if (isPointNearShape(x, y, shape)) {
+            return { shape, index: i };
+        }
+    }
+    return null;
+}
+
+// Helper function to check if a point is near a shape
+function isPointNearShape(x, y, shape) {
+    const tolerance = 15; // pixels
+
+    switch (shape.type) {
+        case 'rectangle':
+            return (x >= shape.x - tolerance && x <= shape.x + shape.width + tolerance &&
+                y >= shape.y - tolerance && y <= shape.y + shape.height + tolerance) &&
+                (x <= shape.x + tolerance || x >= shape.x + shape.width - tolerance ||
+                    y <= shape.y + tolerance || y >= shape.y + shape.height - tolerance);
+
+        case 'circle':
+            const centerX = shape.x + shape.width / 2;
+            const centerY = shape.y + shape.height / 2;
+            const radiusX = Math.abs(shape.width / 2) + tolerance;
+            const radiusY = Math.abs(shape.height / 2) + tolerance;
+
+            const dx = (x - centerX) / radiusX;
+            const dy = (y - centerY) / radiusY;
+            return (dx * dx + dy * dy) <= 1;
+
+        case 'diamond':
+            const dCenterX = shape.x + shape.width / 2;
+            const dCenterY = shape.y + shape.height / 2;
+            const halfWidthTol = Math.abs(shape.width / 2) + tolerance;
+            const halfHeightTol = Math.abs(shape.height / 2) + tolerance;
+
+            const relX = Math.abs(x - dCenterX) / halfWidthTol;
+            const relY = Math.abs(y - dCenterY) / halfHeightTol;
+            return (relX + relY) <= 1;
+
+        default:
+            return false;
+    }
+}
+
+// Add this function to generate connection relationships
+function generateConnections() {
+    let connections = [];
+
+    shapes.forEach((shape, index) => {
+        if (shape.type === 'arrow') {
+            const startX = shape.x;
+            const startY = shape.y;
+            const endX = shape.x + shape.width;
+            const endY = shape.y + shape.height;
+
+            const startShape = findShapeAtPoint(startX, startY, index);
+            const endShape = findShapeAtPoint(endX, endY, index);
+
+            if (startShape && endShape) {
+                const startLabel = getShapeLabel(startShape.shape, startShape.index);
+                const endLabel = getShapeLabel(endShape.shape, endShape.index);
+
+                // Add decision labels for diamonds
+                let connection = `${startLabel} → ${endLabel}`;
+                if (startShape.shape.type === 'diamond') {
+                    // Could add logic here to detect Yes/No based on arrow position
+                    connection = `${startLabel} → ${endLabel}`;
+                }
+
+                connections.push(connection);
+            }
+        }
+    });
+
+    return connections;
+}
+
+// Helper to get a readable label for a shape
+function getShapeLabel(shape, index) {
+    if (shape.text && shape.text.trim()) {
+        return `"${shape.text}"`;
+    }
+
+    // Fallback to numbered labels
+    let counter = 1;
+    for (let i = 0; i < index; i++) {
+        if (shapes[i].text && shapes[i].text.trim()) {
+            counter++;
+        }
+    }
+    return `${counter}`;
+}
