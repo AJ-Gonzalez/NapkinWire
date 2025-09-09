@@ -159,7 +159,7 @@ canvas.addEventListener('touchstart', function (e) {
 
     // Set up drawing state
     isDrawing = true;
-    isCurrentlyDrawing = true;
+    isCurrentlyDrawing = false; // Start as false, will be set to true on move
     startX = pos.x;
     startY = pos.y;
 
@@ -170,6 +170,8 @@ canvas.addEventListener('touchstart', function (e) {
             if (!isCurrentlyDrawing) {
                 const clickedShape = findShapeAtPosition(pos.x, pos.y);
                 if (clickedShape) {
+                    // Cancel drawing state since we're editing text
+                    isDrawing = false;
                     showTextEditor(clickedShape, pos.x, pos.y);
                 }
             }
@@ -181,8 +183,9 @@ document.addEventListener('touchmove', function (e) {
     if (!isDrawing) return;
     e.preventDefault();
 
-    // Clear long press timer on move
+    // Clear long press timer on move and mark as actively drawing
     clearTimeout(pressTimer);
+    isCurrentlyDrawing = true;
 
     const pos = getTouchPosClean(e.touches[0], canvas, snapSize);
     const width = pos.x - startX;
@@ -213,22 +216,25 @@ document.addEventListener('touchend', function (e) {
     e.preventDefault();
 
     const touchDuration = Date.now() - touchStartTime;
+    const wasDrawing = isCurrentlyDrawing; // Capture state before clearing
 
     // Clear timers
     clearTimeout(pressTimer);
-    isCurrentlyDrawing = false;
-
-    // If it was a very short tap (under 100ms) and we haven't moved much,
+    
+    // If it was a very short tap (under 100ms) and we haven't moved (not actively drawing),
     // it might be intended as a text edit tap
-    if (touchDuration < 100) {
+    if (touchDuration < 100 && !wasDrawing) {
         const pos = getTouchPosClean(e.changedTouches[0], canvas, snapSize);
         const clickedShape = findShapeAtPosition(pos.x, pos.y);
         if (clickedShape) {
             showTextEditor(clickedShape, pos.x, pos.y);
             isDrawing = false;
+            isCurrentlyDrawing = false;
             return;
         }
     }
+    
+    isCurrentlyDrawing = false;
 
     // Normal shape drawing logic
     const pos = getTouchPosClean(e.changedTouches[0], canvas, snapSize);
