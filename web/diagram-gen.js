@@ -125,20 +125,26 @@ document.addEventListener('mouseup', function (e) {
     isDrawing = false;
 });
 
-// Touch events
+// REPLACE the two separate touchstart handlers with this consolidated one:
+
+let pressTimer;
+
+// Single consolidated touch handler for canvas
 canvas.addEventListener('touchstart', function (e) {
     e.preventDefault();
 
     const pos = getTouchPos(e, canvas, snapSize);
+    
+    // Always set up drawing state
     isDrawing = true;
-    isCurrentlyDrawing = true; // Set drawing flag
+    isCurrentlyDrawing = true;
     startX = pos.x;
     startY = pos.y;
 
-    // Only start long press timer if we're not drawing arrows
+    // Set up long press timer for text editing (but not for arrows)
     if (currentShape !== 'arrow') {
         pressTimer = setTimeout(() => {
-            // Long press detected - but only if we're still not drawing
+            // Long press detected - but only if we're still not actively drawing
             if (!isCurrentlyDrawing) {
                 const clickedShape = findShapeAtPosition(pos.x, pos.y);
                 if (clickedShape) {
@@ -148,6 +154,9 @@ canvas.addEventListener('touchstart', function (e) {
         }, 500); // 500ms long press
     }
 });
+
+// Remove the second touchstart handler for long press completely
+// Just keep the touchend and touchmove handlers as they are
 
 document.addEventListener('touchend', function (e) {
     if (!isDrawing) return;
@@ -567,25 +576,7 @@ canvas.addEventListener('dblclick', function (e) {
     }
 });
 
-let pressTimer;
 
-// Updated touch handling for long press
-canvas.addEventListener('touchstart', function (e) {
-    // Only handle long press for non-drawing interactions
-    if (isDrawing) return;
-
-    pressTimer = setTimeout(() => {
-        // Long press detected - only if we're not currently drawing
-        if (!isCurrentlyDrawing) {
-            const pos = getTouchPos(e, canvas, snapSize);
-            const clickedShape = findShapeAtPosition(pos.x, pos.y);
-
-            if (clickedShape) {
-                showTextEditor(clickedShape, pos.x, pos.y);
-            }
-        }
-    }, 500); // 500ms long press
-});
 
 canvas.addEventListener('touchend', function (e) {
     clearTimeout(pressTimer);
