@@ -527,36 +527,6 @@ function generateDiagramASCII(shapes, canvasWidth, canvasHeight, snapSize) {
     return asciiOutput;
 }
 
-// Enhanced helper function with full diagonal support
-function getArrowChar(shape, gridX, gridY, snapSize) {
-    const deltaX = shape.width;
-    const deltaY = shape.height;
-
-    // Calculate the angle of the arrow in degrees
-    const angle = Math.atan2(deltaY, deltaX) * 180 / Math.PI;
-
-    // Choose character based on 8-directional angle ranges (45° each)
-    if (angle >= -22.5 && angle < 22.5) {
-        return '-';        // Horizontal right →
-    } else if (angle >= 22.5 && angle < 67.5) {
-        return '\\';       // Diagonal down-right ↘
-    } else if (angle >= 67.5 && angle < 112.5) {
-        return '|';        // Vertical down ↓
-    } else if (angle >= 112.5 && angle < 157.5) {
-        return '/';        // Diagonal down-left ↙
-    } else if (angle >= 157.5 || angle < -157.5) {
-        return '-';        // Horizontal left ←
-    } else if (angle >= -157.5 && angle < -112.5) {
-        return '\\';       // Diagonal up-left ↖
-    } else if (angle >= -112.5 && angle < -67.5) {
-        return '|';        // Vertical up ↑
-    } else if (angle >= -67.5 && angle < -22.5) {
-        return '/';        // Diagonal up-right ↗
-    }
-
-    return '-'; // Fallback to horizontal
-}
-
 
 
 function generateDiagramPrompt() {
