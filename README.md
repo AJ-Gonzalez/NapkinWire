@@ -8,11 +8,15 @@ From sketch to prompt in seconds.
 
 ## What it does
 
-Sketch UI layouts with simple rectangles and instantly get LLM-ready prompts. No accounts, no subscriptions, no BS.
+Sketch UI layouts with simple rectangles and instantly get LLM-ready prompts.
 
-**The problem:** Describing UI layouts to LLMs (or humans) in text is terrible. "Put a button on the right side, below the form, but not too close to the footer..." 🤮
+Give your LLM a diagram of your process it can actually understand.
 
-**The solution:** Draw rectangles. Get perfect prompts. Build your UI.
+No accounts, no subscriptions, no BS.
+
+**The problem:** Describing UI layouts or business processes to LLMs (or humans) in text is terrible. "Put a button on the right side, below the form, but not too close to the footer..." 🤮
+
+**The solution:** Draw rectangles. Get perfect prompts. Build your UI, get your LLM to know your process.
 
 ## Why this exists
 
@@ -24,7 +28,14 @@ I wanted the feeling of sketching ideas on the back of a napkin or whiteboard - 
 
 ## Demo
 
-*[Video/GIF placeholder - showing sketch → copy prompt → paste in LLM → generated code]*
+### UI
+
+![UI Demo gif](napkinwire_demo_UI_.GIF)
+
+
+### Diagrams
+
+![UI Diagram gif](napkinwire_diagram_demo.GIF)
 
 ## How it works
 
@@ -234,9 +245,8 @@ Just start drawing. Everything updates automatically as you sketch.
 ## Roadmap
 
 - [ ] **MCP Server** - Claude Desktop integration for seamless sketch → code workflow
-- [ ] **Diagram mode** - Flowcharts and process diagrams with connection detection
 - [ ] **Template library** - Common UI patterns for faster sketching
-- [ ] **Export options** - PNG, SVG, and more format support
+- [ ] **Advanced export options** - SVG, and more format support
 
 *Want something specific? [Open an issue](https://github.com/AJ-Gonzalez/NapkinWire/issues)*
 
