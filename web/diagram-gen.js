@@ -917,4 +917,23 @@ function generateConnections() {
         }
     });
 
+    return connections;
+}
+
+function getShapeLabel(shape, shapeIndex) {
+    // Create numbering system matching generateDiagramASCII
+    let shapeNumbers = new Map();
+    let counter = 1;
+
+    shapes.forEach((s, index) => {
+        if (s.text && s.text.trim()) {
+            shapeNumbers.set(index, counter++);
+        }
+    });
+
+    if (shapeNumbers.has(shapeIndex)) {
+        return shapeNumbers.get(shapeIndex).toString();
+    } else {
+        return `Shape${shapeIndex}`;
+    }
 }
