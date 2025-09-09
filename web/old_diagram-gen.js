@@ -87,7 +87,6 @@ canvas.addEventListener('mousedown', function (e) {
     startY = pos.y;
 });
 
-// FIXED: Mouse up handler with race condition fix
 document.addEventListener('mouseup', function (e) {
     if (!isDrawing) return;
 
@@ -95,156 +94,20 @@ document.addEventListener('mouseup', function (e) {
     const width = pos.x - startX;
     const height = pos.y - startY;
 
-    // Cancel any pending animation frame to prevent race condition
-    if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);
-        animationFrameId = null;
-    }
 
-    // Clear preview immediately
-    currentPreview = null;
 
     // Only add if shape has actual size
     if (Math.abs(width) >= 10 && Math.abs(height) >= 10) {
         if (currentShape === 'arrow') {
             shapes.push({
                 type: currentShape,
-                x: startX,
-                y: startY,
-                width: width,
-                height: height
+                x: startX,           // Keep original start point
+                y: startY,           // Keep original start point  
+                width: width,        // Keep original direction (can be negative)
+                height: height       // Keep original direction (can be negative)
             });
         } else {
-            shapes.push({
-                type: currentShape,
-                x: Math.min(startX, pos.x),
-                y: Math.min(startY, pos.y),
-                width: Math.abs(width),
-                height: Math.abs(height)
-            });
-        }
-
-        // Force immediate redraw instead of waiting for animation frame
-        redrawShapes();
-        showEditHint();
-    }
-
-    isDrawing = false;
-});
-
-// FIXED: Clean mobile touch handlers
-let pressTimer;
-let touchStartTime = 0;
-
-// Helper function for touch position
-function getTouchPosClean(touch, canvas, snapSize) {
-    const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
-
-    const x = (touch.clientX - rect.left) * scaleX;
-    const y = (touch.clientY - rect.top) * scaleY;
-
-    return {
-        x: snapToGrid(x, snapSize),
-        y: snapToGrid(y, snapSize)
-    };
-}
-
-canvas.addEventListener('touchstart', function (e) {
-    e.preventDefault();
-
-    const pos = getTouchPosClean(e.touches[0], canvas, snapSize);
-    touchStartTime = Date.now();
-
-    // Set up drawing state
-    isDrawing = true;
-    isCurrentlyDrawing = true;
-    startX = pos.x;
-    startY = pos.y;
-
-    // Set up long press timer (but not for arrows)
-    if (currentShape !== 'arrow') {
-        pressTimer = setTimeout(() => {
-            // Only trigger if we haven't moved (still not actively drawing)
-            if (!isCurrentlyDrawing) {
-                const clickedShape = findShapeAtPosition(pos.x, pos.y);
-                if (clickedShape) {
-                    showTextEditor(clickedShape, pos.x, pos.y);
-                }
-            }
-        }, 500);
-    }
-});
-
-document.addEventListener('touchmove', function (e) {
-    if (!isDrawing) return;
-    e.preventDefault();
-
-    // Clear long press timer on move
-    clearTimeout(pressTimer);
-
-    const pos = getTouchPosClean(e.touches[0], canvas, snapSize);
-    const width = pos.x - startX;
-    const height = pos.y - startY;
-
-    // Store preview data
-    currentPreview = {
-        type: currentShape,
-        x: startX,
-        y: startY,
-        width: width,
-        height: height
-    };
-
-    // Throttled redraw
-    if (animationFrameId) return;
-    animationFrameId = requestAnimationFrame(() => {
-        redrawShapes();
-        if (currentPreview) {
-            drawShapePreview(currentPreview.type, currentPreview.x, currentPreview.y, currentPreview.width, currentPreview.height);
-        }
-        animationFrameId = null;
-    });
-});
-
-document.addEventListener('touchend', function (e) {
-    if (!isDrawing) return;
-    e.preventDefault();
-
-    const touchDuration = Date.now() - touchStartTime;
-
-    // Clear timers
-    clearTimeout(pressTimer);
-    isCurrentlyDrawing = false;
-
-    // If it was a very short tap (under 100ms) and we haven't moved much,
-    // it might be intended as a text edit tap
-    if (touchDuration < 100) {
-        const pos = getTouchPosClean(e.changedTouches[0], canvas, snapSize);
-        const clickedShape = findShapeAtPosition(pos.x, pos.y);
-        if (clickedShape) {
-            showTextEditor(clickedShape, pos.x, pos.y);
-            isDrawing = false;
-            return;
-        }
-    }
-
-    // Normal shape drawing logic
-    const pos = getTouchPosClean(e.changedTouches[0], canvas, snapSize);
-    const width = pos.x - startX;
-    const height = pos.y - startY;
-
-    if (Math.abs(width) >= snapSize && Math.abs(height) >= snapSize) {
-        if (currentShape === 'arrow') {
-            shapes.push({
-                type: currentShape,
-                x: startX,
-                y: startY,
-                width: width,
-                height: height
-            });
-        } else {
+            // Normal normalization for other shapes
             shapes.push({
                 type: currentShape,
                 x: Math.min(startX, pos.x),
@@ -254,6 +117,88 @@ document.addEventListener('touchend', function (e) {
             });
         }
         currentPreview = null;
+
+        redrawShapes();
+        showEditHint();
+    }
+
+    isDrawing = false;
+});
+
+// REPLACE the two separate touchstart handlers with this consolidated one:
+
+let pressTimer;
+
+// Single consolidated touch handler for canvas
+canvas.addEventListener('touchstart', function (e) {
+    e.preventDefault();
+
+    const pos = getTouchPos(e, canvas, snapSize);
+    
+    // Always set up drawing state
+    isDrawing = true;
+    isCurrentlyDrawing = true;
+    startX = pos.x;
+    startY = pos.y;
+
+    // Set up long press timer for text editing (but not for arrows)
+    if (currentShape !== 'arrow') {
+        pressTimer = setTimeout(() => {
+            // Long press detected - but only if we're still not actively drawing
+            if (!isCurrentlyDrawing) {
+                const clickedShape = findShapeAtPosition(pos.x, pos.y);
+                if (clickedShape) {
+                    showTextEditor(clickedShape, pos.x, pos.y);
+                }
+            }
+        }, 500); // 500ms long press
+    }
+});
+
+// Remove the second touchstart handler for long press completely
+// Just keep the touchend and touchmove handlers as they are
+
+document.addEventListener('touchend', function (e) {
+    if (!isDrawing) return;
+    e.preventDefault();
+
+    // Clear the long press timer
+    clearTimeout(pressTimer);
+    isCurrentlyDrawing = false; // Clear drawing flag
+
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+
+    const touch = e.changedTouches[0];
+    const x = (touch.clientX - rect.left) * scaleX;
+    const y = (touch.clientY - rect.top) * scaleY;
+
+    const pos = { x: snapToGrid(x, snapSize), y: snapToGrid(y, snapSize) };
+    const width = pos.x - startX;
+    const height = pos.y - startY;
+
+    if (Math.abs(width) >= snapSize && Math.abs(height) >= snapSize) {
+        if (currentShape === 'arrow') {
+            shapes.push({
+                type: currentShape,
+                x: startX,           // Keep original start point
+                y: startY,           // Keep original start point  
+                width: width,        // Keep original direction (can be negative)
+                height: height       // Keep original direction (can be negative)
+            });
+        } else {
+            // Normal normalization for other shapes
+            shapes.push({
+                type: currentShape,
+                x: Math.min(startX, pos.x),
+                y: Math.min(startY, pos.y),
+                width: Math.abs(width),
+                height: Math.abs(height)
+            });
+        }
+        currentPreview = null;
+
         redrawShapes();
         showEditHint();
     }
@@ -308,7 +253,7 @@ function redrawShapes() {
     });
 
 }
-
+    
 
 function drawShapePreview(type, x, y, width, height) {
     ctx.strokeStyle = '#666';
@@ -829,6 +774,41 @@ document.addEventListener('mousemove', function (e) {
     });
 });
 
+// Replace your existing touchmove handler with this:
+document.addEventListener('touchmove', function (e) {
+    if (!isDrawing) return;
+    e.preventDefault();
+
+    // Clear long press timer when moving (indicates drawing, not long press)
+    clearTimeout(pressTimer);
+
+    const pos = getTouchPos(e, canvas, snapSize);
+    const width = pos.x - startX;
+    const height = pos.y - startY;
+
+    // Store the preview data
+    currentPreview = {
+        type: currentShape,
+        x: startX,
+        y: startY,
+        width: width,
+        height: height
+    };
+
+    // Only schedule one redraw per frame (60fps max)
+    if (animationFrameId) return;
+
+    animationFrameId = requestAnimationFrame(() => {
+        redrawShapes();
+        if (currentPreview) {
+            drawShapePreview(currentPreview.type, currentPreview.x, currentPreview.y, currentPreview.width, currentPreview.height);
+        }
+        animationFrameId = null;
+    });
+});
+
+
+
 // Add this function to find what shape a point is touching
 function findShapeAtPoint(x, y, excludeIndex = -1) {
     for (let i = shapes.length - 1; i >= 0; i--) {
@@ -911,4 +891,21 @@ function generateConnections() {
         }
     });
 
+    console.log('Final connections:', connections);
+    return connections;
+}
+// Helper to get a readable label for a shape
+function getShapeLabel(shape, index) {
+    if (shape.text && shape.text.trim()) {
+        return `"${shape.text}"`;
+    }
+
+    // Fallback to numbered labels
+    let counter = 1;
+    for (let i = 0; i < index; i++) {
+        if (shapes[i].text && shapes[i].text.trim()) {
+            counter++;
+        }
+    }
+    return `${counter}`;
 }
