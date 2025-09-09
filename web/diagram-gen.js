@@ -205,18 +205,42 @@ function redrawShapes() {
     shapes.forEach(shape => {
         drawShape(shape.type, shape.x, shape.y, shape.width, shape.height);
 
-        // Draw text if it exists
         if (shape.text) {
-            ctx.fillStyle = '#333';
-            ctx.font = '14px Arial';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#333';
+    ctx.font = '12px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
 
-            const centerX = shape.x + shape.width / 2;
-            const centerY = shape.y + shape.height / 2;
-            ctx.fillText(shape.text, centerX, centerY);
+    const centerX = shape.x + shape.width / 2;
+    const centerY = shape.y + shape.height / 2;
+    
+    // Simple text wrapping
+    const maxWidth = shape.width - 8; // 4px padding on each side
+    const words = shape.text.split(' ');
+    const lines = [];
+    let currentLine = words[0];
+
+    for (let i = 1; i < words.length; i++) {
+        const word = words[i];
+        const width = ctx.measureText(currentLine + " " + word).width;
+        if (width < maxWidth) {
+            currentLine += " " + word;
+        } else {
+            lines.push(currentLine);
+            currentLine = word;
         }
+    }
+    lines.push(currentLine);
+
+    // Draw each line
+    const lineHeight = 14;
+    const totalHeight = lines.length * lineHeight;
+    const startY = centerY - (totalHeight / 2) + (lineHeight / 2);
+
+    lines.forEach((line, index) => {
+        ctx.fillText(line, centerX, startY + (index * lineHeight));
     });
+}
 }
 
 function drawShapePreview(type, x, y, width, height) {
