@@ -337,7 +337,6 @@ function isPointInShape(x, y, shape) {
     return false;
 }
 
-// Replace the showTextEditor function in diagram-gen.js with this:
 
 function showTextEditor(shape, clickX, clickY) {
     // Remove any existing text editor
@@ -352,30 +351,53 @@ function showTextEditor(shape, clickX, clickY) {
     textInput.className = 'text-editor';
     textInput.value = shape.text || '';
 
-    // Base styles
+    // Base styles - same for both platforms
     textInput.style.zIndex = '9999';
     textInput.style.border = '2px solid #166534';
     textInput.style.borderRadius = '4px';
-    textInput.style.padding = '4px 8px';
-    textInput.style.fontSize = '14px';
+    textInput.style.padding = '8px 12px';  // More generous padding
+    textInput.style.fontSize = '16px';     // Larger, more readable font
     textInput.style.background = 'white';
+    textInput.style.fontFamily = 'Arial, sans-serif';
+    textInput.style.outline = 'none';      // Remove browser default outline
+    textInput.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)'; // Subtle shadow
 
     // Platform-specific positioning
     if (isTouchDevice) {
+        // Mobile: centered overlay (keep existing logic)
         textInput.style.position = 'fixed';
         textInput.style.left = '50%';
         textInput.style.top = '50%';
         textInput.style.transform = 'translate(-50%, -50%)';
-        textInput.style.width = '200px';
+        textInput.style.width = '250px';
+        textInput.style.maxWidth = '80vw';
     } else {
+        // Desktop: positioned near the shape but larger and better positioned
         const canvasRect = canvas.getBoundingClientRect();
         const centerX = shape.x + shape.width / 2;
         const centerY = shape.y + shape.height / 2;
-
-        textInput.style.position = 'absolute';
-        textInput.style.left = (canvasRect.left + centerX - 60) + 'px';
-        textInput.style.top = (canvasRect.top + centerY - 10) + 'px';
-        textInput.style.width = '120px';
+        
+        // Scale canvas coordinates to screen coordinates
+        const scaleX = canvasRect.width / canvas.width;
+        const scaleY = canvasRect.height / canvas.height;
+        
+        const screenX = centerX * scaleX;
+        const screenY = centerY * scaleY;
+        
+        textInput.style.position = 'fixed';  // Use fixed to avoid scroll issues
+        textInput.style.left = (canvasRect.left + screenX - 100) + 'px';  // Center on shape
+        textInput.style.top = (canvasRect.top + screenY - 15) + 'px';     // Center vertically
+        textInput.style.width = '200px';      // Wider input
+        textInput.style.minWidth = '150px';   // Minimum width
+        
+        // Keep input on screen
+        const inputRect = textInput.getBoundingClientRect();
+        if (canvasRect.left + screenX + 100 > window.innerWidth - 20) {
+            textInput.style.left = (window.innerWidth - 220) + 'px';  // Push left if too far right
+        }
+        if (canvasRect.left + screenX - 100 < 20) {
+            textInput.style.left = '20px';  // Push right if too far left
+        }
     }
 
     document.body.appendChild(textInput);
@@ -385,21 +407,23 @@ function showTextEditor(shape, clickX, clickY) {
     // Define saveText function with proper scope
     function saveText() {
         shape.text = textInput.value;
-
+        
         // Safe removal - check if element still exists and has a parent
         if (textInput && textInput.parentNode) {
             textInput.remove();
         }
-
+        
         redrawShapes();
     }
 
-    // Simple event handling that works on both platforms
+    // Event handling
     textInput.addEventListener('keydown', function (e) {
         if (e.key === 'Enter') {
+            e.preventDefault();  // Prevent form submission behavior
             saveText();
         }
         if (e.key === 'Escape') {
+            e.preventDefault();
             if (textInput && textInput.parentNode) {
                 textInput.remove();
             }
