@@ -30,12 +30,13 @@ I wanted the feeling of sketching ideas on the back of a napkin or whiteboard - 
 
 ### UI
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/UkBR1bfjrr8?si=xZYmWjGO4kJypdof" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-
+[![UI Demo](https://img.youtube.com/vi/UkBR1bfjrr8/0.jpg)](https://www.youtube.com/watch?v=UkBR1bfjrr8)
 
 ### Diagrams
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/tobQSC0ESPI?si=Z57-oN7vsgY9GcrA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+[![Diagram Demo](https://img.youtube.com/vi/tobQSC0ESPI/0.jpg)](https://www.youtube.com/watch?v=tobQSC0ESPI)
+
 
 ## How it works
 
