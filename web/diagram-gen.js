@@ -376,20 +376,20 @@ function showTextEditor(shape, clickX, clickY) {
         const canvasRect = canvas.getBoundingClientRect();
         const centerX = shape.x + shape.width / 2;
         const centerY = shape.y + shape.height / 2;
-        
+
         // Scale canvas coordinates to screen coordinates
         const scaleX = canvasRect.width / canvas.width;
         const scaleY = canvasRect.height / canvas.height;
-        
+
         const screenX = centerX * scaleX;
         const screenY = centerY * scaleY;
-        
+
         textInput.style.position = 'fixed';  // Use fixed to avoid scroll issues
         textInput.style.left = (canvasRect.left + screenX - 100) + 'px';  // Center on shape
         textInput.style.top = (canvasRect.top + screenY - 15) + 'px';     // Center vertically
         textInput.style.width = '200px';      // Wider input
         textInput.style.minWidth = '150px';   // Minimum width
-        
+
         // Keep input on screen
         const inputRect = textInput.getBoundingClientRect();
         if (canvasRect.left + screenX + 100 > window.innerWidth - 20) {
@@ -404,15 +404,18 @@ function showTextEditor(shape, clickX, clickY) {
     textInput.focus();
     textInput.select();
 
-    // Define saveText function with proper scope
+    let isBeingRemoved = false;
+
     function saveText() {
+        if (isBeingRemoved) return;
+        isBeingRemoved = true;
+
         shape.text = textInput.value;
-        
-        // Safe removal - check if element still exists and has a parent
+
         if (textInput && textInput.parentNode) {
             textInput.remove();
         }
-        
+
         redrawShapes();
     }
 
