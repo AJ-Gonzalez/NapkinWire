@@ -220,23 +220,22 @@ function drawShape(type, x, y, width, height) {
             drawDiamond(x, y, width, height);
             break;
 
-        // Replace the arrow case in drawShape() function with this:
         case 'arrow':
             ctx.strokeStyle = '#7c3aed'; // Purple - flow
             ctx.lineWidth = 2;
             ctx.beginPath();
 
-            // Calculate actual start and end points based on drawing direction
-            const startX = shape.x;
-            const startY = shape.y;
-            const endX = shape.x + shape.width;
-            const endY = shape.y + shape.height;
+            // Use the parameters, not shape object
+            const startX = x;
+            const startY = y;
+            const endX = x + width;
+            const endY = y + height;
 
             ctx.moveTo(startX, startY);
             ctx.lineTo(endX, endY);
             ctx.stroke();
 
-            // Draw arrowhead at the END point (where user finished drawing)
+            // Draw arrowhead at the END point
             drawArrowhead(ctx, endX, endY, startX, startY);
             break;
     }
