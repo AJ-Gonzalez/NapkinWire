@@ -102,6 +102,7 @@ document.addEventListener('mouseup', function (e) {
             width: Math.abs(width),
             height: Math.abs(height)
         });
+        console.log(shapes.length, shapes)
 
         redrawShapes();
         showEditHint();
