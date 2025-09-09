@@ -179,6 +179,7 @@ document.addEventListener('touchmove', function (e) {
 
 // Drawing functions
 function redrawShapes() {
+    console.trace()
     console.log('Redrawing', shapes.length, 'shapes');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     shapes.forEach(shape => {
