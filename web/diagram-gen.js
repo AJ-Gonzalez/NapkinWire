@@ -85,6 +85,13 @@ canvas.addEventListener('mousedown', function (e) {
     isDrawing = true;
     startX = pos.x;
     startY = pos.y;
+    
+    // Debug: Draw a small red dot where we think the mouse clicked
+    if (e.ctrlKey) { // Only when Ctrl is held to avoid spam
+        ctx.fillStyle = 'red';
+        ctx.fillRect(pos.x - 2, pos.y - 2, 4, 4);
+        console.log('Debug click at:', pos.x, pos.y, 'Raw click at:', e.clientX, e.clientY);
+    }
 });
 
 // FIXED: Mouse up handler with safe completion approach
