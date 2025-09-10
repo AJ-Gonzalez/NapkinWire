@@ -144,7 +144,6 @@ async def watch_for_file(
 if __name__ == "__main__":
     logger.info("Starting NapkinWire MCP server")
     mcp.run()
-    mcp.enable_openapi()
 
 # TODO: Flesh out note taking, add tool for it. 
 # TODO: ask cheper llm for code snippet
