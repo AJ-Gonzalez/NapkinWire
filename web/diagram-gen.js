@@ -416,15 +416,22 @@ function drawDiamond(x, y, width, height) {
 
 function resizeCanvas() {
     const container = document.querySelector('.canvas-container');
+    const containerRect = container.getBoundingClientRect();
+    
+    // Account for container's border (2px on each side = 4px total)
+    const containerBorder = 4; // 2px border on each side
+    let availableWidth = containerRect.width - containerBorder;
     
     // Use more screen width on desktop, keep mobile friendly
     let maxWidth;
     if (window.innerWidth >= 768) {
-        // Desktop: use 85% of screen width with reasonable limits
-        maxWidth = Math.min(window.innerWidth * 0.85, 1400);
+        // Desktop: use the available container width, but with reasonable limits
+        const targetWidth = Math.min(window.innerWidth * 0.85, 1400);
+        // Make sure canvas fits in container and doesn't exceed our target
+        maxWidth = Math.min(targetWidth, availableWidth);
     } else {
-        // Mobile: keep current behavior
-        maxWidth = window.innerWidth - 40;
+        // Mobile: use available container width minus some padding
+        maxWidth = Math.min(window.innerWidth - 40, availableWidth);
     }
     
     const aspectRatio = 600 / 1000; // height/width
@@ -445,7 +452,8 @@ function resizeCanvas() {
         console.warn('Canvas size mismatch:', {
             internal: { width: canvas.width, height: canvas.height },
             css: { width: maxWidth, height: canvasHeight },
-            actual: { width: rect.width, height: rect.height }
+            actual: { width: rect.width, height: rect.height },
+            container: { width: containerRect.width, available: availableWidth }
         });
     }
     
