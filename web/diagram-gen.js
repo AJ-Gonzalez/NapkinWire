@@ -436,6 +436,19 @@ function resizeCanvas() {
     canvas.style.width = maxWidth + 'px';
     canvas.style.height = canvasHeight + 'px';
     
+    // Force a reflow to ensure dimensions are applied
+    canvas.offsetHeight; // trigger reflow
+    
+    // Verify the dimensions match (debug check)
+    const rect = canvas.getBoundingClientRect();
+    if (Math.abs(rect.width - maxWidth) > 1 || Math.abs(rect.height - canvasHeight) > 1) {
+        console.warn('Canvas size mismatch:', {
+            internal: { width: canvas.width, height: canvas.height },
+            css: { width: maxWidth, height: canvasHeight },
+            actual: { width: rect.width, height: rect.height }
+        });
+    }
+    
     // Redraw existing shapes after resize
     if (shapes.length > 0) {
         redrawShapes();

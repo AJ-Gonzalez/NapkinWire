@@ -301,12 +301,16 @@ h1 {
 }
 
 #diagramCanvas {
-    display: block;
+    display: inline-block;
     cursor: crosshair;
     /* Ensure canvas isn't scaled by CSS - JS controls exact size */
     max-width: none;
     width: auto;
     height: auto;
+    /* Prevent any margin or padding that could affect positioning */
+    margin: 0;
+    padding: 0;
+    vertical-align: top;
 }
 
 /* POLISHED: Text styling for shapes */
@@ -365,8 +369,7 @@ h1 {
 
     .canvas-container {
         width: 100%;
-        display: flex;
-        justify-content: center;
+        text-align: center;
     }
 
     .controls {
