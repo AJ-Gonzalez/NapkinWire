@@ -416,7 +416,17 @@ function drawDiamond(x, y, width, height) {
 
 function resizeCanvas() {
     const container = document.querySelector('.canvas-container');
-    const maxWidth = Math.min(window.innerWidth - 40, 1000);
+    
+    // Use more screen width on desktop, keep mobile friendly
+    let maxWidth;
+    if (window.innerWidth >= 768) {
+        // Desktop: use 85% of screen width with reasonable limits
+        maxWidth = Math.min(window.innerWidth * 0.85, 1400);
+    } else {
+        // Mobile: keep current behavior
+        maxWidth = window.innerWidth - 40;
+    }
+    
     const aspectRatio = 600 / 1000; // height/width
 
     canvas.width = maxWidth;
