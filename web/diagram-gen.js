@@ -428,9 +428,18 @@ function resizeCanvas() {
     }
     
     const aspectRatio = 600 / 1000; // height/width
+    const canvasHeight = maxWidth * aspectRatio;
 
+    // Set both internal canvas dimensions AND CSS display size
     canvas.width = maxWidth;
-    canvas.height = maxWidth * aspectRatio;
+    canvas.height = canvasHeight;
+    canvas.style.width = maxWidth + 'px';
+    canvas.style.height = canvasHeight + 'px';
+    
+    // Redraw existing shapes after resize
+    if (shapes.length > 0) {
+        redrawShapes();
+    }
 }
 
 window.addEventListener('resize', resizeCanvas);

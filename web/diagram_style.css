@@ -303,6 +303,10 @@ h1 {
 #diagramCanvas {
     display: block;
     cursor: crosshair;
+    /* Ensure canvas isn't scaled by CSS - JS controls exact size */
+    max-width: none;
+    width: auto;
+    height: auto;
 }
 
 /* POLISHED: Text styling for shapes */
