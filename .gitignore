@@ -3,3 +3,5 @@ CLAUDE.md
 napkinwire-mcp/node_modules/*
 .project-context.md
 setpath.ps1
+mcp_template/*
+mcp/.venv/*
