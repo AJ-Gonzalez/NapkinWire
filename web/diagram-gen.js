@@ -87,7 +87,7 @@ canvas.addEventListener('mousedown', function (e) {
     startY = pos.y;
 });
 
-// FIXED: Mouse up handler with race condition fix
+// FIXED: Mouse up handler with safe completion approach
 document.addEventListener('mouseup', function (e) {
     if (!isDrawing) return;
 
@@ -95,11 +95,8 @@ document.addEventListener('mouseup', function (e) {
     const width = pos.x - startX;
     const height = pos.y - startY;
 
-    // Cancel any pending animation frame to prevent race condition
-    if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);
-        animationFrameId = null;
-    }
+    // Set completion state to prevent preview interference
+    isCompletingShape = true;
 
     // Clear preview immediately
     currentPreview = null;
@@ -124,9 +121,18 @@ document.addEventListener('mouseup', function (e) {
             });
         }
 
-        // Force immediate redraw instead of waiting for animation frame
-        redrawShapes();
-        showEditHint();
+        // Schedule safe final redraw after current frame
+        setTimeout(() => {
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+            }
+            redrawShapes();
+            showEditHint();
+            isCompletingShape = false;
+        }, 0);
+    } else {
+        isCompletingShape = false;
     }
 
     isDrawing = false;
@@ -200,12 +206,15 @@ document.addEventListener('touchmove', function (e) {
         height: height
     };
 
-    // Throttled redraw
-    if (animationFrameId) return;
+    // Throttled redraw - skip if completing shape
+    if (animationFrameId || isCompletingShape) return;
     animationFrameId = requestAnimationFrame(() => {
-        redrawShapes();
-        if (currentPreview) {
-            drawShapePreview(currentPreview.type, currentPreview.x, currentPreview.y, currentPreview.width, currentPreview.height);
+        // Double check completion state before drawing
+        if (!isCompletingShape) {
+            redrawShapes();
+            if (currentPreview) {
+                drawShapePreview(currentPreview.type, currentPreview.x, currentPreview.y, currentPreview.width, currentPreview.height);
+            }
         }
         animationFrameId = null;
     });
@@ -236,10 +245,14 @@ document.addEventListener('touchend', function (e) {
     
     isCurrentlyDrawing = false;
 
-    // Normal shape drawing logic
+    // Normal shape drawing logic with safe completion
     const pos = getTouchPosClean(e.changedTouches[0], canvas, snapSize);
     const width = pos.x - startX;
     const height = pos.y - startY;
+
+    // Set completion state to prevent preview interference
+    isCompletingShape = true;
+    currentPreview = null;
 
     if (Math.abs(width) >= snapSize && Math.abs(height) >= snapSize) {
         if (currentShape === 'arrow') {
@@ -259,9 +272,19 @@ document.addEventListener('touchend', function (e) {
                 height: Math.abs(height)
             });
         }
-        currentPreview = null;
-        redrawShapes();
-        showEditHint();
+        
+        // Schedule safe final redraw after current frame
+        setTimeout(() => {
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+            }
+            redrawShapes();
+            showEditHint();
+            isCompletingShape = false;
+        }, 0);
+    } else {
+        isCompletingShape = false;
     }
 
     isDrawing = false;
@@ -269,8 +292,6 @@ document.addEventListener('touchend', function (e) {
 
 // Drawing functions
 function redrawShapes() {
-    console.trace()
-    console.log('Redrawing', shapes.length, 'shapes');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     shapes.forEach(shape => {
         drawShape(shape.type, shape.x, shape.y, shape.width, shape.height);
@@ -806,6 +827,8 @@ document.getElementById('generate-prompt').addEventListener('click', function ()
 // Add these variables at the top with your other declarations
 let animationFrameId = null;
 let currentPreview = null;
+let isCompletingShape = false;
+let pendingFinalRedraw = false;
 
 document.addEventListener('mousemove', function (e) {
     if (!isDrawing) return;
@@ -823,13 +846,16 @@ document.addEventListener('mousemove', function (e) {
         height: height
     };
 
-    // Only schedule one redraw per frame (60fps max)
-    if (animationFrameId) return;
+    // Only schedule one redraw per frame (60fps max) - skip if completing shape
+    if (animationFrameId || isCompletingShape) return;
 
     animationFrameId = requestAnimationFrame(() => {
-        redrawShapes();
-        if (currentPreview) {
-            drawShapePreview(currentPreview.type, currentPreview.x, currentPreview.y, currentPreview.width, currentPreview.height);
+        // Double check completion state before drawing
+        if (!isCompletingShape) {
+            redrawShapes();
+            if (currentPreview) {
+                drawShapePreview(currentPreview.type, currentPreview.x, currentPreview.y, currentPreview.width, currentPreview.height);
+            }
         }
         animationFrameId = null;
     });
