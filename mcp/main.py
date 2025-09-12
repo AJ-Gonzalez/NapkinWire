@@ -11,10 +11,20 @@ import ast
 import re
 import time
 import threading
+import subprocess
+import tempfile
 from pathlib import Path
 from config import TICKETS
 from datetime import datetime, timedelta
 from typing import List, Dict, Any, Optional
+try:
+    import fcntl  # For file locking on Unix
+except ImportError:
+    fcntl = None
+try:
+    import msvcrt  # For file locking on Windows
+except ImportError:
+    msvcrt = None
 
 # PyWebView import with fallback
 try:
@@ -815,41 +825,18 @@ def napkinwire_project_tree(
             "message": "Failed to generate project tree"
         }
 
-# PyWebView diagram editor integration
-class DiagramAPI:
-    """API class for PyWebView bridge to receive diagram data"""
-    
-    def __init__(self):
-        self.diagram_data = None
-        self.window_closed = False
-        self.error_message = None
-    
-    def send_diagram(self, ascii_data: str) -> bool:
-        """Receive ASCII diagram data from JavaScript"""
-        try:
-            crud_logger.info(f"Received diagram data: {len(ascii_data)} characters")
-            self.diagram_data = ascii_data
-            return True
-        except Exception as e:
-            crud_logger.error(f"Error receiving diagram data: {e}")
-            self.error_message = str(e)
-            return False
-    
-    def close_window(self):
-        """Close the diagram editor window"""
-        self.window_closed = True
-
+# PyWebView diagram editor integration using subprocess
 @mcp.tool()
 def napkinwire_spawn_diagram_editor() -> Dict[str, Any]:
-    """Spawn PyWebView diagram editor window and return ASCII diagram data
+    """Spawn PyWebView diagram editor window using subprocess and return ASCII diagram data
     
-    Opens native window with diagram editor, waits for user to create and send diagram,
-    returns the ASCII representation directly without temp files.
+    Opens native window with diagram editor in a subprocess, waits for user to create and send diagram,
+    returns the ASCII representation via temp file communication.
     
     Returns:
         Dict with diagram data or error message
     """
-    crud_logger.info("Spawning PyWebView diagram editor")
+    crud_logger.info("Spawning PyWebView diagram editor in subprocess")
     
     if not WEBVIEW_AVAILABLE:
         return {
@@ -868,78 +855,467 @@ def napkinwire_spawn_diagram_editor() -> Dict[str, Any]:
                 "success": False
             }
         
-        # Create API instance for JavaScript bridge
-        api = DiagramAPI()
+        # Create temp file for result communication
+        with tempfile.NamedTemporaryFile(mode='w+', suffix='.napkinwire', delete=False) as temp_file:
+            temp_file_path = temp_file.name
         
-        # Create the window in a separate thread
-        def create_window():
+        crud_logger.info(f"Created temp file for communication: {temp_file_path}")
+        
+        # Create subprocess code string
+        subprocess_code = f'''
+import webview
+import json
+import sys
+import logging
+import os
+
+# Configure logging for subprocess
+logging.basicConfig(
+    level=logging.INFO,
+    format='[SUBPROCESS] %(asctime)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger('napkinwire_subprocess')
+
+class DiagramAPI:
+    """API class for PyWebView bridge to receive diagram data in subprocess"""
+    
+    def __init__(self, result_file_path):
+        self.result_file_path = result_file_path
+        self.diagram_data = None
+        self.error_message = None
+        logger.info(f"DiagramAPI initialized with result file: {{self.result_file_path}}")
+    
+    def send_diagram(self, ascii_data):
+        """Receive ASCII diagram data from JavaScript and write to temp file"""
+        try:
+            logger.info(f"Received diagram data: {{len(ascii_data)}} characters")
+            self.diagram_data = ascii_data
+            
+            # Write result to temp file
+            result = {{
+                "success": True,
+                "diagram_data": ascii_data,
+                "method": "pywebview_subprocess"
+            }}
+            
+            with open(self.result_file_path, 'w', encoding='utf-8') as f:
+                json.dump(result, f, indent=2)
+            
+            logger.info("Successfully wrote diagram data to temp file")
+            
+            # Close the window after successful send
             try:
-                # Create window with the diagram editor
-                webview.create_window(
-                    title='NapkinWire Diagram',
-                    url=str(diagram_html_path),
-                    width=1200,
-                    height=800,
-                    resizable=True,
-                    js_api=api
-                )
-                
-                # Start the webview (blocking call)
-                webview.start(debug=False)
-                
+                webview.windows[0].destroy()
+                logger.info("Window closed after successful send")
             except Exception as e:
-                crud_logger.error(f"Error in webview thread: {e}")
-                api.error_message = str(e)
-                api.window_closed = True
+                logger.warning(f"Error closing window: {{e}}")
+            
+            return True
+            
+        except Exception as e:
+            logger.error(f"Error in send_diagram: {{e}}")
+            self.error_message = str(e)
+            
+            # Write error to temp file
+            error_result = {{
+                "success": False,
+                "error": f"JavaScript bridge error: {{str(e)}}"
+            }}
+            
+            try:
+                with open(self.result_file_path, 'w', encoding='utf-8') as f:
+                    json.dump(error_result, f, indent=2)
+            except:
+                pass  # If we can't write the error, main process will timeout
+                
+            return False
+
+try:
+    # Create API instance
+    api = DiagramAPI("{temp_file_path}")
+    
+    # Create window with the diagram editor
+    logger.info("Creating PyWebView window...")
+    webview.create_window(
+        title='NapkinWire Diagram',
+        url="{str(diagram_html_path)}",
+        width=1200,
+        height=800,
+        resizable=True,
+        js_api=api
+    )
+    
+    # Start the webview (blocking call - this runs in main thread of subprocess)
+    logger.info("Starting PyWebView...")
+    webview.start(debug=False)
+    
+    logger.info("PyWebView closed")
+    
+    # If we get here without data being written, window was closed without sending
+    if not os.path.exists("{temp_file_path}") or os.path.getsize("{temp_file_path}") == 0:
+        logger.info("Window closed without sending data")
+        result = {{
+            "success": False,
+            "error": "Window closed without sending diagram data"
+        }}
         
-        # Start webview in separate thread
-        webview_thread = threading.Thread(target=create_window, daemon=True)
-        webview_thread.start()
+        with open("{temp_file_path}", 'w', encoding='utf-8') as f:
+            json.dump(result, f, indent=2)
+    
+except Exception as e:
+    logger.error(f"Error in subprocess: {{e}}")
+    
+    # Write error to temp file
+    error_result = {{
+        "success": False,
+        "error": f"Subprocess error: {{str(e)}}"
+    }}
+    
+    try:
+        with open("{temp_file_path}", 'w', encoding='utf-8') as f:
+            json.dump(error_result, f, indent=2)
+    except:
+        pass  # If we can't write the error, main process will timeout
+
+logger.info("Subprocess exiting")
+'''
         
-        # Wait for either diagram data or window close (max 30 seconds)
-        start_time = time.time()
-        timeout_seconds = 30
+        crud_logger.info("Starting PyWebView subprocess...")
         
-        while time.time() - start_time < timeout_seconds:
-            if api.diagram_data:
-                # Success - got diagram data
-                crud_logger.info("Successfully received diagram data from PyWebView")
+        # Run subprocess with timeout
+        try:
+            result = subprocess.run(
+                [sys.executable, '-c', subprocess_code],
+                timeout=60,  # 60 second timeout
+                capture_output=True,
+                text=True
+            )
+            
+            crud_logger.info(f"Subprocess completed with return code: {result.returncode}")
+            if result.stdout:
+                crud_logger.info(f"Subprocess stdout: {result.stdout}")
+            if result.stderr:
+                crud_logger.warning(f"Subprocess stderr: {result.stderr}")
+                
+        except subprocess.TimeoutExpired:
+            crud_logger.error("Subprocess timed out after 60 seconds")
+            try:
+                os.unlink(temp_file_path)
+            except:
+                pass
+            return {
+                "error": "Diagram editor timed out after 60 seconds",
+                "success": False
+            }
+        except Exception as e:
+            crud_logger.error(f"Error running subprocess: {e}")
+            try:
+                os.unlink(temp_file_path)
+            except:
+                pass
+            return {
+                "error": f"Failed to start diagram editor subprocess: {str(e)}",
+                "success": False
+            }
+        
+        # Read result from temp file
+        try:
+            if not os.path.exists(temp_file_path):
+                crud_logger.error("Temp file not created by subprocess")
                 return {
-                    "success": True,
-                    "diagram_data": api.diagram_data,
-                    "method": "pywebview"
+                    "error": "No result file created by diagram editor",
+                    "success": False
                 }
             
-            if api.window_closed or api.error_message:
-                # Window closed or error occurred
-                break
+            with open(temp_file_path, 'r', encoding='utf-8') as f:
+                file_content = f.read().strip()
+                if not file_content:
+                    crud_logger.error("Temp file is empty")
+                    return {
+                        "error": "Empty result from diagram editor",
+                        "success": False
+                    }
                 
-            # Check every 100ms
-            time.sleep(0.1)
-        
-        # Handle timeout or error cases
-        if api.error_message:
+                result_data = json.loads(file_content)
+            
+            # Clean up temp file
+            try:
+                os.unlink(temp_file_path)
+                crud_logger.info("Cleaned up temp file")
+            except Exception as e:
+                crud_logger.warning(f"Failed to clean up temp file: {e}")
+            
+            # Log success/failure
+            if result_data.get("success"):
+                crud_logger.info("Successfully received diagram data from subprocess")
+                data_len = len(result_data.get("diagram_data", ""))
+                crud_logger.info(f"Diagram data length: {data_len} characters")
+            else:
+                crud_logger.error(f"Subprocess returned error: {result_data.get('error')}")
+            
+            return result_data
+            
+        except json.JSONDecodeError as e:
+            crud_logger.error(f"Failed to parse result JSON: {e}")
+            try:
+                os.unlink(temp_file_path)
+            except:
+                pass
             return {
-                "error": f"PyWebView error: {api.error_message}",
+                "error": "Invalid result data from diagram editor",
                 "success": False
             }
-        elif time.time() - start_time >= timeout_seconds:
+        except Exception as e:
+            crud_logger.error(f"Error reading result file: {e}")
+            try:
+                os.unlink(temp_file_path)
+            except:
+                pass
             return {
-                "error": "Timeout waiting for diagram data (30 seconds)",
-                "success": False
-            }
-        else:
-            return {
-                "error": "Window closed without sending diagram data",
+                "error": f"Failed to read result from diagram editor: {str(e)}",
                 "success": False
             }
             
     except Exception as e:
-        crud_logger.error(f"Error spawning diagram editor: {e}")
+        crud_logger.error(f"Error in spawn_diagram_editor: {e}")
         return {
             "error": str(e),
             "success": False,
-            "message": "Failed to spawn PyWebView diagram editor"
+            "message": "Failed to spawn PyWebView diagram editor subprocess"
+        }
+
+# Roadmap management tools
+def get_roadmap_file_path() -> Path:
+    """Get the path to the roadmap.md file"""
+    project_root = get_project_root()
+    return project_root / "roadmap.md"
+
+def safe_file_operation(file_path: Path, operation: str, content: str = None) -> tuple[bool, str]:
+    """Perform file operations with cross-platform locking"""
+    try:
+        if operation == "read":
+            if not file_path.exists():
+                return True, ""
+            
+            with open(file_path, 'r', encoding='utf-8') as f:
+                if fcntl:  # Unix
+                    fcntl.flock(f.fileno(), fcntl.LOCK_SH)
+                elif msvcrt:  # Windows
+                    msvcrt.locking(f.fileno(), msvcrt.LK_LOCK, 1)
+                content = f.read()
+                return True, content
+        
+        elif operation == "append":
+            with open(file_path, 'a', encoding='utf-8') as f:
+                if fcntl:  # Unix
+                    fcntl.flock(f.fileno(), fcntl.LOCK_EX)
+                elif msvcrt:  # Windows
+                    msvcrt.locking(f.fileno(), msvcrt.LK_LOCK, 1)
+                f.write(content)
+                f.flush()
+                return True, "Successfully appended"
+        
+        elif operation == "create":
+            with open(file_path, 'w', encoding='utf-8') as f:
+                if fcntl:  # Unix
+                    fcntl.flock(f.fileno(), fcntl.LOCK_EX)
+                elif msvcrt:  # Windows
+                    msvcrt.locking(f.fileno(), msvcrt.LK_LOCK, 1)
+                f.write(content)
+                f.flush()
+                return True, "Successfully created"
+                
+    except Exception as e:
+        crud_logger.error(f"Error in file operation {operation}: {e}")
+        return False, str(e)
+    
+    return False, "Unknown operation"
+
+def create_initial_roadmap(file_path: Path) -> bool:
+    """Create initial roadmap.md file with header"""
+    initial_content = """# NapkinWire Roadmap
+
+Ideas and plans for the NapkinWire project, organized by priority and timeline.
+
+## Now
+*Current active work*
+
+## Next
+*Coming up in the next sprint/iteration*
+
+## Soon
+*Planned for the near future*
+
+## Later
+*Future possibilities*
+
+## Ideas
+*Brain dumps and possibilities to explore*
+
+---
+
+"""
+    success, message = safe_file_operation(file_path, "create", initial_content)
+    if success:
+        crud_logger.info(f"Created initial roadmap file: {file_path}")
+    else:
+        crud_logger.error(f"Failed to create initial roadmap: {message}")
+    return success
+
+@mcp.tool()
+def napkinwire_append_roadmap_idea(
+    title: str,
+    description: str,
+    category: str = "ideas"
+) -> Dict[str, Any]:
+    """Append a new idea to the roadmap.md file
+    
+    Args:
+        title: Title of the idea
+        description: Description of the idea
+        category: Category (now, next, soon, later, ideas)
+    
+    Returns:
+        Dict with success status and message
+    """
+    crud_logger.info(f"Appending roadmap idea: '{title}' in category '{category}'")
+    
+    try:
+        # Validate category
+        valid_categories = ["now", "next", "soon", "later", "ideas"]
+        if category not in valid_categories:
+            return {
+                "success": False,
+                "error": f"Invalid category '{category}'. Must be one of: {valid_categories}"
+            }
+        
+        # Get roadmap file path
+        roadmap_path = get_roadmap_file_path()
+        
+        # Create file if it doesn't exist
+        if not roadmap_path.exists():
+            if not create_initial_roadmap(roadmap_path):
+                return {
+                    "success": False,
+                    "error": "Failed to create initial roadmap file"
+                }
+        
+        # Create timestamp
+        timestamp = datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC")
+        
+        # Format the new idea entry
+        new_entry = f"""
+## [{category.title()}] {title}
+*Added: {timestamp}*
+{description}
+---
+"""
+        
+        # Append to file
+        success, message = safe_file_operation(roadmap_path, "append", new_entry)
+        
+        if success:
+            crud_logger.info(f"Successfully appended idea '{title}' to roadmap")
+            return {
+                "success": True,
+                "message": f"Added idea '{title}' to {category} section",
+                "file_path": str(roadmap_path)
+            }
+        else:
+            crud_logger.error(f"Failed to append idea '{title}': {message}")
+            return {
+                "success": False,
+                "error": f"Failed to write to roadmap file: {message}"
+            }
+            
+    except Exception as e:
+        crud_logger.error(f"Exception appending roadmap idea '{title}': {e}")
+        return {
+            "success": False,
+            "error": str(e)
+        }
+
+@mcp.tool()
+def napkinwire_list_roadmap_ideas(category: Optional[str] = None) -> Dict[str, Any]:
+    """List roadmap ideas with optional category filter
+    
+    Args:
+        category: Optional category filter (now, next, soon, later, ideas)
+    
+    Returns:
+        Dict with formatted roadmap content and statistics
+    """
+    crud_logger.info(f"Listing roadmap ideas with category filter: '{category}'")
+    
+    try:
+        # Validate category if provided
+        valid_categories = ["now", "next", "soon", "later", "ideas"]
+        if category and category not in valid_categories:
+            return {
+                "success": False,
+                "error": f"Invalid category '{category}'. Must be one of: {valid_categories}"
+            }
+        
+        # Get roadmap file path
+        roadmap_path = get_roadmap_file_path()
+        
+        # Read file content
+        success, content = safe_file_operation(roadmap_path, "read")
+        
+        if not success:
+            return {
+                "success": False,
+                "error": f"Failed to read roadmap file: {content}",
+                "file_path": str(roadmap_path)
+            }
+        
+        if not content.strip():
+            return {
+                "success": True,
+                "content": "Roadmap file is empty or doesn't exist yet.",
+                "idea_count": 0,
+                "file_path": str(roadmap_path)
+            }
+        
+        # Apply category filter if specified
+        if category:
+            lines = content.split('\n')
+            filtered_lines = []
+            in_target_category = False
+            
+            for line in lines:
+                # Check if this is a category header
+                if line.strip().startswith(f'## [{category.title()}]'):
+                    in_target_category = True
+                    filtered_lines.append(line)
+                elif line.strip().startswith('## [') and not line.strip().startswith(f'## [{category.title()}]'):
+                    in_target_category = False
+                elif in_target_category:
+                    filtered_lines.append(line)
+                elif not line.strip().startswith('## ['):
+                    # Include non-category lines (headers, etc.)
+                    filtered_lines.append(line)
+            
+            content = '\n'.join(filtered_lines)
+        
+        # Count ideas (entries starting with ## [)
+        idea_count = len([line for line in content.split('\n') if line.strip().startswith('## [')])
+        
+        crud_logger.info(f"Successfully listed {idea_count} roadmap ideas")
+        return {
+            "success": True,
+            "content": content,
+            "idea_count": idea_count,
+            "category_filter": category,
+            "file_path": str(roadmap_path)
+        }
+        
+    except Exception as e:
+        crud_logger.error(f"Exception listing roadmap ideas: {e}")
+        return {
+            "success": False,
+            "error": str(e),
+            "file_path": str(get_roadmap_file_path())
         }
 
 # Add a prompt

@@ -1,8 +1,8 @@
 {
   "metadata": {
     "version": "1.0.0",
-    "last_updated": "2025-09-12T05:44:28Z",
-    "next_id": 7,
+    "last_updated": "2025-09-12T12:18:28Z",
+    "next_id": 10,
     "project": "napkinwire"
   },
   "tickets": [
@@ -187,10 +187,10 @@
     {
       "id": "TICKET-006",
       "title": "Create roadmap append and list tools for idea capture",
-      "status": "todo",
+      "status": "done",
       "priority": "medium",
       "created_at": "2025-09-12T05:44:28Z",
-      "updated_at": "2025-09-12T05:44:28Z",
+      "updated_at": "2025-09-12T12:13:20Z",
       "description": "Create simple roadmap tools for capturing ideas quickly without formal ticket overhead - just append ideas and view them",
       "requirements": [
         "Create append_roadmap_idea tool accepting title, description, and optional category",
@@ -216,6 +216,114 @@
       "files_affected": [
         "main.py",
         "roadmap.md"
+      ],
+      "dependencies": [],
+      "outcome": null,
+      "notes": null
+    },
+    {
+      "id": "TICKET-007",
+      "title": "Implement roadmap tools to capture these ideas properly",
+      "status": "todo",
+      "priority": "high",
+      "created_at": "2025-09-12T11:44:32Z",
+      "updated_at": "2025-09-12T11:44:32Z",
+      "description": "Create simple roadmap tools for capturing ideas quickly - append and list functionality for brain dumps without ticket ceremony",
+      "requirements": [
+        "Create append_roadmap_idea tool with title, description, category parameters",
+        "Create list_roadmap_ideas tool with optional category filter",
+        "Auto-create roadmap.md with your existing notes as initial content",
+        "Categories: now, next, soon, later, ideas",
+        "Include timestamp when ideas are added",
+        "Preserve your existing 'Random notes' section"
+      ],
+      "acceptance_criteria": [
+        "Tools successfully append ideas to roadmap.md",
+        "List tool displays all roadmap items clearly",
+        "Markdown formatting is clean and readable",
+        "Categories are properly organized",
+        "No data loss on concurrent writes"
+      ],
+      "files_affected": [
+        "main.py",
+        "roadmap.md"
+      ],
+      "dependencies": [],
+      "outcome": null,
+      "notes": null
+    },
+    {
+      "id": "TICKET-008",
+      "title": "Fix PyWebView threading with subprocess approach",
+      "status": "done",
+      "priority": "high",
+      "created_at": "2025-09-12T12:09:04Z",
+      "updated_at": "2025-09-12T12:13:20Z",
+      "description": "Fix PyWebView main thread issue by running diagram editor in subprocess with its own main thread, using temp file for communication",
+      "requirements": [
+        "Modify spawn_diagram_editor tool to use subprocess.run with Python code string",
+        "Create temp file for result passing between subprocess and main process",
+        "Subprocess code creates PyWebView window with diagram.html",
+        "Expose Python callback function to JavaScript for data transfer",
+        "JavaScript detects pywebview.api availability and calls send function",
+        "Write result to temp file before window closes",
+        "Main process reads temp file and returns content",
+        "Clean up temp file after reading",
+        "Add error handling for subprocess failures",
+        "Include logging for debugging without stdout pollution"
+      ],
+      "acceptance_criteria": [
+        "Diagram editor successfully opens in subprocess window",
+        "ASCII data passes from JavaScript to Python correctly",
+        "Window closes after sending data",
+        "Tool returns ASCII diagram to Claude",
+        "No main thread errors",
+        "Handles window close without sending gracefully",
+        "Works on Windows and Linux",
+        "Timeout after 60 seconds if no response"
+      ],
+      "files_affected": [
+        "main.py",
+        "web/diagram.html",
+        "web/diagram-gen.js"
+      ],
+      "dependencies": [],
+      "outcome": null,
+      "notes": null
+    },
+    {
+      "id": "TICKET-009",
+      "title": "Create Claude Code queue daemon for automatic ticket execution",
+      "status": "todo",
+      "priority": "high",
+      "created_at": "2025-09-12T12:18:28Z",
+      "updated_at": "2025-09-12T12:18:28Z",
+      "description": "Create a file-based queue system with daemon that watches for tickets and automatically launches Claude Code to implement them",
+      "requirements": [
+        "Create claude_code_daemon.py script that polls ticket_queue directory",
+        "Add queue_ticket_for_claude_code MCP tool that writes ticket files",
+        "Queue directory: ./ticket_queue/ (create if not exists)",
+        "File format: TICKET-XXX.queue containing ticket details",
+        "Daemon polls every 5 seconds for new .queue files",
+        "Launch Claude Code with: subprocess.run(['claude', 'code', f'Implement {ticket_id} from tickets.json'])",
+        "Move processed files to ./ticket_queue/processed/ with timestamp",
+        "Add daemon status check tool to see if it's running",
+        "Include start instructions in docstring or README",
+        "Daemon should be stoppable with Ctrl+C gracefully"
+      ],
+      "acceptance_criteria": [
+        "Daemon successfully watches queue directory for new tickets",
+        "Claude Code launches when ticket file appears",
+        "Non-blocking operation - daemon continues running",
+        "Ticket files removed after processing",
+        "Graceful error handling if Claude Code fails",
+        "Daemon can be started/stopped manually",
+        "Logs activity to file for debugging",
+        "Works with relative paths within git repository"
+      ],
+      "files_affected": [
+        "claude_code_daemon.py",
+        "main.py"
       ],
       "dependencies": [],
       "outcome": null,

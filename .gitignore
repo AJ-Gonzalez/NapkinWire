@@ -13,3 +13,4 @@ Ticket2.md
 old.mcp.json
 mcp/__pycache__/*
 notes.md
+mcp/crud.log
