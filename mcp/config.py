@@ -1,0 +1,1 @@
+TICKETS = r"C:\Users\Alicia Jadzia\Desktop\The AI Mechanic\LLM UI toolkit\tickets.json"
