@@ -17,3 +17,4 @@ mcp/crud.log
 config.yaml
 mcp/config.yaml
 mcp/local_config.py
+mcp/__pycache__/main.cpython-313.pyc

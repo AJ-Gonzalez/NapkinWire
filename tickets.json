@@ -1,8 +1,8 @@
 {
   "metadata": {
     "version": "1.0.0",
-    "last_updated": "2025-09-12T16:39:43Z",
-    "next_id": 18,
+    "last_updated": "2025-09-13T03:44:12Z",
+    "next_id": 20,
     "project": "napkinwire"
   },
   "tickets": [
@@ -611,6 +611,80 @@
       ],
       "files_affected": [
         "ticket_summary.py"
+      ],
+      "dependencies": [],
+      "outcome": null,
+      "notes": null
+    },
+    {
+      "id": "TICKET-018",
+      "title": "Research Podman containerization for MCP on Windows",
+      "status": "todo",
+      "priority": "medium",
+      "created_at": "2025-09-13T03:40:10Z",
+      "updated_at": "2025-09-13T03:40:10Z",
+      "description": "Research Podman containerization for NapkinWire MCP server on Windows, create report covering feasibility, setup, volume handling, and configuration approaches",
+      "requirements": [
+        "Research Podman installation on Windows (WSL2 vs native)",
+        "Document how to handle volume mounts for tickets.json and project files",
+        "Investigate passing config via arguments vs environment variables",
+        "Compare resource usage vs native Python",
+        "Document Dockerfile structure for MCP server",
+        "Research stdio communication through container",
+        "Identify potential issues with GUI tools (PyWebView)",
+        "Create example Podman commands for testing",
+        "List pros and cons vs current approach",
+        "Provide recommendation on whether to proceed"
+      ],
+      "acceptance_criteria": [
+        "Research document created as markdown file",
+        "Covers all key aspects of Podman on Windows for MCP",
+        "Provides clear recommendations",
+        "Includes practical examples",
+        "Addresses volume mounting and path issues",
+        "No implementation required, just research"
+      ],
+      "files_affected": [
+        "podman_research.md"
+      ],
+      "dependencies": [],
+      "outcome": null,
+      "notes": null
+    },
+    {
+      "id": "TICKET-019",
+      "title": "Implement local HTTP server for diagram editor instead of PyWebView",
+      "status": "todo",
+      "priority": "high",
+      "created_at": "2025-09-13T03:44:12Z",
+      "updated_at": "2025-09-13T03:44:12Z",
+      "description": "Replace PyWebView with local HTTP server approach - start server, open browser to web/diagram.html, capture POST request with ASCII data, return to Claude",
+      "requirements": [
+        "Modify spawn_diagram_editor tool to start HTTP server on localhost",
+        "Find available port (try 8765, increment if busy)",
+        "Serve web/ directory as static files",
+        "Add POST endpoint /send_to_claude to receive ASCII data",
+        "Modify diagram.html to detect localhost mode",
+        "Change generate button to POST to /send_to_claude when on localhost",
+        "Open browser automatically to http://localhost:PORT/diagram.html",
+        "Server waits for POST request with 60 second timeout",
+        "Return received ASCII data and shut down server",
+        "Handle CORS if needed for localhost"
+      ],
+      "acceptance_criteria": [
+        "Local HTTP server starts on available port",
+        "Browser opens automatically with diagram.html",
+        "Server receives POST request with ASCII data",
+        "Tool returns ASCII data to Claude",
+        "Server shuts down after receiving data",
+        "No timeout errors",
+        "Works on Windows and Linux",
+        "Handles user closing browser without sending"
+      ],
+      "files_affected": [
+        "main.py",
+        "web/diagram.html",
+        "web/diagram-gen.js"
       ],
       "dependencies": [],
       "outcome": null,
