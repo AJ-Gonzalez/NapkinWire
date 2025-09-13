@@ -1,2 +1,4 @@
-from local_config import TICKETS
+from local_config import TICKETS, OPEN_ROUTER_KEY
 TICKETS = TICKETS
+
+OPEN_ROUTER_KEY = OPEN_ROUTER_KEY

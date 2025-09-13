@@ -100,3 +100,13 @@ Build complete NapkinWire TUI using Textual - the ultimate orchestration interfa
 *Added: 2025-09-13 07:23 UTC*
 Integrate Aider with OpenRouter Qwen2.5-Coder for automated ticket implementation. Create MCP tool to queue tickets for Aider processing - non-blocking subprocess that starts Aider with ticket requirements as prompt. Aider handles all file editing with git integration while using Qwen for code generation at fraction of Claude's cost. Tool monitors Aider status, tracks completion, updates ticket status automatically. Enables parallel ticket processing. Architecture: Opus designs → Queue to Aider+Qwen → Sonnet reviews. Requires: Aider config with OpenRouter, ticket-to-prompt templates, process manager for multiple instances, status tracking via files.
 ---
+
+## [Next] Graceful Forgetfulness Engine - Controlled Context Management
+*Added: 2025-09-13 12:53 UTC*
+LLMs need both selective memory AND controlled forgetting. Current context windows fill exponentially with no control over what gets forgotten. Solution requires two systems: (1) REMEMBER: Critical information extraction to ChromaDB - project constants, decisions, key context, user preferences. (2) FORGET: Seamless chat rotation with context handoff - automatically spawn new chat with only essential context carried over. User experiences continuous conversation while backend manages context boundaries. Implementation: Monitor token usage, identify context bloat, extract key facts before rotation, inject minimal bootstrap context into new session. Goal: Infinite effective context through intelligent pruning. The LLM should 'shed' irrelevant context like a snake sheds skin, keeping only what matters.
+---
+
+## [Later] Context analysis tool for auto-identifying important decisions
+*Added: 2025-09-13 13:03 UTC*
+Automated context analysis tool that scans current chat and identifies key decisions that should be saved. At the end of a session or periodically, it could analyze the conversation and suggest: 'Here are 5 key decisions from this chat that should be saved.' Could use pattern matching for decision indicators like 'decided to', 'will use', 'going with', 'the plan is', etc. Output formatted save_decision commands ready to execute.
+---
