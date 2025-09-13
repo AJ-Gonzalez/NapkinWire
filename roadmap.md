@@ -110,3 +110,8 @@ LLMs need both selective memory AND controlled forgetting. Current context windo
 *Added: 2025-09-13 13:03 UTC*
 Automated context analysis tool that scans current chat and identifies key decisions that should be saved. At the end of a session or periodically, it could analyze the conversation and suggest: 'Here are 5 key decisions from this chat that should be saved.' Could use pattern matching for decision indicators like 'decided to', 'will use', 'going with', 'the plan is', etc. Output formatted save_decision commands ready to execute.
 ---
+
+## [Soon] Taiga integration for professional ticket management
+*Added: 2025-09-13 22:08 UTC*
+Replace basic JSON ticket system with Taiga integration. Taiga is open source project management with Kanban/Scrum boards, epics, user stories, Git integration (GitHub/GitLab), and REST API. Features: sync tickets bidirectionally, create tickets from MCP tools, update status from Claude Code, leverage proper project management workflows, maintain Git commit linking. Self-hosted or cloud options. Much more professional than current ticket.json approach while staying open source. Could integrate with existing ticket tools or replace entirely.
+---

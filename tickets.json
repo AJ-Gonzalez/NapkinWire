@@ -1,8 +1,8 @@
 {
   "metadata": {
     "version": "1.0.0",
-    "last_updated": "2025-09-13T22:02:11Z",
-    "next_id": 34,
+    "last_updated": "2025-09-13T22:12:51Z",
+    "next_id": 35,
     "project": "napkinwire"
   },
   "tickets": [
@@ -547,10 +547,10 @@
     {
       "id": "TICKET-016",
       "title": "Fix diagram editor subprocess timeout issue",
-      "status": "blocked",
+      "status": "obsolete",
       "priority": "high",
       "created_at": "2025-09-12T16:28:02Z",
-      "updated_at": "2025-09-13T12:37:07Z",
+      "updated_at": "2025-09-13T22:06:47Z",
       "description": "Fix diagram editor timeout issue - tool works in testing but times out after 60 seconds when called from Claude Desktop",
       "requirements": [
         "Debug why subprocess isn't launching properly from MCP context",
@@ -1116,6 +1116,37 @@
       ],
       "files_affected": [
         "mcp/modules/ticket_manager.py"
+      ],
+      "dependencies": [],
+      "outcome": null,
+      "notes": null
+    },
+    {
+      "id": "TICKET-034",
+      "title": "Fix UI mockup editor browser send timeout issue",
+      "status": "todo",
+      "priority": "high",
+      "created_at": "2025-09-13T22:12:51Z",
+      "updated_at": "2025-09-13T22:12:51Z",
+      "description": "UI mockup editor launches browser successfully but fails with \"browser send failed\" timeout after 60 seconds. User can draw but system times out before data transmission completes. Diagram editor works fine with same HTTP server approach, suggesting UI mockup specific issue.",
+      "requirements": [
+        "Investigate root cause of send failure vs diagram editor",
+        "Compare timeout handling between UI mockup and diagram implementations",
+        "Determine if timeout duration, data processing, or transmission mechanism differs",
+        "Present detailed action plan with specific code locations before implementing fix"
+      ],
+      "acceptance_criteria": [
+        "Root cause analysis completed with findings documented",
+        "Action plan presented with specific files/functions to modify",
+        "Fix implemented only after action plan approval",
+        "UI mockup editor works as reliably as diagram editor",
+        "Timeout handling matches or improves upon diagram editor approach"
+      ],
+      "files_affected": [
+        "mcp/modules/diagram_server.py",
+        "web/main.js",
+        "web/ui.html",
+        "web/ui-standalone.html"
       ],
       "dependencies": [],
       "outcome": null,
