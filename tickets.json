@@ -1,8 +1,8 @@
 {
   "metadata": {
     "version": "1.0.0",
-    "last_updated": "2025-09-13T13:13:39Z",
-    "next_id": 33,
+    "last_updated": "2025-09-13T22:02:11Z",
+    "next_id": 34,
     "project": "napkinwire"
   },
   "tickets": [
@@ -1091,6 +1091,31 @@
       "files_affected": [
         "aider_validation.py",
         "tests/test_aider_integration.py"
+      ],
+      "dependencies": [],
+      "outcome": null,
+      "notes": null
+    },
+    {
+      "id": "TICKET-033",
+      "title": "Add cancelled/obsolete status to ticket system",
+      "status": "done",
+      "priority": "medium",
+      "created_at": "2025-09-13T22:02:11Z",
+      "updated_at": "2025-09-13T22:02:11Z",
+      "description": "Current ticket system only supports todo/done/blocked statuses. Need cancelled/obsolete status for tickets that are no longer relevant (e.g. TICKET-016 which was superseded by TICKET-019's HTTP server approach).",
+      "requirements": [
+        "Add 'cancelled' and 'obsolete' as valid ticket status values",
+        "Update ticket status validation to accept new statuses",
+        "Ensure status filtering works with new statuses"
+      ],
+      "acceptance_criteria": [
+        "Can set ticket status to 'cancelled' or 'obsolete'",
+        "List tickets shows cancelled/obsolete tickets appropriately",
+        "Status validation accepts new values without breaking existing functionality"
+      ],
+      "files_affected": [
+        "mcp/modules/ticket_manager.py"
       ],
       "dependencies": [],
       "outcome": null,

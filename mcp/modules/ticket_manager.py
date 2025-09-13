@@ -150,7 +150,7 @@ def napkinwire_list_tickets(status: str = "all") -> List[Dict[str, Any]]:
     crud_logger.info(f"Listing tickets with status filter: '{status}'")
     try:
         # Validate status
-        valid_statuses = ["todo", "in_progress", "done", "blocked", "all"]
+        valid_statuses = ["todo", "in_progress", "done", "blocked", "cancelled", "obsolete", "all"]
         if status not in valid_statuses:
             crud_logger.warning(f"Invalid status filter '{status}' provided")
             return [{"error": f"Status must be one of: {valid_statuses}"}]
@@ -198,7 +198,7 @@ def napkinwire_update_ticket_status(ticket_id: str, new_status: str) -> Dict[str
     crud_logger.info(f"Updating ticket {ticket_id} status to '{new_status}'")
     try:
         # Validate status
-        valid_statuses = ["todo", "in_progress", "done", "blocked"]
+        valid_statuses = ["todo", "in_progress", "done", "blocked", "cancelled", "obsolete"]
         if new_status not in valid_statuses:
             crud_logger.warning(f"Invalid status '{new_status}' provided for ticket {ticket_id}")
             return {"success": False, "error": f"Status must be one of: {valid_statuses}"}
