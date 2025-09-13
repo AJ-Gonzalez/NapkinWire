@@ -14,8 +14,12 @@ const isLocalMode = window.location.protocol === 'file:';
 // PyWebView mode detection
 const isPyWebView = window.pywebview !== undefined;
 
+// Localhost HTTP server mode detection
+const isLocalhostMode = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
 console.log('Local mode detected:', isLocalMode);
 console.log('PyWebView mode detected:', isPyWebView);
+console.log('Localhost mode detected:', isLocalhostMode);
 
 
 // Wire it up in diagram-gen.js
@@ -918,7 +922,7 @@ document.getElementById('generate-prompt').addEventListener('click', async funct
         try {
             console.log('Sending diagram data to PyWebView bridge...');
             const success = await window.pywebview.api.send_diagram(prompt);
-            
+
             if (success) {
                 // Flash success feedback
                 const originalText = this.textContent;
@@ -939,6 +943,49 @@ document.getElementById('generate-prompt').addEventListener('click', async funct
             }
         } catch (error) {
             console.error('Error sending diagram to PyWebView:', error);
+            const originalText = this.textContent;
+            this.textContent = 'Send failed';
+            setTimeout(() => {
+                this.textContent = originalText;
+            }, 2000);
+        }
+    } else if (isLocalhostMode) {
+        // Localhost HTTP server mode: POST data to /send_to_claude endpoint
+        try {
+            console.log('Sending diagram data to localhost server...');
+            const response = await fetch('/send_to_claude', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    diagram_data: prompt
+                })
+            });
+
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                // Flash success feedback
+                const originalText = this.textContent;
+                this.textContent = 'Sent to Claude!';
+                this.style.backgroundColor = '#059669';
+
+                setTimeout(() => {
+                    // Close the window after successful send
+                    window.close();
+                }, 1000);
+            } else {
+                // Error occurred
+                const originalText = this.textContent;
+                this.textContent = 'Send failed';
+                setTimeout(() => {
+                    this.textContent = originalText;
+                }, 2000);
+                console.error('Server error:', result.error || 'Unknown error');
+            }
+        } catch (error) {
+            console.error('Error sending diagram to localhost server:', error);
             const originalText = this.textContent;
             this.textContent = 'Send failed';
             setTimeout(() => {

@@ -1,0 +1,6 @@
+2025-09-13 01:33:54,015 - INFO - Starting HTTP server for diagram editor
+2025-09-13 01:33:54,032 - INFO - Using port 8765 for HTTP server
+2025-09-13 01:33:54,033 - INFO - HTTP server started on http://localhost:8765
+2025-09-13 01:33:54,579 - INFO - Opened browser to http://localhost:8765/diagram.html
+2025-09-13 01:33:59,040 - INFO - Received diagram data: 63 characters
+2025-09-13 01:33:59,547 - INFO - Successfully received diagram data from HTTP server

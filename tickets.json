@@ -1,8 +1,8 @@
 {
   "metadata": {
     "version": "1.0.0",
-    "last_updated": "2025-09-13T03:46:59Z",
-    "next_id": 21,
+    "last_updated": "2025-09-13T07:39:18Z",
+    "next_id": 22,
     "project": "napkinwire"
   },
   "tickets": [
@@ -654,10 +654,10 @@
     {
       "id": "TICKET-019",
       "title": "Implement local HTTP server for diagram editor instead of PyWebView",
-      "status": "todo",
+      "status": "done",
       "priority": "high",
       "created_at": "2025-09-13T03:44:12Z",
-      "updated_at": "2025-09-13T03:44:12Z",
+      "updated_at": "2025-09-13T07:34:50Z",
       "description": "Replace PyWebView with local HTTP server approach - start server, open browser to web/diagram.html, capture POST request with ASCII data, return to Claude",
       "requirements": [
         "Modify spawn_diagram_editor tool to start HTTP server on localhost",
@@ -719,6 +719,46 @@
       ],
       "files_affected": [
         "test_client.py"
+      ],
+      "dependencies": [],
+      "outcome": null,
+      "notes": null
+    },
+    {
+      "id": "TICKET-021",
+      "title": "Implement HTTP server for UI mockup editor matching diagram approach",
+      "status": "todo",
+      "priority": "high",
+      "created_at": "2025-09-13T07:39:18Z",
+      "updated_at": "2025-09-13T07:39:18Z",
+      "description": "Implement local HTTP server for UI mockup editor using same approach as diagram tool (TICKET-019) - start server, open browser to web/ui.html, capture POST request with ASCII mockup data, return to Claude",
+      "requirements": [
+        "Copy implementation pattern from spawn_diagram_editor",
+        "Create spawn_ui_mockup_editor tool",
+        "Start HTTP server on localhost (find available port)",
+        "Serve web/ directory as static files",
+        "Add POST endpoint /send_to_claude for UI mockup data",
+        "Modify ui.html to detect localhost mode",
+        "Change generate button to POST to /send_to_claude when on localhost",
+        "Open browser to http://localhost:PORT/ui.html",
+        "Server waits for POST with 60 second timeout",
+        "Return received ASCII UI mockup and shut down server",
+        "Use same CORS handling as diagram tool"
+      ],
+      "acceptance_criteria": [
+        "Local HTTP server starts for UI mockup tool",
+        "Browser opens automatically with ui.html",
+        "Server receives POST request with ASCII UI data",
+        "Tool returns ASCII mockup to Claude",
+        "Server shuts down cleanly after receiving data",
+        "No timeout errors",
+        "Works on Windows and Linux",
+        "Handles user closing browser without sending"
+      ],
+      "files_affected": [
+        "main.py",
+        "web/ui.html",
+        "web/main.js"
       ],
       "dependencies": [],
       "outcome": null,
