@@ -825,263 +825,185 @@ def napkinwire_project_tree(
             "message": "Failed to generate project tree"
         }
 
-# PyWebView diagram editor integration using subprocess
+# HTTP server diagram editor integration
 @mcp.tool()
 def napkinwire_spawn_diagram_editor() -> Dict[str, Any]:
-    """Spawn PyWebView diagram editor window using subprocess and return ASCII diagram data
-    
-    Opens native window with diagram editor in a subprocess, waits for user to create and send diagram,
-    returns the ASCII representation via temp file communication.
-    
+    """Spawn local HTTP server for diagram editor and return ASCII diagram data
+
+    Starts HTTP server on localhost, opens browser to diagram.html, waits for POST request
+    with ASCII data, returns the diagram representation.
+
     Returns:
         Dict with diagram data or error message
     """
-    crud_logger.info("Spawning PyWebView diagram editor in subprocess")
-    
-    if not WEBVIEW_AVAILABLE:
-        return {
-            "error": "PyWebView not available - install with: pip install pywebview",
-            "success": False
-        }
-    
+    crud_logger.info("Starting HTTP server for diagram editor")
+
     try:
-        # Get project root and diagram file path
+        import socket
+        import http.server
+        import socketserver
+        import threading
+        import webbrowser
+        import urllib.parse
+
+        # Get project root and web directory path
         project_root = get_project_root()
-        diagram_html_path = project_root / "web" / "diagram.html"
-        
+        web_dir = project_root / "web"
+
+        if not web_dir.exists():
+            return {
+                "error": f"Web directory not found: {web_dir}",
+                "success": False
+            }
+
+        diagram_html_path = web_dir / "diagram.html"
         if not diagram_html_path.exists():
             return {
                 "error": f"Diagram HTML file not found: {diagram_html_path}",
                 "success": False
             }
-        
-        # Create temp file for result communication
-        with tempfile.NamedTemporaryFile(mode='w+', suffix='.napkinwire', delete=False) as temp_file:
-            temp_file_path = temp_file.name
-        
-        crud_logger.info(f"Created temp file for communication: {temp_file_path}")
-        
-        # Create subprocess code string using repr() for cross-platform path handling
-        subprocess_code = f'''
-import webview
-import json
-import sys
-import logging
-import os
 
-# Configure logging for subprocess
-logging.basicConfig(
-    level=logging.INFO,
-    format='[SUBPROCESS] %(asctime)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger('napkinwire_subprocess')
+        # Find available port starting from 8765
+        def find_free_port(start_port=8765):
+            for port in range(start_port, start_port + 100):
+                try:
+                    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                        s.bind(('localhost', port))
+                        return port
+                except OSError:
+                    continue
+            raise Exception("No free port found in range 8765-8864")
 
-class DiagramAPI:
-    """API class for PyWebView bridge to receive diagram data in subprocess"""
-    
-    def __init__(self, result_file_path):
-        self.result_file_path = result_file_path
-        self.diagram_data = None
-        self.error_message = None
-        logger.info(f"DiagramAPI initialized with result file: {{self.result_file_path}}")
-    
-    def send_diagram(self, ascii_data):
-        """Receive ASCII diagram data from JavaScript and write to temp file"""
-        try:
-            logger.info(f"Received diagram data: {{len(ascii_data)}} characters")
-            self.diagram_data = ascii_data
-            
-            # Write result to temp file
-            result = {{
-                "success": True,
-                "diagram_data": ascii_data,
-                "method": "pywebview_subprocess"
-            }}
-            
-            with open(self.result_file_path, 'w', encoding='utf-8') as f:
-                json.dump(result, f, indent=2)
-            
-            logger.info("Successfully wrote diagram data to temp file")
-            
-            # Close the window after successful send
+        port = find_free_port()
+        crud_logger.info(f"Using port {port} for HTTP server")
+
+        # Storage for received diagram data
+        received_data = {"diagram": None, "error": None, "received": False}
+
+        class DiagramHTTPHandler(http.server.SimpleHTTPRequestHandler):
+            def __init__(self, *args, **kwargs):
+                super().__init__(*args, directory=str(web_dir), **kwargs)
+
+            def do_POST(self):
+                if self.path == '/send_to_claude':
+                    try:
+                        content_length = int(self.headers.get('Content-Length', 0))
+                        post_data = self.rfile.read(content_length)
+
+                        # Parse form data or JSON
+                        if self.headers.get('Content-Type', '').startswith('application/json'):
+                            data = json.loads(post_data.decode('utf-8'))
+                            ascii_data = data.get('diagram_data', '')
+                        else:
+                            # Form data
+                            parsed_data = urllib.parse.parse_qs(post_data.decode('utf-8'))
+                            ascii_data = parsed_data.get('diagram_data', [''])[0]
+
+                        if ascii_data:
+                            received_data["diagram"] = ascii_data
+                            received_data["received"] = True
+                            crud_logger.info(f"Received diagram data: {len(ascii_data)} characters")
+
+                            # Send success response
+                            self.send_response(200)
+                            self.send_header('Content-type', 'application/json')
+                            self.send_header('Access-Control-Allow-Origin', '*')
+                            self.end_headers()
+                            self.wfile.write(json.dumps({"success": True}).encode('utf-8'))
+                        else:
+                            self.send_response(400)
+                            self.send_header('Content-type', 'application/json')
+                            self.send_header('Access-Control-Allow-Origin', '*')
+                            self.end_headers()
+                            self.wfile.write(json.dumps({"error": "No diagram data"}).encode('utf-8'))
+
+                    except Exception as e:
+                        crud_logger.error(f"Error handling POST request: {e}")
+                        received_data["error"] = str(e)
+                        received_data["received"] = True
+
+                        self.send_response(500)
+                        self.send_header('Content-type', 'application/json')
+                        self.send_header('Access-Control-Allow-Origin', '*')
+                        self.end_headers()
+                        self.wfile.write(json.dumps({"error": str(e)}).encode('utf-8'))
+                else:
+                    self.send_response(404)
+                    self.end_headers()
+
+            def do_OPTIONS(self):
+                # Handle CORS preflight
+                self.send_response(200)
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.send_header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS')
+                self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+                self.end_headers()
+
+            def log_message(self, format, *args):
+                # Suppress default server logs to keep output clean
+                pass
+
+        # Start HTTP server in background thread
+        with socketserver.TCPServer(("localhost", port), DiagramHTTPHandler) as httpd:
+            httpd.timeout = 1  # Short timeout for serve_request to allow checking received_data
+
+            server_thread = threading.Thread(target=lambda: httpd.serve_forever())
+            server_thread.daemon = True
+            server_thread.start()
+
+            crud_logger.info(f"HTTP server started on http://localhost:{port}")
+
+            # Open browser to diagram.html
+            diagram_url = f"http://localhost:{port}/diagram.html"
             try:
-                webview.windows[0].destroy()
-                logger.info("Window closed after successful send")
+                webbrowser.open(diagram_url)
+                crud_logger.info(f"Opened browser to {diagram_url}")
             except Exception as e:
-                logger.warning(f"Error closing window: {{e}}")
-            
-            return True
-            
-        except Exception as e:
-            logger.error(f"Error in send_diagram: {{e}}")
-            self.error_message = str(e)
-            
-            # Write error to temp file
-            error_result = {{
-                "success": False,
-                "error": f"JavaScript bridge error: {{str(e)}}"
-            }}
-            
-            try:
-                with open(self.result_file_path, 'w', encoding='utf-8') as f:
-                    json.dump(error_result, f, indent=2)
-            except:
-                pass  # If we can't write the error, main process will timeout
-                
-            return False
-
-try:
-    # Create API instance with properly escaped path
-    api = DiagramAPI({repr(temp_file_path)})
-    
-    # Create window with the diagram editor
-    logger.info("Creating PyWebView window...")
-    webview.create_window(
-        title='NapkinWire Diagram',
-        url={repr(str(diagram_html_path))},
-        width=1200,
-        height=800,
-        resizable=True,
-        js_api=api
-    )
-    
-    # Start the webview (blocking call - this runs in main thread of subprocess)
-    logger.info("Starting PyWebView...")
-    webview.start(debug=False)
-    
-    logger.info("PyWebView closed")
-    
-    # If we get here without data being written, window was closed without sending
-    if not os.path.exists({repr(temp_file_path)}) or os.path.getsize({repr(temp_file_path)}) == 0:
-        logger.info("Window closed without sending data")
-        result = {{
-            "success": False,
-            "error": "Window closed without sending diagram data"
-        }}
-        
-        with open({repr(temp_file_path)}, 'w', encoding='utf-8') as f:
-            json.dump(result, f, indent=2)
-    
-except Exception as e:
-    logger.error(f"Error in subprocess: {{e}}")
-    
-    # Write error to temp file
-    error_result = {{
-        "success": False,
-        "error": f"Subprocess error: {{str(e)}}"
-    }}
-    
-    try:
-        with open({repr(temp_file_path)}, 'w', encoding='utf-8') as f:
-            json.dump(error_result, f, indent=2)
-    except:
-        pass  # If we can't write the error, main process will timeout
-
-logger.info("Subprocess exiting")
-'''
-        
-        crud_logger.info("Starting PyWebView subprocess...")
-        
-        # Run subprocess with timeout
-        try:
-            result = subprocess.run(
-                [sys.executable, '-c', subprocess_code],
-                timeout=60,  # 60 second timeout
-                capture_output=True,
-                text=True
-            )
-            
-            crud_logger.info(f"Subprocess completed with return code: {result.returncode}")
-            if result.stdout:
-                crud_logger.info(f"Subprocess stdout: {result.stdout}")
-            if result.stderr:
-                crud_logger.warning(f"Subprocess stderr: {result.stderr}")
-                
-        except subprocess.TimeoutExpired:
-            crud_logger.error("Subprocess timed out after 60 seconds")
-            try:
-                os.unlink(temp_file_path)
-            except:
-                pass
-            return {
-                "error": "Diagram editor timed out after 60 seconds",
-                "success": False
-            }
-        except Exception as e:
-            crud_logger.error(f"Error running subprocess: {e}")
-            try:
-                os.unlink(temp_file_path)
-            except:
-                pass
-            return {
-                "error": f"Failed to start diagram editor subprocess: {str(e)}",
-                "success": False
-            }
-        
-        # Read result from temp file
-        try:
-            if not os.path.exists(temp_file_path):
-                crud_logger.error("Temp file not created by subprocess")
+                crud_logger.warning(f"Failed to open browser automatically: {e}")
                 return {
-                    "error": "No result file created by diagram editor",
+                    "error": f"Server started but failed to open browser. Please go to {diagram_url}",
                     "success": False
                 }
-            
-            with open(temp_file_path, 'r', encoding='utf-8') as f:
-                file_content = f.read().strip()
-                if not file_content:
-                    crud_logger.error("Temp file is empty")
+
+            # Wait for data or timeout
+            timeout_seconds = 60
+            start_time = time.time()
+
+            while not received_data["received"] and (time.time() - start_time) < timeout_seconds:
+                time.sleep(0.5)
+
+            # Shutdown server
+            httpd.shutdown()
+            server_thread.join(timeout=2)
+
+            # Return result
+            if received_data["received"]:
+                if received_data["diagram"]:
+                    crud_logger.info("Successfully received diagram data from HTTP server")
                     return {
-                        "error": "Empty result from diagram editor",
-                        "success": False
+                        "success": True,
+                        "diagram_data": received_data["diagram"],
+                        "method": "http_server"
                     }
-                
-                result_data = json.loads(file_content)
-            
-            # Clean up temp file
-            try:
-                os.unlink(temp_file_path)
-                crud_logger.info("Cleaned up temp file")
-            except Exception as e:
-                crud_logger.warning(f"Failed to clean up temp file: {e}")
-            
-            # Log success/failure
-            if result_data.get("success"):
-                crud_logger.info("Successfully received diagram data from subprocess")
-                data_len = len(result_data.get("diagram_data", ""))
-                crud_logger.info(f"Diagram data length: {data_len} characters")
+                else:
+                    crud_logger.error(f"HTTP server error: {received_data['error']}")
+                    return {
+                        "success": False,
+                        "error": received_data["error"] or "Unknown error receiving diagram data"
+                    }
             else:
-                crud_logger.error(f"Subprocess returned error: {result_data.get('error')}")
-            
-            return result_data
-            
-        except json.JSONDecodeError as e:
-            crud_logger.error(f"Failed to parse result JSON: {e}")
-            try:
-                os.unlink(temp_file_path)
-            except:
-                pass
-            return {
-                "error": "Invalid result data from diagram editor",
-                "success": False
-            }
-        except Exception as e:
-            crud_logger.error(f"Error reading result file: {e}")
-            try:
-                os.unlink(temp_file_path)
-            except:
-                pass
-            return {
-                "error": f"Failed to read result from diagram editor: {str(e)}",
-                "success": False
-            }
-            
+                crud_logger.error("HTTP server timed out waiting for diagram data")
+                return {
+                    "success": False,
+                    "error": "Diagram editor timed out after 60 seconds"
+                }
+
     except Exception as e:
-        crud_logger.error(f"Error in spawn_diagram_editor: {e}")
+        crud_logger.error(f"Error in HTTP server diagram editor: {e}")
         return {
             "error": str(e),
             "success": False,
-            "message": "Failed to spawn PyWebView diagram editor subprocess"
+            "message": "Failed to start HTTP server for diagram editor"
         }
 
 # Roadmap management tools
