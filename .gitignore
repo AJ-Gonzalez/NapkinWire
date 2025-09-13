@@ -14,3 +14,5 @@ old.mcp.json
 mcp/__pycache__/*
 notes.md
 mcp/crud.log
+config.yaml
+mcp/config.yaml

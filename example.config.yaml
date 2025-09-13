@@ -1,0 +1,40 @@
+# NapkinWire Configuration File
+# This is an example configuration. Copy to config.yaml and customize as needed.
+
+paths:
+  # Path to tickets.json file
+  tickets_path: "tickets.json"
+
+  # Path to Claude Desktop logs directory (auto-detected if not specified)
+  logs_path: null
+
+  # Project root directory (uses NAPKINWIRE_PROJECT env var if not specified)
+  project_root: null
+
+  # Path to roadmap.md file
+  roadmap_path: "roadmap.md"
+
+  # Directory for ticket queue files
+  queue_path: "ticket_queue"
+
+# Application settings
+app:
+  # Logging level (DEBUG, INFO, WARNING, ERROR)
+  log_level: "INFO"
+
+  # Enable development mode features
+  dev_mode: false
+
+  # Timeout for diagram editor (seconds)
+  diagram_timeout: 60
+
+# Initiative feed settings
+initiative_feed:
+  # Database file for initiative feed
+  db_path: "initiative_feed.db"
+
+  # Days to keep feed entries before cleanup
+  retention_days: 30
+
+  # Maximum entries to return in feed queries
+  max_entries: 50

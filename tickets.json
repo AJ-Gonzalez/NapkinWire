@@ -40,10 +40,10 @@
     {
       "id": "TICKET-002",
       "title": "Port config.py to YAML with safe loading and validation",
-      "status": "todo",
+      "status": "done",
       "priority": "high",
       "created_at": "2025-09-12T01:38:35Z",
-      "updated_at": "2025-09-12T01:38:35Z",
+      "updated_at": "2025-09-12T16:50:00Z",
       "description": "Replace hardcoded config.py with a YAML configuration file that supports safe loading, validation, and environment overrides",
       "requirements": [
         "Create config.yaml with paths section (tickets_path, logs_path, project_root)",
@@ -582,10 +582,10 @@
     {
       "id": "TICKET-017",
       "title": "Create Python ticket formatter/summary script",
-      "status": "todo",
+      "status": "done",
       "priority": "medium",
       "created_at": "2025-09-12T16:37:50Z",
-      "updated_at": "2025-09-12T16:37:50Z",
+      "updated_at": "2025-09-12T16:52:00Z",
       "description": "Create a simple Python script that reads tickets.json and outputs a formatted summary without needing LLM calls",
       "requirements": [
         "Read tickets.json file",
