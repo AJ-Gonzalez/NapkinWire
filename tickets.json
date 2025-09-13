@@ -797,10 +797,10 @@
     {
       "id": "TICKET-023",
       "title": "Refactor main.py into modules (NO Claude implementation)",
-      "status": "todo",
+      "status": "done",
       "priority": "high",
       "created_at": "2025-09-13T12:29:22Z",
-      "updated_at": "2025-09-13T12:29:22Z",
+      "updated_at": "2025-09-13T13:13:39Z",
       "description": "Refactor the 46KB main.py into logical modules WITHOUT using Claude for implementation. Use Aider+free models or manual refactoring. Core modules: ticket_manager.py, roadmap_manager.py, usage_analyzer.py, project_tools.py, diagram_server.py. Main.py should only handle MCP server setup and tool registration.",
       "requirements": [
         "Extract ticket-related functions to ticket_manager.py",
