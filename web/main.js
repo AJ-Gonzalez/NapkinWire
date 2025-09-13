@@ -203,24 +203,70 @@ document.getElementById("get_prompt").addEventListener('click', function () {
     // Generate the prompt
     const finalPrompt = generateUIPrompt();
 
-    // Copy to clipboard immediately
-    navigator.clipboard.writeText(finalPrompt).then(() => {
-        // Flash the button text
-        const originalText = this.textContent;
-        this.textContent = 'Copied to Clipboard!';
-        this.style.backgroundColor = '#059669'; // Slightly different green
+    // Check if we're running on localhost (MCP mode)
+    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
-        setTimeout(() => {
-            this.textContent = originalText;
-            this.style.backgroundColor = 'var(--button_bg)'; // Back to original
-        }, 1500);
-    }).catch(() => {
-        // Fallback if clipboard fails
-        this.textContent = 'Copy failed';
-        setTimeout(() => {
-            this.textContent = 'Get Prompt!';
-        }, 2000);
-    });
+    if (isLocalhost) {
+        // MCP mode - send to Claude via HTTP POST
+        const originalText = this.textContent;
+        this.textContent = 'Sending to Claude...';
+        this.disabled = true;
+
+        fetch('/send_to_claude', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ ui_mockup_data: finalPrompt })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                this.textContent = 'Sent to Claude!';
+                this.style.backgroundColor = '#059669';
+                setTimeout(() => {
+                    window.close(); // Close the window after successful send
+                }, 1000);
+            } else {
+                this.textContent = 'Send failed';
+                this.style.backgroundColor = '#dc2626';
+                setTimeout(() => {
+                    this.textContent = originalText;
+                    this.style.backgroundColor = 'var(--button_bg)';
+                    this.disabled = false;
+                }, 2000);
+            }
+        })
+        .catch(error => {
+            console.error('Error sending to Claude:', error);
+            this.textContent = 'Send failed';
+            this.style.backgroundColor = '#dc2626';
+            setTimeout(() => {
+                this.textContent = originalText;
+                this.style.backgroundColor = 'var(--button_bg)';
+                this.disabled = false;
+            }, 2000);
+        });
+    } else {
+        // Regular web mode - copy to clipboard
+        navigator.clipboard.writeText(finalPrompt).then(() => {
+            // Flash the button text
+            const originalText = this.textContent;
+            this.textContent = 'Copied to Clipboard!';
+            this.style.backgroundColor = '#059669'; // Slightly different green
+
+            setTimeout(() => {
+                this.textContent = originalText;
+                this.style.backgroundColor = 'var(--button_bg)'; // Back to original
+            }, 1500);
+        }).catch(() => {
+            // Fallback if clipboard fails
+            this.textContent = 'Copy failed';
+            setTimeout(() => {
+                this.textContent = 'Get Prompt!';
+            }, 2000);
+        });
+    }
 });
 
 

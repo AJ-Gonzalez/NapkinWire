@@ -1,8 +1,8 @@
 {
   "metadata": {
     "version": "1.0.0",
-    "last_updated": "2025-09-13T07:39:18Z",
-    "next_id": 22,
+    "last_updated": "2025-09-13T13:13:39Z",
+    "next_id": 33,
     "project": "napkinwire"
   },
   "tickets": [
@@ -547,10 +547,10 @@
     {
       "id": "TICKET-016",
       "title": "Fix diagram editor subprocess timeout issue",
-      "status": "todo",
+      "status": "blocked",
       "priority": "high",
       "created_at": "2025-09-12T16:28:02Z",
-      "updated_at": "2025-09-12T16:28:02Z",
+      "updated_at": "2025-09-13T12:37:07Z",
       "description": "Fix diagram editor timeout issue - tool works in testing but times out after 60 seconds when called from Claude Desktop",
       "requirements": [
         "Debug why subprocess isn't launching properly from MCP context",
@@ -727,10 +727,10 @@
     {
       "id": "TICKET-021",
       "title": "Implement HTTP server for UI mockup editor matching diagram approach",
-      "status": "todo",
+      "status": "done",
       "priority": "high",
       "created_at": "2025-09-13T07:39:18Z",
-      "updated_at": "2025-09-13T07:39:18Z",
+      "updated_at": "2025-09-13T13:13:39Z",
       "description": "Implement local HTTP server for UI mockup editor using same approach as diagram tool (TICKET-019) - start server, open browser to web/ui.html, capture POST request with ASCII mockup data, return to Claude",
       "requirements": [
         "Copy implementation pattern from spawn_diagram_editor",
@@ -759,6 +759,338 @@
         "main.py",
         "web/ui.html",
         "web/main.js"
+      ],
+      "dependencies": [],
+      "outcome": null,
+      "notes": null
+    },
+    {
+      "id": "TICKET-022",
+      "title": "Setup Aider with free OpenRouter models for automated implementation",
+      "status": "done",
+      "priority": "high",
+      "created_at": "2025-09-13T12:29:11Z",
+      "updated_at": "2025-09-13T12:45:12Z",
+      "description": "Configure Aider to use free tier models from OpenRouter (like Qwen2.5-Coder, DeepSeek, or others marked as free) for automated ticket implementation. This will preserve Claude usage for high-level design while delegating routine coding to free models.",
+      "requirements": [
+        "Research current free models on OpenRouter",
+        "Install Aider if not present",
+        "Create .aider.conf.yml with OpenRouter configuration",
+        "Test with a simple ticket implementation",
+        "Document usage patterns and cost tracking"
+      ],
+      "acceptance_criteria": [
+        "Aider successfully connects to OpenRouter",
+        "Can execute a simple code change using free model",
+        "Process documented for ticket-to-Aider workflow",
+        "No Claude tokens used for routine implementation"
+      ],
+      "files_affected": [
+        ".aider.conf.yml",
+        "mcp/main.py",
+        "docs/aider-setup.md"
+      ],
+      "dependencies": [],
+      "outcome": null,
+      "notes": null
+    },
+    {
+      "id": "TICKET-023",
+      "title": "Refactor main.py into modules (NO Claude implementation)",
+      "status": "todo",
+      "priority": "high",
+      "created_at": "2025-09-13T12:29:22Z",
+      "updated_at": "2025-09-13T12:29:22Z",
+      "description": "Refactor the 46KB main.py into logical modules WITHOUT using Claude for implementation. Use Aider+free models or manual refactoring. Core modules: ticket_manager.py, roadmap_manager.py, usage_analyzer.py, project_tools.py, diagram_server.py. Main.py should only handle MCP server setup and tool registration.",
+      "requirements": [
+        "Extract ticket-related functions to ticket_manager.py",
+        "Extract roadmap functions to roadmap_manager.py",
+        "Extract project tree functions to project_tools.py",
+        "Extract diagram server to diagram_server.py",
+        "Keep usage_analyzer.py as is",
+        "Update imports in main.py"
+      ],
+      "acceptance_criteria": [
+        "main.py reduced to under 10KB",
+        "Each module has single responsibility",
+        "All existing functionality preserved",
+        "Import structure clean and logical"
+      ],
+      "files_affected": [
+        "mcp/main.py",
+        "mcp/ticket_manager.py",
+        "mcp/roadmap_manager.py",
+        "mcp/project_tools.py",
+        "mcp/diagram_server.py"
+      ],
+      "dependencies": [],
+      "outcome": null,
+      "notes": null
+    },
+    {
+      "id": "TICKET-024",
+      "title": "Setup pytest infrastructure with test templates for Aider",
+      "status": "todo",
+      "priority": "high",
+      "created_at": "2025-09-13T12:29:31Z",
+      "updated_at": "2025-09-13T12:29:31Z",
+      "description": "Set up testing infrastructure using pytest. Create test structure and basic tests for critical functions. Use Aider+free models to write the actual tests. Focus on: ticket CRUD operations, roadmap operations, file reading, and critical MCP tool functions.",
+      "requirements": [
+        "Install pytest and pytest-cov",
+        "Create tests/ directory structure",
+        "Write fixture for test data",
+        "Create test templates that Aider can fill",
+        "Set up GitHub Actions workflow (optional)"
+      ],
+      "acceptance_criteria": [
+        "Pytest configured and running",
+        "Basic test structure created",
+        "CI/CD ready test command",
+        "Coverage report generated"
+      ],
+      "files_affected": [
+        "tests/test_tickets.py",
+        "tests/test_roadmap.py",
+        "tests/test_mcp_tools.py",
+        "pytest.ini",
+        ".github/workflows/tests.yml"
+      ],
+      "dependencies": [],
+      "outcome": null,
+      "notes": null
+    },
+    {
+      "id": "TICKET-025",
+      "title": "Implementation Guide: Aider Setup with OpenRouter",
+      "status": "done",
+      "priority": "high",
+      "created_at": "2025-09-13T12:31:27Z",
+      "updated_at": "2025-09-13T13:13:39Z",
+      "description": "SPECIFIC STEPS for TICKET-022 that Sonnet can execute directly:\n\n1. INSTALL AIDER:\n```bash\npip install aider-chat\n```\n\n2. CREATE .aider.conf.yml in project root:\n```yaml\nopenrouter:\n  api_key: ${OPENROUTER_API_KEY}\n  model: openrouter/qwen/qwen-2.5-coder-32b-instruct\n  # Alternative free models to try:\n  # - openrouter/microsoft/phi-3-mini-128k-instruct:free\n  # - openrouter/google/gemma-2-9b-it:free\n  # - openrouter/meta-llama/llama-3.2-3b-instruct:free\n\n# Aider settings\nauto_commits: true\ndirty_commits: false\ngit: true\nvoice: false\n```\n\n3. CREATE mcp/tools/aider_integration.py:\n```python\nimport subprocess\nimport os\nfrom pathlib import Path\n\ndef run_aider_on_ticket(ticket_id, ticket_description, requirements):\n    '''Execute Aider with ticket requirements as prompt'''\n    prompt = f'Implement {ticket_id}: {ticket_description}\\\\n\\\\nRequirements:\\\\n' + '\\\\n'.join(requirements)\n    \n    cmd = ['aider', '--message', prompt, '--yes']\n    \n    result = subprocess.run(cmd, capture_output=True, text=True)\n    return result.stdout, result.returncode\n```\n\n4. TEST with simple task:\n```bash\nexport OPENROUTER_API_KEY='your-key-here'\naider --message 'Add a docstring to the add function in main.py'\n```\n\n5. CREATE docs/aider-setup.md documenting the process",
+      "requirements": [
+        "Copy-paste executable code",
+        "No design decisions needed",
+        "Test each step independently"
+      ],
+      "acceptance_criteria": [
+        "Aider runs successfully with OpenRouter",
+        "Can make a simple code change",
+        "Documentation created"
+      ],
+      "files_affected": [
+        ".aider.conf.yml",
+        "mcp/tools/aider_integration.py",
+        "docs/aider-setup.md"
+      ],
+      "dependencies": [],
+      "outcome": null,
+      "notes": null
+    },
+    {
+      "id": "TICKET-026",
+      "title": "Implementation Guide: Refactor main.py (mechanical steps)",
+      "status": "todo",
+      "priority": "high",
+      "created_at": "2025-09-13T12:31:43Z",
+      "updated_at": "2025-09-13T12:31:43Z",
+      "description": "MECHANICAL REFACTORING STEPS for TICKET-023 (no design decisions):\n\n1. CREATE mcp/modules/ticket_manager.py and MOVE these functions from main.py:\n- load_tickets()\n- save_tickets()\n- create_ticket()\n- napkinwire_create_ticket()\n- napkinwire_list_tickets()\n- napkinwire_update_ticket_status()\n- napkinwire_get_ticket_details()\n\n2. CREATE mcp/modules/roadmap_manager.py and MOVE:\n- napkinwire_append_roadmap_idea()\n- napkinwire_list_roadmap_ideas()\n\n3. CREATE mcp/modules/project_tools.py and MOVE:\n- napkinwire_project_tree()\n- Any helper functions for project tree\n\n4. CREATE mcp/modules/diagram_server.py and MOVE:\n- napkinwire_spawn_diagram_editor()\n- DiagramHandler class\n- All diagram-related helper functions\n\n5. UPDATE main.py imports:\n```python\nfrom modules.ticket_manager import (\n    napkinwire_create_ticket,\n    napkinwire_list_tickets,\n    napkinwire_update_ticket_status,\n    napkinwire_get_ticket_details\n)\nfrom modules.roadmap_manager import (\n    napkinwire_append_roadmap_idea,\n    napkinwire_list_roadmap_ideas\n)\nfrom modules.project_tools import napkinwire_project_tree\nfrom modules.diagram_server import napkinwire_spawn_diagram_editor\n```\n\n6. KEEP in main.py:\n- MCP server initialization\n- Tool registration (@server.tool decorators)\n- Main entry point\n- Basic imports\n\n7. TEST each tool still works after refactoring",
+      "requirements": [
+        "Pure cut-and-paste operation",
+        "No logic changes",
+        "Preserve all decorators and function signatures"
+      ],
+      "acceptance_criteria": [
+        "All functions moved to appropriate modules",
+        "main.py only contains MCP server code",
+        "All tools still work"
+      ],
+      "files_affected": [
+        "mcp/main.py",
+        "mcp/modules/ticket_manager.py",
+        "mcp/modules/roadmap_manager.py",
+        "mcp/modules/project_tools.py",
+        "mcp/modules/diagram_server.py"
+      ],
+      "dependencies": [],
+      "outcome": null,
+      "notes": null
+    },
+    {
+      "id": "TICKET-027",
+      "title": "Implementation Guide: pytest setup with working examples",
+      "status": "todo",
+      "priority": "high",
+      "created_at": "2025-09-13T12:32:00Z",
+      "updated_at": "2025-09-13T12:32:00Z",
+      "description": "STEP-BY-STEP TEST SETUP for TICKET-024:\n\n1. INSTALL testing dependencies:\n```bash\npip install pytest pytest-cov pytest-mock\n```\n\n2. CREATE pytest.ini in project root:\n```ini\n[pytest]\ntestpaths = tests\npython_files = test_*.py\npython_classes = Test*\npython_functions = test_*\naddopts = -v --cov=mcp --cov-report=html --cov-report=term\n```\n\n3. CREATE tests/__init__.py (empty file)\n\n4. CREATE tests/conftest.py with fixtures:\n```python\nimport pytest\nimport json\nfrom pathlib import Path\n\n@pytest.fixture\ndef temp_tickets_file(tmp_path):\n    '''Create temporary tickets.json for testing'''\n    tickets_file = tmp_path / 'tickets.json'\n    tickets_file.write_text('[]')\n    return tickets_file\n\n@pytest.fixture\ndef sample_ticket():\n    return {\n        'id': 'TEST-001',\n        'title': 'Test ticket',\n        'status': 'todo',\n        'priority': 'high',\n        'description': 'Test description',\n        'requirements': ['req1', 'req2'],\n        'acceptance_criteria': ['ac1', 'ac2'],\n        'files_affected': ['file1.py']\n    }\n```\n\n5. CREATE tests/test_tickets.py with basic test:\n```python\ndef test_ticket_creation(sample_ticket):\n    '''Test that a ticket has required fields'''\n    assert 'id' in sample_ticket\n    assert 'title' in sample_ticket\n    assert sample_ticket['status'] in ['todo', 'in_progress', 'done']\n```\n\n6. RUN tests to verify setup:\n```bash\npytest\n```\n\n7. CREATE tests/test_roadmap.py (placeholder):\n```python\ndef test_roadmap_placeholder():\n    '''Placeholder test for roadmap functionality'''\n    assert True  # Replace with actual tests\n```\n\n8. CREATE .github/workflows/tests.yml (optional):\n```yaml\nname: Tests\non: [push, pull_request]\njobs:\n  test:\n    runs-on: ubuntu-latest\n    steps:\n    - uses: actions/checkout@v2\n    - uses: actions/setup-python@v2\n      with:\n        python-version: '3.11'\n    - run: pip install -e . pytest pytest-cov\n    - run: pytest\n```",
+      "requirements": [
+        "All code is copy-pasteable",
+        "Each file is complete and runnable",
+        "No design decisions needed"
+      ],
+      "acceptance_criteria": [
+        "pytest runs successfully",
+        "At least one test passes",
+        "Test structure ready for expansion"
+      ],
+      "files_affected": [
+        "pytest.ini",
+        "tests/__init__.py",
+        "tests/conftest.py",
+        "tests/test_tickets.py",
+        "tests/test_roadmap.py",
+        ".github/workflows/tests.yml"
+      ],
+      "dependencies": [],
+      "outcome": null,
+      "notes": null
+    },
+    {
+      "id": "TICKET-028",
+      "title": "Create context restore tool for new chat sessions",
+      "status": "todo",
+      "priority": "high",
+      "created_at": "2025-09-13T13:00:29Z",
+      "updated_at": "2025-09-13T13:04:23Z",
+      "description": "Create an MCP tool that extracts and returns essential project context for new chat sessions. When called, it should gather:\n\n1. Current project status summary\n2. Active high-priority tickets (todo items)\n3. Recently completed work (last 3-5 done tickets)\n4. Current roadmap focus areas (Next/Soon items)\n5. Any critical project constants/decisions from CLAUDE.md or README.md\n6. Current working directory and active files\n\nThe tool should return a concise, formatted summary that can be passed to a new Claude session to instantly restore context. No ChromaDB needed yet - just read from existing files (tickets.json, roadmap.md, recent git commits, etc.).\n\nExample output:\n```\nPROJECT CONTEXT RESTORE\n=======================\nProject: NapkinWire MCP Tools\nStatus: 10 completed, 11 todo tickets\n\nCURRENT FOCUS:\n- Setting up Aider integration with free models\n- Refactoring main.py into modules\n- Building Initiative Engine foundation\n\nRECENT COMPLETIONS:\n- TICKET-019: HTTP server for diagram editor\n- TICKET-015: Fixed usage analyzer\n- TICKET-007: Roadmap tools implemented\n\nACTIVE HIGH-PRIORITY:\n- TICKET-009: Claude Code queue daemon\n- TICKET-022: Aider setup with OpenRouter\n- TICKET-023: Refactor main.py\n\nKEY DECISIONS:\n- Using HTTP server instead of PyWebView\n- Prioritizing free model integration\n- Initiative Engine for push-based LLM actions\n```\n\nThis becomes the 'context pill' you give to each new chat.",
+      "requirements": [
+        "Read tickets.json for active/recent tickets",
+        "Parse roadmap.md for current focus",
+        "Extract key info from CLAUDE.md/README.md",
+        "Format as concise summary",
+        "Add as @server.tool to main.py"
+      ],
+      "acceptance_criteria": [
+        "Tool successfully extracts key project facts",
+        "Returns formatted context summary",
+        "Can be called at start of new chat",
+        "Includes active tickets, recent decisions, and current focus"
+      ],
+      "files_affected": [
+        "mcp/main.py",
+        "mcp/modules/context_manager.py",
+        "tickets.json",
+        "roadmap.md"
+      ],
+      "dependencies": [],
+      "outcome": null,
+      "notes": null
+    },
+    {
+      "id": "TICKET-029",
+      "title": "Create decision/context saving tool for persistent memory",
+      "status": "todo",
+      "priority": "high",
+      "created_at": "2025-09-13T13:01:53Z",
+      "updated_at": "2025-09-13T13:01:53Z",
+      "description": "Create an MCP tool to save important decisions and context during chat sessions. This captures the \"why\" behind choices that need to persist across sessions.\n\nTool signature:\n```python\n@server.tool()\nasync def napkinwire_save_decision(\n    decision: str,\n    category: str = \"general\",  # architecture, tooling, process, design, general\n    context: str = None  # Optional additional context\n) -> str:\n    '''Save a key project decision or context for future sessions'''\n```\n\nSaves to a structured file (decisions.json or decisions.md) with:\n- Timestamp\n- Category\n- Decision text\n- Optional context/rationale\n- Chat session ID (if available)\n\nExample usage:\n- napkinwire_save_decision(\"Use Aider + free OpenRouter models for all routine coding\", \"tooling\", \"Preserves Claude tokens for design work\")\n- napkinwire_save_decision(\"Refactor main.py into modules for maintainability\", \"architecture\")\n- napkinwire_save_decision(\"Initiative Engine needs both push and pull mechanisms\", \"design\", \"MCP is pull-only, need orchestration layer\")\n\nStorage format (decisions.json):\n```json\n{\n  \"decisions\": [\n    {\n      \"id\": \"DEC-001\",\n      \"timestamp\": \"2025-09-13T12:45:00Z\",\n      \"category\": \"tooling\",\n      \"decision\": \"Use Aider + free OpenRouter models for all routine coding\",\n      \"context\": \"Preserves Claude tokens for design work\",\n      \"session\": \"chat-abc123\"\n    }\n  ]\n}\n```\n\nThe context_restore tool (TICKET-028) should read from this file and include recent/important decisions in its output.\n\nBonus: Add a napkinwire_list_decisions(category=None, recent=5) tool to query past decisions.",
+      "requirements": [
+        "Create decisions.json structure",
+        "Implement save_decision tool",
+        "Add auto-incrementing ID system",
+        "Include timestamp for each decision",
+        "Update context_restore to read decisions",
+        "Optional: Add list_decisions tool for querying"
+      ],
+      "acceptance_criteria": [
+        "Tool saves key decisions/choices to persistent file",
+        "Decisions are timestamped and categorized",
+        "Can be retrieved by context_restore tool",
+        "Supports different decision types (architecture, process, tooling)"
+      ],
+      "files_affected": [
+        "mcp/main.py",
+        "mcp/modules/context_manager.py",
+        "decisions.json"
+      ],
+      "dependencies": [],
+      "outcome": null,
+      "notes": null
+    },
+    {
+      "id": "TICKET-030",
+      "title": "UPDATE TICKET-028: Add max_tokens parameter for context control",
+      "status": "todo",
+      "priority": "high",
+      "created_at": "2025-09-13T13:04:49Z",
+      "updated_at": "2025-09-13T13:04:49Z",
+      "description": "UPDATE for TICKET-028: Add max_tokens parameter and layered context approach.\n\nTool signature should be:\n```python\n@server.tool()\nasync def napkinwire_context_restore(max_tokens: int = 1000) -> str:\n    '''Restore essential project context with token budget\n    \n    Args:\n        max_tokens: Maximum tokens for context (default 1000)\n            - 500: Bare minimum (current task + active tickets)\n            - 1000: Standard (+ recent decisions + completions)\n            - 2000: Detailed (+ roadmap + project stats)\n            - 5000: Full (+ file tree + git status)\n    '''\n```\n\nImplementation with layered context:\n```python\ndef build_context_summary(max_tokens=1000):\n    summary = \"\"\n    token_count = 0\n    \n    # LAYER 1: Critical (always include, ~200 tokens)\n    critical = f\"\"\"\n=== NAPKINWIRE CONTEXT ===\n🎯 CURRENT: {get_active_goal()}\n⚡ ACTIVE: {get_active_tickets(max=3)}\n\"\"\"\n    summary += critical\n    token_count += estimate_tokens(critical)\n    \n    # LAYER 2: Helpful (if budget allows, ~300 tokens)\n    if token_count < max_tokens - 300:\n        helpful = f\"\"\"\n📌 DECISIONS: {get_recent_decisions(max=3)}\n✅ COMPLETED: {get_recent_done(max=3)}\n\"\"\"\n        summary += helpful\n        token_count += estimate_tokens(helpful)\n    \n    # LAYER 3: Detailed (if budget allows, ~500 tokens)\n    if token_count < max_tokens - 500:\n        detailed = f\"\"\"\n🔧 STATS: {done_count} done, {todo_count} todo\n📋 ROADMAP: {get_roadmap_next(max=3)}\n\"\"\"\n        summary += detailed\n        token_count += estimate_tokens(detailed)\n    \n    # LAYER 4: Full context (if budget allows)\n    if token_count < max_tokens - 1000:\n        full = f\"\"\"\n📁 PROJECT TREE: {get_project_structure()}\n🔄 GIT STATUS: {get_git_status()}\n\"\"\"\n        summary += full\n    \n    return summary\n\ndef estimate_tokens(text: str) -> int:\n    # Rough estimate: 1 token ≈ 4 characters\n    return len(text) // 4\n```\n\nUsage examples:\n- `napkinwire_context_restore(500)` - Minimal context for quick questions\n- `napkinwire_context_restore(1000)` - Standard restore (default)\n- `napkinwire_context_restore(5000)` - Full context for complex work\n\nThis update makes TICKET-028 much more flexible and efficient with context window usage.",
+      "requirements": [
+        "Add max_tokens parameter with default 1000",
+        "Implement token estimation function",
+        "Create layered context building",
+        "Test with different token budgets",
+        "Ensure graceful degradation if content exceeds budget"
+      ],
+      "acceptance_criteria": [
+        "Tool accepts max_tokens parameter (default 1000)",
+        "Returns layered context based on token budget",
+        "Always includes critical context",
+        "Progressively adds helpful and full context if budget allows",
+        "Token counting is approximate but functional"
+      ],
+      "files_affected": [
+        "mcp/main.py",
+        "mcp/modules/context_manager.py"
+      ],
+      "dependencies": [],
+      "outcome": null,
+      "notes": null
+    },
+    {
+      "id": "TICKET-031",
+      "title": "Create mission statement tool and integrate with context",
+      "status": "todo",
+      "priority": "high",
+      "created_at": "2025-09-13T13:07:01Z",
+      "updated_at": "2025-09-13T13:07:01Z",
+      "description": "Create a project mission statement tool and integrate it with context restore.\n\n1. CREATE mission.md file with project vision/mission:\n```markdown\n# NapkinWire Mission\n\n## Vision\n[Your vision statement here]\n\n## Mission\n[Core mission - what NapkinWire does and why]\n\n## Core Principles\n- [Principle 1]\n- [Principle 2]\n- [Principle 3]\n\n## Success Metrics\n- [How we measure success]\n\n## Non-Goals\n- [What we explicitly won't do]\n```\n\n2. CREATE MCP tool to read mission:\n```python\n@server.tool()\nasync def napkinwire_get_mission() -> str:\n    '''Get project mission statement and core principles'''\n    mission_file = Path('mission.md')\n    if mission_file.exists():\n        return mission_file.read_text()\n    return \"No mission statement found. Create mission.md\"\n```\n\n3. INTEGRATE with context_restore - mission should be in Layer 1 (critical context):\n```python\n# In context_restore tool\ncritical = f\"\"\"\n=== NAPKINWIRE CONTEXT ===\n📍 MISSION: {get_mission_summary()}  # First line of mission\n🎯 CURRENT: {get_active_goal()}\n⚡ ACTIVE: {get_active_tickets(max=3)}\n\"\"\"\n```\n\nThis ensures every new chat starts with clear understanding of WHY the project exists and WHAT it's trying to achieve. All decisions should align with this mission.",
+      "requirements": [
+        "Create mission.md template",
+        "Add get_mission tool",
+        "Integrate with context_restore",
+        "Mission should be concise but clear",
+        "Include in critical context layer"
+      ],
+      "acceptance_criteria": [
+        "Mission statement file exists and is readable",
+        "Tool returns mission statement clearly",
+        "Mission appears in context_restore output",
+        "Mission guides project decisions"
+      ],
+      "files_affected": [
+        "mission.md",
+        "mcp/main.py",
+        "mcp/modules/context_manager.py"
+      ],
+      "dependencies": [],
+      "outcome": null,
+      "notes": null
+    },
+    {
+      "id": "TICKET-032",
+      "title": "Create Aider validation checklist and tests",
+      "status": "todo",
+      "priority": "high",
+      "created_at": "2025-09-13T13:07:24Z",
+      "updated_at": "2025-09-13T13:07:24Z",
+      "description": "Create Aider validation checklist to ensure quality before production use.\n\nVALIDATION CHECKLIST:\n```python\n# aider_validation.py\n\ndef validate_aider_setup():\n    '''Run all checks before using Aider in production'''\n    \n    checks = {\n        \"installation\": check_aider_installed(),\n        \"openrouter_auth\": check_api_key_valid(),\n        \"free_model_access\": test_free_model_call(),\n        \"git_integration\": test_git_commit(),\n        \"file_editing\": test_simple_edit(),\n        \"multi_file\": test_multi_file_edit(),\n        \"error_handling\": test_error_recovery(),\n        \"token_usage\": verify_zero_cost(),\n    }\n    \n    return all(checks.values()), checks\n\n# TEST 1: Simple edit\ndef test_simple_edit():\n    '''Test Aider can add a docstring'''\n    test_file = 'test_dummy.py'\n    create_test_file(test_file)\n    \n    result = run_aider(\n        \"Add a docstring to the greet function\",\n        files=[test_file]\n    )\n    \n    # Verify docstring was added\n    return '\"' in read_file(test_file)\n\n# TEST 2: Multi-file refactor\ndef test_multi_file_edit():\n    '''Test Aider can refactor across files'''\n    # Create function in file1, move to file2\n    pass\n\n# TEST 3: Error recovery\ndef test_error_recovery():\n    '''Test Aider handles syntax errors gracefully'''\n    pass\n\n# TEST 4: Cost verification\ndef verify_zero_cost():\n    '''Ensure we're using free models only'''\n    # Check OpenRouter dashboard or API\n    pass\n```\n\nRUN CHECKLIST:\n```bash\npython aider_validation.py\n\n✅ Installation: PASS\n✅ OpenRouter auth: PASS  \n✅ Free model access: PASS\n✅ Git integration: PASS\n✅ File editing: PASS\n⚠️ Multi-file editing: NEEDS REVIEW\n✅ Error handling: PASS\n✅ Zero cost verified: PASS\n\nDECISION: Ready for production with caution on multi-file edits\n```\n\nROLLBACK PLAN:\n1. If Aider corrupts code: `git reset --hard HEAD`\n2. If wrong model used: Check OpenRouter billing immediately\n3. If performance poor: Revert to manual coding for that ticket\n4. Keep manual override: --no-aider flag on all tools\n\nThis ensures Aider quality before we rely on it.",
+      "requirements": [
+        "Create validation script",
+        "Test each critical feature",
+        "Verify free model usage",
+        "Create rollback procedures",
+        "Document known limitations"
+      ],
+      "acceptance_criteria": [
+        "All tests pass before Aider is used for real work",
+        "Clear go/no-go decision",
+        "Rollback plan if Aider causes issues",
+        "Performance benchmarks established"
+      ],
+      "files_affected": [
+        "aider_validation.py",
+        "tests/test_aider_integration.py"
       ],
       "dependencies": [],
       "outcome": null,

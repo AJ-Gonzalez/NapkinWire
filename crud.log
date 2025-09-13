@@ -4,3 +4,9 @@
 2025-09-13 01:33:54,579 - INFO - Opened browser to http://localhost:8765/diagram.html
 2025-09-13 01:33:59,040 - INFO - Received diagram data: 63 characters
 2025-09-13 01:33:59,547 - INFO - Successfully received diagram data from HTTP server
+2025-09-13 15:28:35,885 - INFO - Starting HTTP server for UI mockup editor
+2025-09-13 15:28:35,918 - INFO - Using port 8766 for UI mockup HTTP server
+2025-09-13 15:28:35,921 - INFO - HTTP server started on http://localhost:8766
+2025-09-13 15:28:36,451 - INFO - Opened browser to http://localhost:8766/ui.html
+2025-09-13 15:28:56,452 - INFO - Received UI mockup data: 1878 characters
+2025-09-13 15:28:56,963 - INFO - Successfully received UI mockup data from HTTP server
