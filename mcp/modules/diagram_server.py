@@ -322,12 +322,17 @@ def napkinwire_spawn_ui_mockup_editor() -> Dict[str, Any]:
                     "success": False
                 }
 
-            # Wait for data or timeout
-            timeout_seconds = 60
+            # Wait for data or timeout (increased for UI mockup processing)
+            timeout_seconds = 120
             start_time = time.time()
 
             while not received_data["received"] and (time.time() - start_time) < timeout_seconds:
                 time.sleep(0.5)
+
+            # Add small delay to ensure response is fully sent
+            if received_data["received"]:
+                time.sleep(0.5)
+                crud_logger.info(f"UI mockup data received in {time.time() - start_time:.2f}s")
 
             # Shutdown server
             httpd.shutdown()
@@ -352,7 +357,7 @@ def napkinwire_spawn_ui_mockup_editor() -> Dict[str, Any]:
                 crud_logger.error("HTTP server timed out waiting for UI mockup data")
                 return {
                     "success": False,
-                    "error": "UI mockup editor timed out after 60 seconds"
+                    "error": "UI mockup editor timed out after 120 seconds"
                 }
 
     except Exception as e:
