@@ -1,8 +1,8 @@
 {
   "metadata": {
     "version": "1.0.0",
-    "last_updated": "2025-09-13T03:44:12Z",
-    "next_id": 20,
+    "last_updated": "2025-09-13T03:46:59Z",
+    "next_id": 21,
     "project": "napkinwire"
   },
   "tickets": [
@@ -685,6 +685,40 @@
         "main.py",
         "web/diagram.html",
         "web/diagram-gen.js"
+      ],
+      "dependencies": [],
+      "outcome": null,
+      "notes": null
+    },
+    {
+      "id": "TICKET-020",
+      "title": "Create MCP test client for local tool testing",
+      "status": "todo",
+      "priority": "high",
+      "created_at": "2025-09-13T03:46:59Z",
+      "updated_at": "2025-09-13T03:46:59Z",
+      "description": "Create a simple MCP test client that simulates Claude's tool calls for testing without burning API tokens",
+      "requirements": [
+        "Create standalone test_client.py script",
+        "Start MCP server using subprocess with same args as Claude config",
+        "Establish stdio communication with server",
+        "Send proper JSON-RPC messages for tool calls",
+        "Interactive mode: prompt for tool name and parameters",
+        "Display tool response formatted nicely",
+        "List available tools command",
+        "Handle connection errors and timeouts",
+        "Example usage in comments or docstring"
+      ],
+      "acceptance_criteria": [
+        "Test client starts MCP server same way Claude does",
+        "Can call any tool by name with parameters",
+        "Shows tool response clearly",
+        "Handles errors gracefully",
+        "Simple command-line interface",
+        "No token costs for testing"
+      ],
+      "files_affected": [
+        "test_client.py"
       ],
       "dependencies": [],
       "outcome": null,
