@@ -861,7 +861,7 @@ def napkinwire_spawn_diagram_editor() -> Dict[str, Any]:
         
         crud_logger.info(f"Created temp file for communication: {temp_file_path}")
         
-        # Create subprocess code string
+        # Create subprocess code string using repr() for cross-platform path handling
         subprocess_code = f'''
 import webview
 import json
@@ -931,14 +931,14 @@ class DiagramAPI:
             return False
 
 try:
-    # Create API instance
-    api = DiagramAPI("{temp_file_path}")
+    # Create API instance with properly escaped path
+    api = DiagramAPI({repr(temp_file_path)})
     
     # Create window with the diagram editor
     logger.info("Creating PyWebView window...")
     webview.create_window(
         title='NapkinWire Diagram',
-        url="{str(diagram_html_path)}",
+        url={repr(str(diagram_html_path))},
         width=1200,
         height=800,
         resizable=True,
@@ -952,14 +952,14 @@ try:
     logger.info("PyWebView closed")
     
     # If we get here without data being written, window was closed without sending
-    if not os.path.exists("{temp_file_path}") or os.path.getsize("{temp_file_path}") == 0:
+    if not os.path.exists({repr(temp_file_path)}) or os.path.getsize({repr(temp_file_path)}) == 0:
         logger.info("Window closed without sending data")
         result = {{
             "success": False,
             "error": "Window closed without sending diagram data"
         }}
         
-        with open("{temp_file_path}", 'w', encoding='utf-8') as f:
+        with open({repr(temp_file_path)}, 'w', encoding='utf-8') as f:
             json.dump(result, f, indent=2)
     
 except Exception as e:
@@ -972,7 +972,7 @@ except Exception as e:
     }}
     
     try:
-        with open("{temp_file_path}", 'w', encoding='utf-8') as f:
+        with open({repr(temp_file_path)}, 'w', encoding='utf-8') as f:
             json.dump(error_result, f, indent=2)
     except:
         pass  # If we can't write the error, main process will timeout

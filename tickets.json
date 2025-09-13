@@ -1,8 +1,8 @@
 {
   "metadata": {
     "version": "1.0.0",
-    "last_updated": "2025-09-12T12:18:28Z",
-    "next_id": 10,
+    "last_updated": "2025-09-12T16:39:43Z",
+    "next_id": 18,
     "project": "napkinwire"
   },
   "tickets": [
@@ -224,10 +224,10 @@
     {
       "id": "TICKET-007",
       "title": "Implement roadmap tools to capture these ideas properly",
-      "status": "todo",
+      "status": "done",
       "priority": "high",
       "created_at": "2025-09-12T11:44:32Z",
-      "updated_at": "2025-09-12T11:44:32Z",
+      "updated_at": "2025-09-12T16:45:00Z",
       "description": "Create simple roadmap tools for capturing ideas quickly - append and list functionality for brain dumps without ticket ceremony",
       "requirements": [
         "Create append_roadmap_idea tool with title, description, category parameters",
@@ -324,6 +324,293 @@
       "files_affected": [
         "claude_code_daemon.py",
         "main.py"
+      ],
+      "dependencies": [],
+      "outcome": null,
+      "notes": null
+    },
+    {
+      "id": "TICKET-010",
+      "title": "Initiative Feed: Database setup and basic operations",
+      "status": "todo",
+      "priority": "high",
+      "created_at": "2025-09-12T16:18:21Z",
+      "updated_at": "2025-09-12T16:18:21Z",
+      "description": "Set up SQLite database for Initiative Feed with category tables and basic read/write operations",
+      "requirements": [
+        "Create SQLite database file: initiative_feed.db",
+        "Schema: id, timestamp, category, priority, message, context fields",
+        "Create three tables for different categories",
+        "Write function to add feed entry",
+        "Write function to read entries by category",
+        "Create MCP tool: read_initiative_feed(category=None, limit=10)",
+        "Return formatted dict with entries"
+      ],
+      "acceptance_criteria": [
+        "SQLite database created with proper schema",
+        "Tables for: codebase_insights, workflow_patterns, quality_metrics",
+        "CRUD functions work without errors",
+        "MCP tool returns feed entries in readable format",
+        "Database file stored in project directory",
+        "Handles empty database gracefully",
+        "Timestamp and priority fields functioning"
+      ],
+      "files_affected": [
+        "main.py",
+        "initiative_feed.py"
+      ],
+      "dependencies": [],
+      "outcome": null,
+      "notes": null
+    },
+    {
+      "id": "TICKET-011",
+      "title": "Initiative Feed: Git change detector",
+      "status": "todo",
+      "priority": "high",
+      "created_at": "2025-09-12T16:18:32Z",
+      "updated_at": "2025-09-12T16:18:32Z",
+      "description": "Create git change detector that parses diffs and extracts what changed in commits",
+      "requirements": [
+        "Create function to run git diff HEAD~1",
+        "Parse output to extract changed files list",
+        "Get commit message with git log -1",
+        "Get commit hash and author",
+        "Format as feed entry with context",
+        "Store in database using ticket 1's functions",
+        "Handle case when not in git repository",
+        "Return summary of what was captured"
+      ],
+      "acceptance_criteria": [
+        "Successfully parses git diff output",
+        "Extracts list of changed files",
+        "Captures commit message and hash",
+        "Stores data in feed database",
+        "Handles different git operations (add, modify, delete)",
+        "Works with relative file paths",
+        "Processes multi-file commits correctly"
+      ],
+      "files_affected": [
+        "initiative_feed.py",
+        "git_monitor.py"
+      ],
+      "dependencies": [],
+      "outcome": null,
+      "notes": null
+    },
+    {
+      "id": "TICKET-012",
+      "title": "Initiative Feed: Git hook installer",
+      "status": "todo",
+      "priority": "medium",
+      "created_at": "2025-09-12T16:18:41Z",
+      "updated_at": "2025-09-12T16:18:41Z",
+      "description": "Install git post-commit hook that automatically triggers feed updates after commits",
+      "requirements": [
+        "Create install_hook.py script",
+        "Generate post-commit hook file content",
+        "Hook calls python script with git info",
+        "Check if hook already exists",
+        "Backup existing hooks if present",
+        "Make hook executable on Linux",
+        "Add uninstall function",
+        "Include instructions for manual setup",
+        "Test with actual git commit"
+      ],
+      "acceptance_criteria": [
+        "Git hook successfully installs in .git/hooks/",
+        "Hook triggers after each commit",
+        "Executes git change detector from ticket 11",
+        "Writes results to feed database",
+        "Non-blocking operation",
+        "Works on Windows and Linux",
+        "Can be uninstalled cleanly",
+        "Doesn't interfere with existing hooks"
+      ],
+      "files_affected": [
+        "install_hook.py",
+        ".git/hooks/post-commit"
+      ],
+      "dependencies": [],
+      "outcome": null,
+      "notes": null
+    },
+    {
+      "id": "TICKET-013",
+      "title": "Initiative Feed: Summary presenter tool",
+      "status": "todo",
+      "priority": "medium",
+      "created_at": "2025-09-12T16:18:51Z",
+      "updated_at": "2025-09-12T16:18:51Z",
+      "description": "Create MCP tool that queries feed database and presents organized summary of insights",
+      "requirements": [
+        "Create check_initiative_feed MCP tool",
+        "Query last N entries from each category",
+        "Sort by priority then timestamp",
+        "Format as readable sections",
+        "Include entry counts per category",
+        "Auto-cleanup entries older than 30 days",
+        "Support filtering by date range",
+        "Return structured dict for Claude to interpret"
+      ],
+      "acceptance_criteria": [
+        "Tool queries database and returns formatted summary",
+        "Groups entries by category correctly",
+        "Respects limit parameter",
+        "Formats output for easy reading",
+        "Handles empty database gracefully",
+        "Shows most recent entries first",
+        "Cleans old entries (30+ days) automatically",
+        "Returns counts per category"
+      ],
+      "files_affected": [
+        "main.py",
+        "initiative_feed.py"
+      ],
+      "dependencies": [],
+      "outcome": null,
+      "notes": null
+    },
+    {
+      "id": "TICKET-014",
+      "title": "Initiative Feed: Code comment extractor",
+      "status": "todo",
+      "priority": "medium",
+      "created_at": "2025-09-12T16:19:02Z",
+      "updated_at": "2025-09-12T16:19:02Z",
+      "description": "Scan codebase for docstrings and comments to extract purpose and context information",
+      "requirements": [
+        "Create scan_code_comments function",
+        "Use regex to find Python docstrings",
+        "Extract top-of-file comments from JS/TS",
+        "Find all TODO/FIXME/NOTE comments",
+        "Parse out the 'why' from docstrings",
+        "Store each finding as feed entry",
+        "Category: 'codebase_insights'",
+        "Include file path in context",
+        "Run on demand, not automatic"
+      ],
+      "acceptance_criteria": [
+        "Successfully extracts Python docstrings",
+        "Extracts JavaScript/TypeScript top comments",
+        "Finds TODO and FIXME comments",
+        "Stores findings in feed database",
+        "Handles files without comments gracefully",
+        "Processes multiple files efficiently",
+        "Groups findings by file",
+        "Works with project tree structure"
+      ],
+      "files_affected": [
+        "code_scanner.py",
+        "initiative_feed.py"
+      ],
+      "dependencies": [],
+      "outcome": null,
+      "notes": null
+    },
+    {
+      "id": "TICKET-015",
+      "title": "Fix usage analyzer time calculation and window detection bugs",
+      "status": "done",
+      "priority": "high",
+      "created_at": "2025-09-12T16:22:30Z",
+      "updated_at": "2025-09-12T16:39:43Z",
+      "description": "Fix usage analyzer's broken time calculations and window detection logic - currently showing 11 hours elapsed when only 22 minutes have passed",
+      "requirements": [
+        "Debug timezone conversion between log timestamps and local time",
+        "Fix window boundary detection (5 hours usage, 5 hours cooldown)",
+        "Ensure message count only includes current window",
+        "Verify time elapsed matches actual time since window started",
+        "Add logging to show calculation steps for debugging",
+        "Test with various scenarios: fresh window, mid-window, expired",
+        "Handle case where logs span multiple days",
+        "Ensure burn rate calculation uses correct time period",
+        "Add sanity checks (elapsed time cannot exceed 5 hours in active window)"
+      ],
+      "acceptance_criteria": [
+        "Correctly identifies current 5-hour window start time",
+        "Accurate time elapsed calculation",
+        "Proper timezone handling (local vs UTC)",
+        "Only counts messages from current window, not cumulative",
+        "Detects window resets accurately",
+        "Time remaining calculation matches actual limit",
+        "Handles edge cases like window just started or just expired",
+        "Math calculations are verifiable and correct"
+      ],
+      "files_affected": [
+        "mcp/usage_analysis.py"
+      ],
+      "dependencies": [],
+      "outcome": null,
+      "notes": null
+    },
+    {
+      "id": "TICKET-016",
+      "title": "Fix diagram editor subprocess timeout issue",
+      "status": "todo",
+      "priority": "high",
+      "created_at": "2025-09-12T16:28:02Z",
+      "updated_at": "2025-09-12T16:28:02Z",
+      "description": "Fix diagram editor timeout issue - tool works in testing but times out after 60 seconds when called from Claude Desktop",
+      "requirements": [
+        "Debug why subprocess isn't launching properly from MCP context",
+        "Check if PATH or environment variables are different in MCP",
+        "Verify python executable path is correct",
+        "Test if subprocess needs shell=True on Windows",
+        "Add debug logging to see where it's failing",
+        "Consider removing timeout or making it configurable",
+        "Test alternative launch methods if subprocess fails",
+        "Ensure window actually appears on screen",
+        "Handle case where pywebview needs different initialization in subprocess"
+      ],
+      "acceptance_criteria": [
+        "Diagram editor opens successfully when called from Claude",
+        "No timeout errors",
+        "Window appears and is interactive",
+        "Subprocess launches correctly",
+        "Works from both Claude Desktop and testing environments",
+        "Error messages are informative if it fails",
+        "Handles both quick and slow responses gracefully"
+      ],
+      "files_affected": [
+        "main.py"
+      ],
+      "dependencies": [],
+      "outcome": null,
+      "notes": null
+    },
+    {
+      "id": "TICKET-017",
+      "title": "Create Python ticket formatter/summary script",
+      "status": "todo",
+      "priority": "medium",
+      "created_at": "2025-09-12T16:37:50Z",
+      "updated_at": "2025-09-12T16:37:50Z",
+      "description": "Create a simple Python script that reads tickets.json and outputs a formatted summary without needing LLM calls",
+      "requirements": [
+        "Read tickets.json file",
+        "Parse and group tickets by status (todo/in_progress/done/blocked)",
+        "Within each status, sort by priority (high/medium/low)",
+        "Generate text output with sections for each status",
+        "Show ticket ID, title, and priority for each",
+        "Add summary counts at the top",
+        "Highlight any blocked tickets or dependencies",
+        "Optional: add ASCII art dividers for readability",
+        "Optional: colorized output for terminal",
+        "Make it executable from command line"
+      ],
+      "acceptance_criteria": [
+        "Script runs standalone without dependencies",
+        "Outputs clear text summary of tickets",
+        "Groups tickets by status and priority",
+        "Shows counts for each category",
+        "Highlights critical/blocked tickets",
+        "Runs in under 1 second",
+        "Works with current tickets.json format",
+        "Output is easy to read at a glance"
+      ],
+      "files_affected": [
+        "ticket_summary.py"
       ],
       "dependencies": [],
       "outcome": null,
