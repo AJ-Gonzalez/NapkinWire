@@ -174,13 +174,13 @@ def test_aider_connection() -> Dict[str, Any]:
 if __name__ == "__main__":
     # Simple test when run directly
     setup_status = check_aider_setup()
-    print("Aider Setup Status:")
+    logger.info("Aider Setup Status:")
     for key, value in setup_status.items():
-        print(f"  {key}: {value}")
+        logger.info(f"  {key}: {value}")
 
     if setup_status["ready"]:
-        print("\nRunning connection test...")
+        logger.info("Running connection test...")
         test_result = test_aider_connection()
-        print(f"Test result: {test_result}")
+        logger.info(f"Test result: {test_result}")
     else:
-        print("\nSetup incomplete - fix errors before testing")
+        logger.warning("Setup incomplete - fix errors before testing")

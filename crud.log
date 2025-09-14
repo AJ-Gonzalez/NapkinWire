@@ -10,3 +10,4 @@
 2025-09-13 15:28:36,451 - INFO - Opened browser to http://localhost:8766/ui.html
 2025-09-13 15:28:56,452 - INFO - Received UI mockup data: 1878 characters
 2025-09-13 15:28:56,963 - INFO - Successfully received UI mockup data from HTTP server
+2025-09-13 22:34:06,849 - INFO - Enabled tools: ['napkinwire_spawn_diagram_editor', 'napkinwire_spawn_ui_mockup_editor', 'add', 'napkinwire_create_ticket', 'napkinwire_list_tickets', 'napkinwire_update_ticket_status', 'napkinwire_get_ticket_details', 'napkinwire_claude_usage_analysis', 'napkinwire_project_tree', 'napkinwire_append_roadmap_idea', 'napkinwire_list_roadmap_ideas']

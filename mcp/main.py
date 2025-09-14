@@ -1,11 +1,13 @@
 from mcp.server.fastmcp import FastMCP
 from constants import JSON_FORMAT
 from usage_analysis import analyze_claude_logs
+from config import get_enabled_tools
 
 import signal
 import sys
 import logging
 from typing import List, Dict, Any, Optional
+import functools
 
 # Module imports are done inside each tool function to avoid circular dependencies
 
@@ -18,6 +20,22 @@ logging.basicConfig(
     ]
 )
 crud_logger = logging.getLogger('napkinwire_crud')
+
+# Get enabled tools from configuration
+ENABLED_TOOLS = get_enabled_tools()
+crud_logger.info(f"Enabled tools: {ENABLED_TOOLS}")
+
+def conditional_tool(tool_name: str):
+    """Decorator to conditionally register MCP tools based on configuration"""
+    def decorator(func):
+        if tool_name in ENABLED_TOOLS:
+            # Tool is enabled - register it
+            return mcp.tool()(func)
+        else:
+            # Tool is disabled - return unregistered function
+            crud_logger.info(f"Tool '{tool_name}' disabled by configuration")
+            return func
+    return decorator
 
 def cleanup(signum, frame):
     # Clean up resources
@@ -172,12 +190,12 @@ def create_detailed_report(data: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 # MCP Tools
-@mcp.tool()
+@conditional_tool("add")
 def add(a: int, b: int) -> int:
     """Add two numbers"""
     return a + b
 
-@mcp.tool()
+@conditional_tool("napkinwire_create_ticket")
 def napkinwire_create_ticket(
     title: str,
     description: str,
@@ -190,25 +208,25 @@ def napkinwire_create_ticket(
     from modules.ticket_manager import napkinwire_create_ticket as create_ticket
     return create_ticket(title, description, priority, requirements, acceptance_criteria, files_affected)
 
-@mcp.tool()
+@conditional_tool("napkinwire_list_tickets")
 def napkinwire_list_tickets(status: str = "all") -> List[Dict[str, Any]]:
     """List tickets with optional status filter, sorted by priority then created_at"""
     from modules.ticket_manager import napkinwire_list_tickets as list_tickets
     return list_tickets(status)
 
-@mcp.tool()
+@conditional_tool("napkinwire_update_ticket_status")
 def napkinwire_update_ticket_status(ticket_id: str, new_status: str) -> Dict[str, Any]:
     """Update the status of an existing ticket"""
     from modules.ticket_manager import napkinwire_update_ticket_status as update_status
     return update_status(ticket_id, new_status)
 
-@mcp.tool()
+@conditional_tool("napkinwire_get_ticket_details")
 def napkinwire_get_ticket_details(ticket_id: str) -> Dict[str, Any]:
     """Get full details of a specific ticket for implementation"""
     from modules.ticket_manager import napkinwire_get_ticket_details as get_details
     return get_details(ticket_id)
 
-@mcp.tool()
+@conditional_tool("napkinwire_claude_usage_analysis")
 def napkinwire_claude_usage_analysis(detail_level: str = "summary") -> Dict[str, Any]:
     """Analyze Claude Desktop usage with configurable detail levels
 
@@ -261,7 +279,7 @@ def napkinwire_claude_usage_analysis(detail_level: str = "summary") -> Dict[str,
             "message": "Failed to analyze Claude usage logs"
         }
 
-@mcp.tool()
+@conditional_tool("napkinwire_project_tree")
 def napkinwire_project_tree(
     include_stats: bool = False,
     filter_type: Optional[str] = None,
@@ -271,19 +289,19 @@ def napkinwire_project_tree(
     from modules.project_tools import napkinwire_project_tree as project_tree
     return project_tree(include_stats, filter_type, max_depth)
 
-@mcp.tool()
+@conditional_tool("napkinwire_spawn_diagram_editor")
 def napkinwire_spawn_diagram_editor() -> Dict[str, Any]:
     """Spawn local HTTP server for diagram editor and return ASCII diagram data"""
     from modules.diagram_server import napkinwire_spawn_diagram_editor as spawn_diagram
     return spawn_diagram()
 
-@mcp.tool()
+@conditional_tool("napkinwire_spawn_ui_mockup_editor")
 def napkinwire_spawn_ui_mockup_editor() -> Dict[str, Any]:
     """Spawn local HTTP server for UI mockup editor and return ASCII mockup data"""
     from modules.diagram_server import napkinwire_spawn_ui_mockup_editor as spawn_ui
     return spawn_ui()
 
-@mcp.tool()
+@conditional_tool("napkinwire_append_roadmap_idea")
 def napkinwire_append_roadmap_idea(
     title: str,
     description: str,
@@ -293,7 +311,7 @@ def napkinwire_append_roadmap_idea(
     from modules.roadmap_manager import napkinwire_append_roadmap_idea as append_idea
     return append_idea(title, description, category)
 
-@mcp.tool()
+@conditional_tool("napkinwire_list_roadmap_ideas")
 def napkinwire_list_roadmap_ideas(category: Optional[str] = None) -> Dict[str, Any]:
     """List roadmap ideas with optional category filter"""
     from modules.roadmap_manager import napkinwire_list_roadmap_ideas as list_ideas

@@ -1,8 +1,8 @@
 {
   "metadata": {
     "version": "1.0.0",
-    "last_updated": "2025-09-13T22:12:51Z",
-    "next_id": 35,
+    "last_updated": "2025-09-14T04:35:14Z",
+    "next_id": 37,
     "project": "napkinwire"
   },
   "tickets": [
@@ -619,10 +619,10 @@
     {
       "id": "TICKET-018",
       "title": "Research Podman containerization for MCP on Windows",
-      "status": "todo",
+      "status": "done",
       "priority": "medium",
       "created_at": "2025-09-13T03:40:10Z",
-      "updated_at": "2025-09-13T03:40:10Z",
+      "updated_at": "2025-09-14T04:30:49Z",
       "description": "Research Podman containerization for NapkinWire MCP server on Windows, create report covering feasibility, setup, volume handling, and configuration approaches",
       "requirements": [
         "Research Podman installation on Windows (WSL2 vs native)",
@@ -1124,10 +1124,10 @@
     {
       "id": "TICKET-034",
       "title": "Fix UI mockup editor browser send timeout issue",
-      "status": "todo",
+      "status": "done",
       "priority": "high",
       "created_at": "2025-09-13T22:12:51Z",
-      "updated_at": "2025-09-13T22:12:51Z",
+      "updated_at": "2025-09-14T04:11:14Z",
       "description": "UI mockup editor launches browser successfully but fails with \"browser send failed\" timeout after 60 seconds. User can draw but system times out before data transmission completes. Diagram editor works fine with same HTTP server approach, suggesting UI mockup specific issue.",
       "requirements": [
         "Investigate root cause of send failure vs diagram editor",
@@ -1147,6 +1147,70 @@
         "web/main.js",
         "web/ui.html",
         "web/ui-standalone.html"
+      ],
+      "dependencies": [],
+      "outcome": null,
+      "notes": null
+    },
+    {
+      "id": "TICKET-035",
+      "title": "Add IS_PROD boolean toggle for tool filtering",
+      "status": "todo",
+      "priority": "high",
+      "created_at": "2025-09-13T22:30:07Z",
+      "updated_at": "2025-09-13T22:30:07Z",
+      "description": "Add IS_PROD boolean to config.py that filters available MCP tools. When IS_PROD=True, only expose core tools (diagram editor, UI mockup editor). When IS_PROD=False, expose all tools including internal dev tools. This should be overrideable in local_config.py.",
+      "requirements": [
+        "Add IS_PROD boolean to config.py with default False",
+        "Create tool filtering logic in main.py based on IS_PROD",
+        "Allow local_config.py to override IS_PROD",
+        "Core tools: diagram editor, UI mockup editor",
+        "Dev tools: tickets, roadmap, usage analysis, project tree"
+      ],
+      "acceptance_criteria": [
+        "IS_PROD=True shows only 2 core tools",
+        "IS_PROD=False shows all tools",
+        "local_config.py can override the setting",
+        "Tool filtering works without breaking existing functionality"
+      ],
+      "files_affected": [
+        "mcp/config.py",
+        "mcp/local_config.py",
+        "mcp/main.py"
+      ],
+      "dependencies": [],
+      "outcome": null,
+      "notes": null
+    },
+    {
+      "id": "TICKET-036",
+      "title": "Implement YAML-based tool filtering with production/development sections",
+      "status": "done",
+      "priority": "high",
+      "created_at": "2025-09-13T23:02:10Z",
+      "updated_at": "2025-09-14T04:35:14Z",
+      "description": "Implement YAML-based tool filtering system. Config should live at mcp/config.yaml and use reliable path resolution (os.path.join(os.path.dirname(__file__))). Add all available tools as comments for easy management. Enable/disable tools based on is_prod boolean and tool sections.",
+      "requirements": [
+        "Load config.yaml from same directory as config.py using reliable path resolution",
+        "List all tools as comments with their function names",
+        "Add napkinwire_spawn_diagram_editor and napkinwire_spawn_ui_mockup_editor to production section",
+        "Add remaining tools (create_ticket, list_tickets, update_ticket_status, get_ticket_details, claude_usage_analysis, project_tree, append_roadmap_idea, list_roadmap_ideas) to development section",
+        "Implement tool filtering logic in main.py",
+        "is_prod: true = only production tools enabled",
+        "is_prod: false = all tools enabled"
+      ],
+      "acceptance_criteria": [
+        "YAML config loads from mcp/config.yaml using reliable path resolution",
+        "All available tools listed as comments in YAML for easy reference",
+        "napkinwire_spawn_diagram_editor and napkinwire_spawn_ui_mockup_editor added to production section",
+        "When is_prod: true, only production tools are enabled",
+        "When is_prod: false, all tools (production + development) are enabled",
+        "Tool filtering implemented in main.py during tool registration"
+      ],
+      "files_affected": [
+        "mcp/config.yaml",
+        "mcp/config.py",
+        "mcp/main.py"
       ],
       "dependencies": [],
       "outcome": null,
