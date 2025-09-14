@@ -1,0 +1,36 @@
+# NapkinWire MCP Tool Configuration
+# Tool filtering based on production/development mode
+
+# All available tools:
+# - add                               # Basic test tool
+# - napkinwire_create_ticket          # Create new ticket
+# - napkinwire_list_tickets           # List tickets with filtering
+# - napkinwire_update_ticket_status   # Update ticket status
+# - napkinwire_get_ticket_details     # Get full ticket details
+# - napkinwire_claude_usage_analysis  # Analyze Claude usage
+# - napkinwire_project_tree           # Generate project file tree
+# - napkinwire_spawn_diagram_editor   # Spawn diagram editor
+# - napkinwire_spawn_ui_mockup_editor # Spawn UI mockup editor
+# - napkinwire_append_roadmap_idea    # Add idea to roadmap
+# - napkinwire_list_roadmap_ideas     # List roadmap ideas
+
+# Production tools (core functionality for end users)
+production:
+  - napkinwire_spawn_diagram_editor
+  - napkinwire_spawn_ui_mockup_editor
+
+# Development tools (internal development and management)
+development:
+  - add
+  - napkinwire_create_ticket
+  - napkinwire_list_tickets
+  - napkinwire_update_ticket_status
+  - napkinwire_get_ticket_details
+  - napkinwire_claude_usage_analysis
+  - napkinwire_project_tree
+  - napkinwire_append_roadmap_idea
+  - napkinwire_list_roadmap_ideas
+
+# Environment setting: true = production mode (only production tools)
+#                     false = development mode (all tools)
+is_prod: true

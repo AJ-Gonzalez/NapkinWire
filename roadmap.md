@@ -115,3 +115,8 @@ Automated context analysis tool that scans current chat and identifies key decis
 *Added: 2025-09-13 22:08 UTC*
 Replace basic JSON ticket system with Taiga integration. Taiga is open source project management with Kanban/Scrum boards, epics, user stories, Git integration (GitHub/GitLab), and REST API. Features: sync tickets bidirectionally, create tickets from MCP tools, update status from Claude Code, leverage proper project management workflows, maintain Git commit linking. Self-hosted or cloud options. Much more professional than current ticket.json approach while staying open source. Could integrate with existing ticket tools or replace entirely.
 ---
+
+## [Ideas] Image search capability for competitive analysis and visual research
+*Added: 2025-09-14 04:26 UTC*
+Add image search capability to Claude for better competitive analysis and research. Would enable visual research for tools, UI patterns, API documentation examples, competitor analysis, etc. Could be integrated as MCP tool or requested as core Claude feature. Useful for understanding visual design patterns when building sketch-to-code tools and comparing against existing solutions.
+---
