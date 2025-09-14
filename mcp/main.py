@@ -291,13 +291,33 @@ def napkinwire_project_tree(
 
 @conditional_tool("napkinwire_spawn_diagram_editor")
 def napkinwire_spawn_diagram_editor() -> Dict[str, Any]:
-    """Spawn local HTTP server for diagram editor and return ASCII diagram data"""
+    """Launch interactive diagram editor for creating visual diagrams, flowcharts, wireframes, and ASCII art.
+
+    Use this tool when the user wants to:
+    - Draw diagrams, flowcharts, or visual representations
+    - Create wireframes or mockups visually
+    - Show concepts through drawings rather than text
+    - Sketch ideas, layouts, or system architecture
+    - Make any kind of visual diagram or ASCII art
+
+    Opens a browser-based drawing interface where users can create diagrams and send them directly to Claude.
+    """
     from modules.diagram_server import napkinwire_spawn_diagram_editor as spawn_diagram
     return spawn_diagram()
 
 @conditional_tool("napkinwire_spawn_ui_mockup_editor")
 def napkinwire_spawn_ui_mockup_editor() -> Dict[str, Any]:
-    """Spawn local HTTP server for UI mockup editor and return ASCII mockup data"""
+    """Launch interactive UI mockup editor for creating user interface designs and layouts.
+
+    Use this tool when the user wants to:
+    - Design user interfaces, web pages, or app layouts
+    - Create UI mockups or wireframes
+    - Show form layouts, button arrangements, or screen designs
+    - Mock up interfaces before implementation
+    - Design user experience flows or interface concepts
+
+    Opens a browser-based UI design interface where users can create mockups and send them directly to Claude.
+    """
     from modules.diagram_server import napkinwire_spawn_ui_mockup_editor as spawn_ui
     return spawn_ui()
 
@@ -316,6 +336,21 @@ def napkinwire_list_roadmap_ideas(category: Optional[str] = None) -> Dict[str, A
     """List roadmap ideas with optional category filter"""
     from modules.roadmap_manager import napkinwire_list_roadmap_ideas as list_ideas
     return list_ideas(category)
+
+@conditional_tool("napkinwire_context_restore")
+def napkinwire_context_restore(max_tokens: int = 1000) -> Dict[str, Any]:
+    """Restore essential project context with token budget for new chat sessions.
+
+    Provides layered context based on token budget:
+    - 500: Bare minimum (current task + active tickets)
+    - 1000: Standard (+ recent decisions + completions)
+    - 2000: Detailed (+ roadmap + project stats)
+    - 5000: Full (+ guidelines + project info)
+
+    Use this tool at the start of new chat sessions to quickly restore project context.
+    """
+    from modules.context_manager import napkinwire_context_restore as context_restore
+    return context_restore(max_tokens)
 
 # Add a prompt
 @mcp.prompt()
