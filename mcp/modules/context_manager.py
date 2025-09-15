@@ -170,7 +170,7 @@ def build_context_summary(max_tokens: int = 1000) -> str:
 
     # LAYER 1: Critical (always include, ~200 tokens)
     mission = get_mission_summary()
-    active_tickets = get_active_tickets(max=3)
+    active_tickets = get_active_tickets(max_count=3)
     active_list = [f"{t['id']}: {t['title']}" for t in active_tickets]
 
     critical = f"""=== NAPKINWIRE CONTEXT ===
