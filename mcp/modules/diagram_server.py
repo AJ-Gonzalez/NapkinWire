@@ -71,8 +71,10 @@ def napkinwire_spawn_diagram_editor() -> Dict[str, Any]:
 
             def do_POST(self):
                 if self.path == '/send_to_claude':
+                    crud_logger.info(f"Received POST request to {self.path}")
                     try:
                         content_length = int(self.headers.get('Content-Length', 0))
+                        crud_logger.info(f"Content-Length: {content_length}")
                         post_data = self.rfile.read(content_length)
 
                         # Parse form data or JSON
@@ -87,7 +89,7 @@ def napkinwire_spawn_diagram_editor() -> Dict[str, Any]:
                         if ascii_data:
                             received_data["diagram"] = ascii_data
                             received_data["received"] = True
-                            crud_logger.info(f"Received diagram data: {len(ascii_data)} characters")
+                            crud_logger.info(f"Successfully parsed diagram data: {len(ascii_data)} characters")
 
                             # Send success response
                             self.send_response(200)
@@ -96,11 +98,12 @@ def napkinwire_spawn_diagram_editor() -> Dict[str, Any]:
                             self.end_headers()
                             self.wfile.write(json.dumps({"success": True}).encode('utf-8'))
                         else:
+                            crud_logger.warning("POST request received but no diagram data found")
                             self.send_response(400)
                             self.send_header('Content-type', 'application/json')
                             self.send_header('Access-Control-Allow-Origin', '*')
                             self.end_headers()
-                            self.wfile.write(json.dumps({"error": "No diagram data"}).encode('utf-8'))
+                            self.wfile.write(json.dumps({"error": "No diagram data provided"}).encode('utf-8'))
 
                     except Exception as e:
                         crud_logger.error(f"Error handling POST request: {e}")
@@ -113,6 +116,7 @@ def napkinwire_spawn_diagram_editor() -> Dict[str, Any]:
                         self.end_headers()
                         self.wfile.write(json.dumps({"error": str(e)}).encode('utf-8'))
                 else:
+                    crud_logger.warning(f"Received POST request to unexpected path: {self.path}")
                     self.send_response(404)
                     self.end_headers()
 
@@ -151,11 +155,16 @@ def napkinwire_spawn_diagram_editor() -> Dict[str, Any]:
                 }
 
             # Wait for data or timeout
-            timeout_seconds = 60
+            timeout_seconds = 300  # 5 minutes - users need time to draw meaningful diagrams
             start_time = time.time()
+
+            crud_logger.info(f"Waiting for diagram data with {timeout_seconds}s timeout")
 
             while not received_data["received"] and (time.time() - start_time) < timeout_seconds:
                 time.sleep(0.5)
+
+            elapsed_time = time.time() - start_time
+            crud_logger.info(f"Wait completed after {elapsed_time:.1f}s, received: {received_data['received']}")
 
             # Shutdown server
             httpd.shutdown()
@@ -164,23 +173,23 @@ def napkinwire_spawn_diagram_editor() -> Dict[str, Any]:
             # Return result
             if received_data["received"]:
                 if received_data["diagram"]:
-                    crud_logger.info("Successfully received diagram data from HTTP server")
+                    crud_logger.info(f"Successfully received diagram data from HTTP server after {elapsed_time:.1f}s")
                     return {
                         "success": True,
                         "diagram_data": received_data["diagram"],
                         "method": "http_server"
                     }
                 else:
-                    crud_logger.error(f"HTTP server error: {received_data['error']}")
+                    crud_logger.error(f"HTTP server error after {elapsed_time:.1f}s: {received_data['error']}")
                     return {
                         "success": False,
                         "error": received_data["error"] or "Unknown error receiving diagram data"
                     }
             else:
-                crud_logger.error("HTTP server timed out waiting for diagram data")
+                crud_logger.error(f"HTTP server timed out after {elapsed_time:.1f}s waiting for diagram data")
                 return {
                     "success": False,
-                    "error": "Diagram editor timed out after 60 seconds"
+                    "error": f"Diagram editor timed out after {timeout_seconds} seconds ({timeout_seconds//60} minutes). No data received from browser."
                 }
 
     except Exception as e:
@@ -323,7 +332,7 @@ def napkinwire_spawn_ui_mockup_editor() -> Dict[str, Any]:
                 }
 
             # Wait for data or timeout (increased for UI mockup processing)
-            timeout_seconds = 120
+            timeout_seconds = 300  # 5 minutes - users need time to design meaningful UI mockups
             start_time = time.time()
 
             while not received_data["received"] and (time.time() - start_time) < timeout_seconds:
@@ -354,10 +363,10 @@ def napkinwire_spawn_ui_mockup_editor() -> Dict[str, Any]:
                         "error": received_data["error"] or "Unknown error receiving UI mockup data"
                     }
             else:
-                crud_logger.error("HTTP server timed out waiting for UI mockup data")
+                crud_logger.error(f"HTTP server timed out after {elapsed_time:.1f}s waiting for UI mockup data")
                 return {
                     "success": False,
-                    "error": "UI mockup editor timed out after 120 seconds"
+                    "error": f"UI mockup editor timed out after {timeout_seconds} seconds ({timeout_seconds//60} minutes). No data received from browser."
                 }
 
     except Exception as e:

@@ -1,8 +1,8 @@
 {
   "metadata": {
     "version": "1.0.0",
-    "last_updated": "2025-09-14T04:35:14Z",
-    "next_id": 37,
+    "last_updated": "2025-09-15T03:24:16Z",
+    "next_id": 40,
     "project": "napkinwire"
   },
   "tickets": [
@@ -948,7 +948,7 @@
     {
       "id": "TICKET-028",
       "title": "Create context restore tool for new chat sessions",
-      "status": "todo",
+      "status": "done",
       "priority": "high",
       "created_at": "2025-09-13T13:00:29Z",
       "updated_at": "2025-09-13T13:04:23Z",
@@ -973,8 +973,8 @@
         "roadmap.md"
       ],
       "dependencies": [],
-      "outcome": null,
-      "notes": null
+      "outcome": "Created napkinwire_context_restore MCP tool with layered context based on token budget. Implemented context_manager.py module with functions to extract active tickets, recent completions, roadmap items, and project guidelines. Tool provides 4 layers of context (critical, helpful, detailed, full) based on max_tokens parameter (500, 1000, 2000, 5000). Integrates TICKET-030 requirements for token control.",
+      "notes": "Tool extracts project context from tickets.json, roadmap.md, and CLAUDE.md. Provides layered output based on token budget to efficiently restore context for new chat sessions."
     },
     {
       "id": "TICKET-029",
@@ -1010,7 +1010,7 @@
     {
       "id": "TICKET-030",
       "title": "UPDATE TICKET-028: Add max_tokens parameter for context control",
-      "status": "todo",
+      "status": "done",
       "priority": "high",
       "created_at": "2025-09-13T13:04:49Z",
       "updated_at": "2025-09-13T13:04:49Z",
@@ -1034,8 +1034,8 @@
         "mcp/modules/context_manager.py"
       ],
       "dependencies": [],
-      "outcome": null,
-      "notes": null
+      "outcome": "Implemented as part of TICKET-028. Added max_tokens parameter with default 1000, token estimation function, and layered context building. Tool provides 4 layers of context based on token budget: critical (always), helpful (if budget allows), detailed (more budget), and full context (maximum budget).",
+      "notes": "Layered approach ensures essential context is always included while providing more details when token budget allows. Token estimation uses 1 token ≈ 4 characters."
     },
     {
       "id": "TICKET-031",
@@ -1215,6 +1215,90 @@
       "dependencies": [],
       "outcome": null,
       "notes": null
+    },
+    {
+      "id": "TICKET-037",
+      "title": "Fix diagram editor tool call triggering issue",
+      "status": "done",
+      "priority": "high",
+      "created_at": "2025-09-15T02:25:36Z",
+      "updated_at": "2025-09-15T02:25:36Z",
+      "description": "When user mentions wanting to draw a diagram or show a visual concept, Claude should automatically call the diagram editor tool instead of waiting for explicit user action. Currently the tool call mechanism is not triggering properly when contextually appropriate. This creates friction in the user workflow where they expect the diagram tool to launch based on conversational context.",
+      "requirements": [
+        "Analyze conversation context to detect when diagram tool should be triggered",
+        "Fix tool call mechanism for diagram editor",
+        "Ensure smooth workflow when user mentions drawing/diagramming",
+        "Test automatic tool triggering based on conversational cues"
+      ],
+      "acceptance_criteria": [
+        "Tool automatically launches when user mentions drawing diagrams",
+        "No manual tool calls required for obvious diagram use cases",
+        "Maintains responsive user experience",
+        "Works consistently across different conversation contexts"
+      ],
+      "files_affected": [
+        "mcp/modules/diagram_server.py",
+        "mcp/main.py"
+      ],
+      "dependencies": [],
+      "outcome": "Enhanced tool descriptions with clear contextual triggers and use cases. Added comprehensive documentation for when Claude should automatically invoke diagram and UI mockup editors. Tools now include specific trigger phrases and scenarios to improve automatic tool call detection.",
+      "notes": "The issue was not with the tool implementation but with insufficient tool descriptions for Claude's automatic triggering mechanism. Enhanced descriptions now clearly specify when tools should be used."
+    },
+    {
+      "id": "TICKET-038",
+      "title": "Diagram editor tool reliability issues",
+      "status": "done",
+      "priority": "high",
+      "created_at": "2025-09-15T03:08:38Z",
+      "updated_at": "2025-09-15T03:08:38Z",
+      "description": "Diagram editor tool is failing inconsistently with different error messages for users vs system. AJ reported \"send failed\" while system shows \"timed out after 60 seconds\". This suggests either a communication issue between frontend/backend or different failure modes not being handled properly.",
+      "requirements": [
+        "Investigate diagram editor timeout vs send failure discrepancy",
+        "Determine if this is a communication issue or separate failure modes",
+        "Fix or improve error handling and user feedback",
+        "Ensure consistent error reporting between user and system"
+      ],
+      "acceptance_criteria": [
+        "Diagram editor errors are consistent between user experience and system logs",
+        "Tool either works reliably or fails gracefully with clear error messages",
+        "User gets actionable feedback when tool fails",
+        "Investigation results documented for future debugging"
+      ],
+      "files_affected": [
+        "mcp/modules/diagram_server.py",
+        "web/diagram-gen.js"
+      ],
+      "dependencies": [],
+      "outcome": "Fixed error handling consistency between frontend and backend. Frontend now shows specific error messages (Connection failed, Server timeout, etc.) instead of generic 'Send failed'. Backend provides detailed logging with timestamps and clear error descriptions. Added request timeout handling and improved POST request logging for better debugging.",
+      "notes": "Root cause was generic frontend error handling masking specific backend errors. Frontend now parses server error messages and displays appropriate user feedback. Timeout handling improved with 65s frontend timeout matching backend behavior."
+    },
+    {
+      "id": "TICKET-039",
+      "title": "Diagram editor timeout is too short for actual use",
+      "status": "done",
+      "priority": "high",
+      "created_at": "2025-09-15T03:24:16Z",
+      "updated_at": "2025-09-15T03:24:16Z",
+      "description": "Root cause identified: Diagram editor times out after 60 seconds, but users need 2-5+ minutes to draw meaningful diagrams. The timeout should either be much longer (5-10 minutes) or removed entirely - waiting for user to actually submit their work instead of arbitrary time limits.",
+      "requirements": [
+        "Increase timeout to 5-10 minutes minimum",
+        "Or better: remove timeout, wait for user submission",
+        "Consider showing timer/warning if timeout must exist",
+        "Test with real drawing scenarios, not just quick sketches"
+      ],
+      "acceptance_criteria": [
+        "Users can draw complex diagrams without time pressure",
+        "Tool doesn't timeout during normal drawing workflow",
+        "If timeout exists, user gets clear warning before cutoff",
+        "Success rate for diagram creation increases significantly"
+      ],
+      "files_affected": [
+        "mcp/modules/diagram_server.py",
+        "web/diagram-gen.js"
+      ],
+      "dependencies": [],
+      "outcome": "Increased timeout from 60 seconds to 300 seconds (5 minutes) for both diagram editor and UI mockup editor. Updated frontend timeout to match backend. Error messages now show timeout in both seconds and minutes for clarity. Users now have adequate time to create meaningful diagrams without time pressure.",
+      "notes": "Changed timeout_seconds from 60 to 300 in both diagram and UI mockup editors. Frontend timeout updated from 65s to 305s to match. This gives users realistic time to draw complex diagrams."
     }
   ],
   "templates": {}

@@ -953,6 +953,11 @@ document.getElementById('generate-prompt').addEventListener('click', async funct
         // Localhost HTTP server mode: POST data to /send_to_claude endpoint
         try {
             console.log('Sending diagram data to localhost server...');
+
+            // Add timeout to fetch request
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 305000); // 305 seconds (5+ minutes) to match backend timeout
+
             const response = await fetch('/send_to_claude', {
                 method: 'POST',
                 headers: {
@@ -960,8 +965,11 @@ document.getElementById('generate-prompt').addEventListener('click', async funct
                 },
                 body: JSON.stringify({
                     diagram_data: prompt
-                })
+                }),
+                signal: controller.signal
             });
+
+            clearTimeout(timeoutId);
 
             const result = await response.json();
 
@@ -976,21 +984,39 @@ document.getElementById('generate-prompt').addEventListener('click', async funct
                     window.close();
                 }, 1000);
             } else {
-                // Error occurred
+                // Error occurred - show specific server error if available
                 const originalText = this.textContent;
-                this.textContent = 'Send failed';
+                const serverError = result.error || 'Unknown error';
+
+                if (serverError.includes('timed out')) {
+                    this.textContent = 'Server timeout';
+                } else if (serverError.includes('connection')) {
+                    this.textContent = 'Connection failed';
+                } else {
+                    this.textContent = 'Send failed';
+                }
+
                 setTimeout(() => {
                     this.textContent = originalText;
-                }, 2000);
-                console.error('Server error:', result.error || 'Unknown error');
+                }, 2500);
+                console.error('Server error:', serverError);
             }
         } catch (error) {
             console.error('Error sending diagram to localhost server:', error);
             const originalText = this.textContent;
-            this.textContent = 'Send failed';
+
+            // More specific error messages
+            if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                this.textContent = 'Connection failed';
+            } else if (error.name === 'AbortError') {
+                this.textContent = 'Request timed out';
+            } else {
+                this.textContent = 'Send failed';
+            }
+
             setTimeout(() => {
                 this.textContent = originalText;
-            }, 2000);
+            }, 2500);
         }
     } else if (isLocalMode) {
         // Local mode: save to temp file for MCP integration
