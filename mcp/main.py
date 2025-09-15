@@ -352,6 +352,25 @@ def napkinwire_context_restore(max_tokens: int = 1000) -> Dict[str, Any]:
     from modules.context_manager import napkinwire_context_restore as context_restore
     return context_restore(max_tokens)
 
+@conditional_tool("napkinwire_classify_element")
+def napkinwire_classify_element(element_label: str) -> Dict[str, Any]:
+    """Classify diagram element labels into standard categories using OpenRouter API.
+
+    Classifies elements into types like UI_COMPONENT, PROCESS_STEP, DATA_STORE, ACTION,
+    DECISION, CONNECTOR, ACTOR, CONTAINER, ANNOTATION, or OTHER.
+
+    Returns classification result with confidence score and token usage statistics
+    for cost monitoring. Uses efficient qwen-2.5-coder-7b-instruct model.
+
+    Args:
+        element_label: The text label to classify (e.g., "Login Button", "User Database", "Submit Form")
+
+    Returns:
+        Dict containing classification, confidence, token_usage, and error fields
+    """
+    from modules.element_classifier import classify_element
+    return classify_element(element_label)
+
 # Add a prompt
 @mcp.prompt()
 def greet_user(name: str, style: str = "friendly") -> str:

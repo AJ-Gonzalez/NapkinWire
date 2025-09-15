@@ -1,8 +1,8 @@
 {
   "metadata": {
     "version": "1.0.0",
-    "last_updated": "2025-09-15T03:24:16Z",
-    "next_id": 40,
+    "last_updated": "2025-09-15T06:56:58Z",
+    "next_id": 41,
     "project": "napkinwire"
   },
   "tickets": [
@@ -1299,6 +1299,47 @@
       "dependencies": [],
       "outcome": "Increased timeout from 60 seconds to 300 seconds (5 minutes) for both diagram editor and UI mockup editor. Updated frontend timeout to match backend. Error messages now show timeout in both seconds and minutes for clarity. Users now have adequate time to create meaningful diagrams without time pressure.",
       "notes": "Changed timeout_seconds from 60 to 300 in both diagram and UI mockup editors. Frontend timeout updated from 65s to 305s to match. This gives users realistic time to draw complex diagrams."
+    },
+    {
+      "id": "TICKET-040",
+      "title": "Create MCP element classification service with OpenRouter integration",
+      "status": "done",
+      "priority": "high",
+      "created_at": "2025-09-15T06:44:47Z",
+      "updated_at": "2025-09-15T06:44:47Z",
+      "description": "Build MCP tool for classifying diagram elements using OpenRouter API. This supports the semantic diagram editor by automatically categorizing user-provided element labels into standard types (UI_COMPONENT, PROCESS_STEP, DATA_STORE, ACTION, etc.). Tool should use existing OpenRouter configuration and provide token usage tracking for cost monitoring.",
+      "requirements": [
+        "Create new module mcp/modules/element_classifier.py",
+        "Implement classify_element() function that calls OpenRouter API",
+        "Use existing OPENROUTER_API_KEY from mcp/config.py",
+        "Use small efficient model like qwen/qwen-2.5-coder-7b-instruct for cost efficiency",
+        "Return classification result and token usage metrics",
+        "Add MCP tool registration in main.py",
+        "Create comprehensive test script test_classifier.py that demonstrates all functionality",
+        "Test script should show token usage per classification call",
+        "Include example classifications for various element types",
+        "Add error handling for API failures and invalid responses"
+      ],
+      "acceptance_criteria": [
+        "MCP tool classifies element labels into standard categories",
+        "Tool uses existing OpenRouter configuration without hardcoded keys",
+        "Returns both classification result and token usage statistics",
+        "Test script demonstrates functionality with sample inputs and outputs",
+        "Test script shows actual token costs per classification",
+        "Error handling covers API timeouts, invalid responses, and network issues",
+        "Tool integrates with existing MCP server without breaking current functionality",
+        "Classification prompt is optimized for accuracy and token efficiency",
+        "Test script is preserved and not deleted during implementation"
+      ],
+      "files_affected": [
+        "mcp/modules/element_classifier.py",
+        "mcp/main.py",
+        "test_classifier.py",
+        "mcp/config.py"
+      ],
+      "dependencies": [],
+      "outcome": "Created MCP element classification service with OpenRouter integration. Implemented element_classifier.py module with classify_element() function that categorizes diagram elements into standard types (UI_COMPONENT, PROCESS_STEP, DATA_STORE, etc.). Added MCP tool registration in main.py as napkinwire_classify_element. Created comprehensive test_classifier.py script demonstrating functionality and token usage monitoring. Uses meta-llama/llama-3.2-3b-instruct:free model for cost efficiency (~900 tokens per classification). Tool provides classification result, confidence score, and token usage statistics for cost monitoring.",
+      "notes": "Tool successfully classifies elements with ~900 tokens per call. Test script demonstrates all functionality including error handling. Integration with existing OpenRouter configuration works correctly."
     }
   ],
   "templates": {}
