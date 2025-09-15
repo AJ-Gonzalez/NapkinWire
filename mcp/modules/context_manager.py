@@ -183,8 +183,8 @@ def build_context_summary(max_tokens: int = 1000) -> str:
 
     # LAYER 2: Helpful (if budget allows, ~300 tokens)
     if token_count < max_tokens - 300:
-        recent_decisions = get_recent_decisions(max=3)
-        recent_completed = get_recent_completed(max=3)
+        recent_decisions = get_recent_decisions(max_count=3)
+        recent_completed = get_recent_completed(max_count=3)
         completed_list = [f"{t['id']}: {t['title']}" for t in recent_completed]
 
         helpful = f"""
@@ -198,7 +198,7 @@ def build_context_summary(max_tokens: int = 1000) -> str:
     # LAYER 3: Detailed (if budget allows, ~500 tokens)
     if token_count < max_tokens - 500:
         stats = get_ticket_stats()
-        roadmap_items = get_roadmap_items(max=3)
+        roadmap_items = get_roadmap_items(max_count=3)
 
         detailed = f"""
 
