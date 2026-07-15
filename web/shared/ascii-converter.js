@@ -75,77 +75,6 @@ export function isOnPerimeter(x, y, shape, snapSize) {
         return onLeftOrRight || onTopOrBottom;
     }
 
-    if (shape.type === 'circle') {
-        // Check if point is on the ellipse perimeter
-        const centerX = shape.x + shape.width / 2;
-        const centerY = shape.y + shape.height / 2;
-        const radiusX = Math.abs(shape.width / 2);
-        const radiusY = Math.abs(shape.height / 2);
-
-        const dx = (pixelX - centerX) / radiusX;
-        const dy = (pixelY - centerY) / radiusY;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-        
-        // Check if we're close to the perimeter (within one grid cell)
-        const tolerance = snapSize / Math.max(radiusX, radiusY);
-        return Math.abs(distance - 1) <= tolerance;
-    }
-
-    if (shape.type === 'diamond') {
-        // Check if point is on diamond perimeter
-        const centerX = shape.x + shape.width / 2;
-        const centerY = shape.y + shape.height / 2;
-        const halfWidth = shape.width / 2;
-        const halfHeight = shape.height / 2;
-
-        const relX = Math.abs(pixelX - centerX) / halfWidth;
-        const relY = Math.abs(pixelY - centerY) / halfHeight;
-        
-        // Check if we're close to the diamond edge (relX + relY = 1)
-        const edgeDistance = Math.abs((relX + relY) - 1);
-        const tolerance = snapSize / Math.max(halfWidth, halfHeight);
-        return edgeDistance <= tolerance;
-    }
-
-    if (shape.type === 'arrow') {
-        // Check if point is close to the line segment
-        const startX = shape.x;
-        const startY = shape.y;
-        const endX = shape.x + shape.width;
-        const endY = shape.y + shape.height;
-
-        // Calculate distance from point to line segment
-        const lineLength = Math.sqrt(shape.width * shape.width + shape.height * shape.height);
-        if (lineLength === 0) return false; // Zero-length arrow
-
-        // Vector from start to end
-        const lineX = shape.width / lineLength;
-        const lineY = shape.height / lineLength;
-
-        // Vector from start to point
-        const pointX = pixelX - startX;
-        const pointY = pixelY - startY;
-
-        // Project point onto line
-        const projection = (pointX * lineX + pointY * lineY);
-        
-        // Clamp projection to line segment
-        const clampedProjection = Math.max(0, Math.min(lineLength, projection));
-        
-        // Find closest point on line segment
-        const closestX = startX + clampedProjection * lineX;
-        const closestY = startY + clampedProjection * lineY;
-        
-        // Calculate distance from point to closest point on line
-        const distance = Math.sqrt(
-            (pixelX - closestX) * (pixelX - closestX) + 
-            (pixelY - closestY) * (pixelY - closestY)
-        );
-        
-        // Point is "on" the arrow if within half a grid cell of the line
-        return distance <= snapSize / 2;
-    }
-
     return false;
 }
 
@@ -201,13 +130,7 @@ export function generateInputFields(shapes, container, role) {
 
     container.innerHTML = ''; // Clear existing fields
 
-    let placeholderText = "e.g., Text content";  // Default
-
-    if (role === "UI") {
-        placeholderText = "e.g., Article title, User message, Navigation links";
-    } else if (role === "diagram") {
-        placeholderText = "e.g., Process step, Decision point, Data flow";
-    }
+    let placeholderText = "e.g., Article title, User message, Navigation links";
 
     // Only generate fields for text areas (purple shapes)
     let textAreaCounter = 1;

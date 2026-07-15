@@ -10,13 +10,11 @@ From sketch to prompt in seconds.
 
 Sketch UI layouts with simple rectangles and instantly get LLM-ready prompts.
 
-Give your LLM a diagram of your process it can actually understand.
-
 No accounts, no subscriptions, no BS.
 
-**The problem:** Describing UI layouts or business processes to LLMs (or humans) in text is terrible. "Put a button on the right side, below the form, but not too close to the footer..." 🤮
+**The problem:** Describing UI layouts to LLMs (or humans) in text is terrible. "Put a button on the right side, below the form, but not too close to the footer..." 🤮
 
-**The solution:** Draw rectangles. Get perfect prompts. Build your UI, get your LLM to know your process.
+**The solution:** Draw rectangles. Get perfect prompts. Build your UI.
 
 ## Why this exists
 
@@ -38,7 +36,7 @@ I wanted the feeling of sketching ideas on the back of a napkin or whiteboard - 
 
 ## Examples
 
-These are the sample of each demo Gif.
+Here is a sample prompt from the demo.
 
 ### UI mockup
 
@@ -104,111 +102,6 @@ No rounded corners.
 
 </details>
 
-
-### Diagram that the LLM can understand.
-
-<details> 
-
-<summary>Here is a diagram example from the gif, it shows onboarding a customer</summary>
-
-
-```
-Here is my Customer onboarding for my SaaS represented as a diagram:
-
-                                                                                                    
-                                                                                                    
-                                                                                                    
-                                                                                                    
-                                                                                                    
-                                                                                                    
-                                          44444444444444444444444444                      999999    
-                                          4                        4                     999  999   
-                                          4                        4            666     99      99  
-                                          4                        4           66 66    99      99  
-                                          4                        4          66   66   99      99  
-                                          4                        4        66       66 99      99  
-                                          4                        4        66       66 99      99  
-                                          4                        4          66   66    999  999   
-                                          4                        4           66 66      999999    
-                                          4                        4            666                 
-                                          44444444444444444444444444                                
-                                                                                                    
-                                                                                                    
-                                                                                                    
-                                                                                                    
-                                                                                                    
-                                                                                                    
-        1                                                                                           
-     1111111                                                           888888888888888888888        
-    111111111       2222222222222                                      8                   8        
-   111     111      2           2              33                      8                   8        
-   11       11      2           2             3333                     8                   8        
-   11       11      2           2           33    33                   8                   8        
-  111       111     2           2          33      33                  8                   8        
-   11       11      2           2        33          33                8                   8        
-   11       11      2           2        33          33                8                   8        
-   111     111      2           2          33      33                  8                   8        
-    111111111       2222222222222           33    33                   8                   8        
-     1111111                                  3333                     888888888888888888888        
-        1                                      33                                                   
-                                                                                                    
-                                                                                                    
-                                                                                                    
-                                                                                                    
-                                                                                                    
-                                                                                                    
-                                                                                                    
-                                           55555555555555555555555555           7                   
-                                           5                        5          777        1010101010     
-                                           5                        5         77 77      10101010101010    
-                                           5                        5        77   77    1010     1010   
-                                           5                        5       77     77   1010     1010   
-                                           5                        5       77     77   10       10   
-                                           5                        5        77   77    10       10   
-                                           5                        5         77 77     1010     1010   
-                                           5                        5          777      1010     1010   
-                                           55555555555555555555555555           7        10101010101010    
-                                                                                          1010101010     
-                                                                                                    
-                                                                                                    
-                                                                                                    
-                                                                                                    
-                                                                                                    
-                                                                                                    
-
-
-Legend:
-1: Customer joins (Start/End Point)
-2: Send welcome email (Process/Action)
-3: is b2b? (Decision Point)
-4: B2B customer, connect with account rep (Process/Action)
-5: B2C, connect with AI chatbot rep (Process/Action)
-6: issue? (Decision Point)
-7: issue? (Decision Point)
-8: If there is an issue escalate to L2 rep (Process/Action)
-9: Success! (Start/End Point)
-10: Success! (Start/End Point)
-
-
-Connections:
-"Customer joins" → "Send welcome email"
-"is b2b?" → "B2B customer, connect with account rep"
-"is b2b?" → "B2C, connect with AI chatbot rep"
-"Send welcome email" → "is b2b?"
-"issue?" → "If there is an issue escalate to L2 rep"
-"B2B customer, connect with account rep" → "issue?"
-"Success!" → "Success!"
-"B2C, connect with AI chatbot rep" → "issue?"
-"issue?" → "If there is an issue escalate to L2 rep"
-"issue?" → "Success!"
-
-Additional context:
-This starts with a customer that just joined
-```
-
-</details>
-
-
 ## Features
 
 - ✅ Works on mobile (PWA installable)
@@ -249,9 +142,7 @@ python -m http.server 8000  # or your preferred local server
 ## Who this is for
 
 - **Developers** who need quick UI mockups for AI coding workflows
-- **Product managers** explaining processes and user flows to LLMs
-- **Business analysts** documenting workflows and system diagrams  
-- **Designers** who want to communicate ideas without Figma overhead  
+- **Designers** who want to communicate ideas without Figma overhead
 - **Anyone** who thinks better with visual layouts than pure text
 
 ## License

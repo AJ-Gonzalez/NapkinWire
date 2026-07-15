@@ -1,7 +1,6 @@
 import { snapToGrid } from './shared/ascii-converter.js';
 import { getMousePos } from './shared/ascii-converter.js';
 import { getTouchPos } from './shared/ascii-converter.js';
-import { isOnPerimeter } from './shared/ascii-converter.js';
 import { redrawCanvas } from './shared/ascii-converter.js';
 import { generateASCII } from './shared/ascii-converter.js';
 import { generateInputFields } from './shared/ascii-converter.js';
