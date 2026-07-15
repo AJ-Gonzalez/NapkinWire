@@ -193,6 +193,12 @@ export function generateASCII(shapes, canvasWidth, canvasHeight, snapSize, color
 }
 
 export function generateInputFields(shapes, container, role) {
+    // Snapshot existing input values BEFORE clearing (keyed by field id)
+    const previousValues = {};
+    container.querySelectorAll('input[type="text"]').forEach(input => {
+        if (input.id) previousValues[input.id] = input.value;
+    });
+
     container.innerHTML = ''; // Clear existing fields
 
     let placeholderText = "e.g., Text content";  // Default
@@ -209,11 +215,18 @@ export function generateInputFields(shapes, container, role) {
     shapes.forEach((shape, index) => {
         if (shape.color === '#ff00ff') {
             const fieldDiv = document.createElement('div');
+            const fieldId = `text_${index}`;
             fieldDiv.innerHTML = `
                 <label>Text Area ${textAreaCounter}:</label>
-                <input type="text" id="text_${index}" placeholder="${placeholderText}">
+                <input type="text" id="${fieldId}" placeholder="${placeholderText}">
             `;
             container.appendChild(fieldDiv);
+
+            // Restore the previously-typed value if this field existed before
+            if (previousValues[fieldId] !== undefined) {
+                fieldDiv.querySelector(`#${fieldId}`).value = previousValues[fieldId];
+            }
+
             textAreaCounter++;
         }
     });

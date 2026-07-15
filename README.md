@@ -233,12 +233,6 @@ Just start drawing. Everything updates automatically as you sketch.
 
 **Pro tip:** Use purple rectangles for any area that needs custom content (text, images, forms, etc.).
 
-## Roadmap
-
-- [*] **MCP Server** - Claude Desktop integration for seamless sketch → code workflow (In development!)
-- [ ] **Template library** - Common UI patterns for faster sketching
-- [ ] **Advanced export options** - SVG, and more format support
-
 *Want something specific? [Open an issue](https://github.com/AJ-Gonzalez/NapkinWire/issues)*
 
 ## Installation & Development

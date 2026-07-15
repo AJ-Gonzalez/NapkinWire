@@ -269,6 +269,27 @@ document.getElementById("get_prompt").addEventListener('click', function () {
     }
 });
 
+document.getElementById("copy_layout").addEventListener('click', function () {
+    // Build only the layout + annotations, no instructions
+    const layoutOnly = generateAnnotatedASCII(
+        generateASCII(rectangles, canvas.width, canvas.height, snapSize, uiColorMapping),
+        rectangles, document.getElementById('rectangle-dropdowns'), "Content areas"
+    );
+
+    const originalText = this.textContent;
+    navigator.clipboard.writeText(layoutOnly).then(() => {
+        this.textContent = 'Copied!';
+        setTimeout(() => {
+            this.textContent = originalText;
+        }, 1500);
+    }).catch(() => {
+        this.textContent = 'Copy failed';
+        setTimeout(() => {
+            this.textContent = originalText;
+        }, 2000);
+    });
+});
+
 
 // Reset canvas functionality - add this to main.js
 document.getElementById("clear_canvas").addEventListener('click', function () {

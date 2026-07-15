@@ -216,6 +216,13 @@ canvas {
     height: 18px;
 }
 
+.button-group {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    align-items: stretch;
+}
+
 .primary-btn {
     padding: 1rem 2rem;
     background-color: var(--button_bg);
