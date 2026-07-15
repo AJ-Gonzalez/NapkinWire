@@ -46,20 +46,35 @@ export function updateLayout(shapes, canvasWidth, canvasHeight, snapSize, colorM
 
 export function redrawCanvas(ctx, shapes) {
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+    // Count purple shapes for numbering (matches generateASCII logic)
+    let textAreaNumber = 0;
+
     shapes.forEach(shape => {
         if (shape.type === 'rectangle') {
             if (shape.color === '#ff00ff') { // Purple text shapes
+                textAreaNumber++;
+
                 ctx.fillStyle = shape.color;
                 ctx.fillRect(shape.x, shape.y, shape.width, shape.height);
+
+                // Draw the text area number centered on the rectangle
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 20px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(
+                    textAreaNumber.toString(),
+                    shape.x + shape.width / 2,
+                    shape.y + shape.height / 2
+                );
             } else {
                 ctx.strokeStyle = shape.color;
                 ctx.lineWidth = 2;
                 ctx.strokeRect(shape.x, shape.y, shape.width, shape.height);
             }
         }
-        // Add handling for other shape types later
-    }
-    );
+    });
 }
 
 export function isOnPerimeter(x, y, shape, snapSize) {
