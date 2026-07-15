@@ -1,3 +1,11 @@
+@font-face {
+    font-family: 'Iosevka Mono';
+    font-style: normal;
+    font-display: swap;
+    font-weight: 400;
+    src: url(https://cdn.jsdelivr.net/fontsource/fonts/iosevka@5.2.5/latin-400-normal.woff2) format('woff2');
+}
+
 :root {
     --fg: #166534;
     --bg: #fefce8;
@@ -15,7 +23,7 @@ body {
     margin: 0;
     background-color: var(--bg);
     color: var(--fg);
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: 'Inter', sans-serif;
 }
 
 header {
@@ -82,7 +90,7 @@ h1 {
     border: 2px solid transparent;
     cursor: pointer;
     background: white;
-    border-radius: 4px;
+    border-radius: 6px;
 }
 
 .color-btn::before {
@@ -121,7 +129,7 @@ h1 {
     background-color: var(--button_bg);
     color: var(--button_fg);
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
 }
 
@@ -152,7 +160,7 @@ canvas {
 }
 
 .ascii-display {
-    font-family: 'Courier New', monospace;
+    font-family: 'Iosevka Mono', monospace;
     font-size: 10px;
     background-color: #f8f8f8;
     border: 2px solid var(--border);
@@ -235,7 +243,7 @@ canvas {
     background-color: var(--button_bg);
     color: var(--button_fg);
     border: none;
-    border-radius: 8px;
+    border-radius: 6px;
     font-size: 1.1rem;
     font-weight: bold;
     cursor: pointer;
@@ -290,7 +298,7 @@ canvas {
     color: #fefce8;
     /* Your cream */
     text-decoration: none;
-    border-radius: 4px;
+    border-radius: 6px;
     font-weight: 500;
     transition: background 0.2s;
 }
