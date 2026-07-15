@@ -70,6 +70,13 @@ document.querySelectorAll('.color-btn').forEach(button => {
     });
 });
 
+// Toggle ASCII preview visibility
+document.getElementById('toggle-ascii').addEventListener('click', function () {
+    const preview = document.getElementById('ascii-preview');
+    const isHidden = preview.classList.toggle('hidden');
+    this.textContent = isHidden ? 'Show ASCII Preview' : 'Hide ASCII Preview';
+});
+
 
 let rectangles = [];
 let isDrawing = false;

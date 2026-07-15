@@ -131,7 +131,6 @@ h1 {
 
 canvas {
     width: 100%;
-    max-width: 800px;
     background-color: #ffffff;
     border: 2px solid var(--border);
     border-radius: 8px;
@@ -142,6 +141,14 @@ canvas {
 /* Output Section */
 .output-section {
     flex: 1;
+}
+
+.hidden {
+    display: none;
+}
+
+#toggle-ascii {
+    margin-bottom: 1rem;
 }
 
 .ascii-display {
@@ -243,18 +250,17 @@ canvas {
 @media (min-width: 768px) {
     .app-container {
         flex-direction: row;
-        gap: 2rem;
-        padding: 2rem;
+        gap: 1rem;
+        padding: 1rem;
     }
 
     .drawing-section {
-        flex: 1;
-        max-width: 50%;
+        flex: 2;
     }
 
     .output-section {
         flex: 1;
-        max-width: 50%;
+        min-width: 300px;
     }
 
     .controls {
@@ -265,20 +271,10 @@ canvas {
         max-height: 400px;
         font-size: 11px;
     }
-
-    canvas {
-        max-width: none;
-    }
 }
 
 /* Large Desktop */
 @media (min-width: 1200px) {
-    .app-container {
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 2rem;
-    }
-
     .ascii-display {
         font-size: 12px;
     }
