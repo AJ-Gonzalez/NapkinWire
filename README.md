@@ -24,18 +24,8 @@ Built because I needed to mock up UIs quickly for AI coding workflows. Started s
 
 I wanted the feeling of sketching ideas on the back of a napkin or whiteboard - dead simple, no friction between idea and communication.
 
-**Real world usage:** I used NapkinWire to design NapkinWire's own homepage. It worked on the first try.
+**Real world usage:** I used NapkinWire to design NapkinWire's own homepage. It worked on the first try
 
-## Demo
-
-### UI
-
-[![UI Demo](https://img.youtube.com/vi/UkBR1bfjrr8/0.jpg)](https://www.youtube.com/watch?v=UkBR1bfjrr8)
-
-### Diagrams
-
-
-[![Diagram Demo](https://img.youtube.com/vi/tobQSC0ESPI/0.jpg)](https://www.youtube.com/watch?v=tobQSC0ESPI)
 
 
 ## How it works

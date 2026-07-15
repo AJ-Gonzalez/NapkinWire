@@ -1,1 +1,0 @@
-# NapkinWire modules package
