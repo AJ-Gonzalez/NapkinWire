@@ -4,15 +4,17 @@
 
 From sketch to prompt in seconds.
 
-**[Try it here!](https://www.napkinwire.lat/)** | **[Demo Video](#demo)** | **[Examples](#examples)**
+**[Try it here!](https://www.napkinwire.lat/)**
 
 ## What it does
 
-Sketch UI layouts with simple rectangles and instantly get LLM-ready prompts.
+Sketch UI layouts with simple rectangles and instantly get LLM-ready prompts, or layout diagrams for Spect Driven Development. 
 
-No accounts, no subscriptions, no BS.
+No accounts, no subscriptions, no BS. 
 
-**The problem:** Describing UI layouts to LLMs (or humans) in text is terrible. "Put a button on the right side, below the form, but not too close to the footer..." 🤮
+Free forever. 
+
+**The problem:** Describing UI layouts to LLMs (or humans) in text is terrible. "Put a button on the right side, below the form, but not too close to the footer..." Yuck!
 
 **The solution:** Draw rectangles. Get perfect prompts. Build your UI.
 
@@ -21,10 +23,6 @@ No accounts, no subscriptions, no BS.
 Built because I needed to mock up UIs quickly for AI coding workflows. Started sketching on actual napkins, realized this could be better.
 
 I wanted the feeling of sketching ideas on the back of a napkin or whiteboard - dead simple, no friction between idea and communication.
-
-**Real world usage:** I used NapkinWire to design NapkinWire's own homepage. It worked on the first try
-
-
 
 ## How it works
 
@@ -124,7 +122,6 @@ No rounded corners.
 
 Just start drawing. Everything updates automatically as you sketch.
 
-**Pro tip:** Use purple rectangles for any area that needs custom content (text, images, forms, etc.).
 
 *Want something specific? [Open an issue](https://github.com/AJ-Gonzalez/NapkinWire/issues)*
 
@@ -151,8 +148,10 @@ Licensed under Apache 2.0 - commercially friendly, use however you want.
 
 ## Contributing
 
-PRs welcome. Philosophy: keep it simple, keep it fast, keep it free.
+PRs welcome. 
+
+Keep it simple, keep it fast, keep it free.
 
 ---
 
-*Built with ❤️ for the "sketch on a napkin" feeling we all miss.*
+*Built for the "sketch on a napkin" feeling we all miss.*
