@@ -22,6 +22,11 @@
             --button_bg: #166534;
             --button_bg_clicked: #0d4322;
             --border: #c4c4c4;
+            /* Dark-mode palette + canvas */
+            --palette-bg: #1f1f1f;
+            --palette-active-bg: #3d3d3d;
+            --palette-fg: #e5e5e5;
+            --canvas-bg: #1e1e1e;
         }
 
         * {
@@ -98,7 +103,8 @@
             padding: 0.5rem 0.75rem;
             border: 2px solid transparent;
             cursor: pointer;
-            background: white;
+            background: var(--palette-bg);
+            color: var(--palette-fg);
             border-radius: 6px;
         }
 
@@ -117,7 +123,7 @@
         }
 
         .color-btn.blue::before {
-            color: #0000ff;
+            color: #4d8eff;
         }
 
         .color-btn.yellow::before {
@@ -129,8 +135,8 @@
         }
 
         .color-btn.active {
-            border-color: var(--fg);
-            background: #f0f0f0;
+            border-color: var(--palette-fg);
+            background: var(--palette-active-bg);
         }
 
         .action-btn {
@@ -149,7 +155,7 @@
         canvas {
             width: 100%;
             max-width: 800px;
-            background-color: #ffffff;
+            background-color: var(--canvas-bg);
             border: 2px solid var(--border);
             border-radius: 8px;
             display: block;
@@ -359,7 +365,7 @@
                 <div class="color-palette">
                     <button data-color="#ff0000" class="color-btn red">Red</button>
                     <button data-color="#00ff00" class="color-btn green">Green</button>
-                    <button data-color="#0000ff" class="color-btn blue">Blue</button>
+                    <button data-color="#4d8eff" class="color-btn blue">Blue</button>
                     <button data-color="#DAA520" class="color-btn yellow">Yellow</button>
                     <button data-color="#ff00ff" class="color-btn purple">[TEXT]</button>
                     <button id="undoBtn" class="action-btn">Undo</button>
@@ -422,7 +428,7 @@
         const uiColorMapping = {
             '#ff0000': '#',  // Red
             '#00ff00': '@',  // Green  
-            '#0000ff': '%',  // Blue
+            '#4d8eff': '%',  // Blue
             '#DAA520': '&',  // Yellow
             '#ff00ff': '.'   // Purple
         };

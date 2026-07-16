@@ -17,7 +17,7 @@ const ctx = canvas.getContext('2d');
 const uiColorMapping = {
     '#ff0000': '#',  // Red
     '#00ff00': '@',  // Green  
-    '#0000ff': '%',  // Blue
+    '#4d8eff': '%',  // Blue
     '#DAA520': '&',  // Yellow
     '#ff00ff': '.'   // Purple
 };

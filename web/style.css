@@ -13,6 +13,11 @@
     --button_bg: #166534;
     --button_bg_clicked: #0d4322;
     --border: #c4c4c4;
+    /* Dark-mode palette + canvas */
+    --palette-bg: #1f1f1f;
+    --palette-active-bg: #3d3d3d;
+    --palette-fg: #e5e5e5;
+    --canvas-bg: #1e1e1e;
 }
 
 * {
@@ -89,10 +94,10 @@ h1 {
     padding: 0.5rem 0.75rem;
     border: 2px solid transparent;
     cursor: pointer;
-    background: white;
+    background: var(--palette-bg);
+    color: var(--palette-fg);
     border-radius: 6px;
 }
-
 .color-btn::before {
     content: '●';
     font-size: 16px;
@@ -108,7 +113,7 @@ h1 {
 }
 
 .color-btn.blue::before {
-    color: #0000ff;
+    color: #4d8eff;
 }
 
 .color-btn.yellow::before {
@@ -120,8 +125,8 @@ h1 {
 }
 
 .color-btn.active {
-    border-color: var(--fg);
-    background: #f0f0f0;
+    border-color: var(--palette-fg);
+    background: var(--palette-active-bg);
 }
 
 .action-btn {
@@ -139,14 +144,12 @@ h1 {
 
 canvas {
     width: 100%;
-    background-color: #ffffff;
+    background-color: var(--canvas-bg);
     border: 2px solid var(--border);
     border-radius: 8px;
     display: block;
     margin: 0 auto;
 }
-
-/* Output Section */
 .output-section {
     flex: 1;
 }
