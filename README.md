@@ -32,15 +32,12 @@ I wanted the feeling of sketching ideas on the back of a napkin or whiteboard - 
 4. **Copy prompt** that actually works with ChatGPT, Claude, Cursor, etc.
 5. **Generate code** in your LLM of choice
 
-## Examples
 
-Here is a sample prompt from the demo.
-
-### UI mockup
+### UI Mockup Example
 
 <details>
 
-<summary>From the Login form demo, here is the prompt</summary>
+<summary>Here is a login form example, showcasing how the text labels work</summary>
 
 
 ```
@@ -102,21 +99,14 @@ No rounded corners.
 
 ## Features
 
-- ✅ Works on mobile (PWA installable)
-- ✅ Touch drawing with snap-to-grid
-- ✅ Multiple layouts (desktop, mobile, square)
-- ✅ Supports both GUI and TUI frameworks
-- ✅ One-click copy to clipboard
-- ✅ Completely free and open source
-- ✅ No data leaves your device
+- Works on mobile (PWA installable)
+- Multiple layouts (desktop, mobile, square)
+- Supports both GUI and TUI frameworks
+- One-click copy to clipboard
+- Completely free and open source
+- No data leaves your device
+- Also provides just the annotated diagram for Spec Driven Development
 
-## Anti-features (by design)
-
-- ❌ No user accounts or login
-- ❌ No data collection or tracking
-- ❌ No subscription fees  
-- ❌ No complex design tools or learning curve
-- ❌ No cloud dependencies
 
 ## Usage
 
