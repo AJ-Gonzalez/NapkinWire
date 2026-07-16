@@ -24,6 +24,10 @@ Built because I needed to mock up UIs quickly for AI coding workflows. Started s
 
 I wanted the feeling of sketching ideas on the back of a napkin or whiteboard - dead simple, no friction between idea and communication.
 
+## Why it works
+
+Because LLMs have poor patial reasoning, and even multimodal SOTA models burn more tokens/usage processing imgages. ASCII graphics are a text native medium and allow LLMs to perfrom spatial reasoning in 2d. 
+
 ## How it works
 
 1. **Draw rectangles** on a canvas (mobile-friendly)
@@ -107,24 +111,6 @@ No rounded corners.
 - No data leaves your device
 - Also provides just the annotated diagram for Spec Driven Development
 
-
-## Usage
-
-Just start drawing. Everything updates automatically as you sketch.
-
-
-*Want something specific? [Open an issue](https://github.com/AJ-Gonzalez/NapkinWire/issues)*
-
-## Installation & Development
-
-```bash
-# Clone and run locally
-git clone https://github.com/AJ-Gonzalez/NapkinWire.git
-cd NapkinWire/web
-python -m http.server 8000  # or your preferred local server
-
-# No build step needed - vanilla JS keeps it simple
-```
 
 ## Who this is for
 
