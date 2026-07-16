@@ -7,17 +7,21 @@
 }
 
 :root {
-    --fg: #166534;
-    --bg: #fefce8;
+    color-scheme: dark;
+    --fg: #e8e6d8;
+    --bg: #1a1e16;
     --button_fg: #fefce8;
     --button_bg: #166534;
     --button_bg_clicked: #0d4322;
-    --border: #c4c4c4;
+    --border: #3a3f33;
     /* Dark-mode palette + canvas */
     --palette-bg: #1f1f1f;
     --palette-active-bg: #3d3d3d;
     --palette-fg: #e5e5e5;
     --canvas-bg: #1e1e1e;
+    --input-bg: #252a20;
+    --input-fg: #e8e6d8;
+    --ascii-bg: #232820;
 }
 
 * {
@@ -32,25 +36,26 @@ body {
 }
 
 header {
-    padding: 1rem;
+    padding: 0.5rem 1rem;
     border-bottom: 2px solid var(--border);
     display: flex;
     justify-content: space-between;
+    align-items: center;
 }
 
 h1 {
     font-family: 'Oswald', sans-serif;
-    font-size: 2rem;
+    font-size: 1.5rem;
     margin: 0;
     margin-right: 2%;
     display: inline-block;
 }
 
 .tagline {
-    margin: 0.5rem 0 0 0;
+    margin: 0.2rem 0 0 0;
     margin-top: auto ;
     font-style: italic;
-    color: #666;
+    color: #9a9a8a;
     display: inline-block;
     justify-self: left;
     align-self: left;
@@ -59,7 +64,7 @@ h1 {
 .app-container {
     display: flex;
     flex-direction: column;
-    min-height: calc(100vh - 120px);
+    min-height: calc(100vh - 70px);
     gap: 1rem;
     padding: 1rem;
 }
@@ -81,7 +86,8 @@ h1 {
     padding: 0.5rem;
     border: 2px solid var(--border);
     border-radius: 4px;
-    background: white;
+    background: var(--input-bg);
+    color: var(--input-fg);
 }
 
 .color-palette {
@@ -165,7 +171,8 @@ canvas {
 .ascii-display {
     font-family: 'Iosevka Mono', monospace;
     font-size: 10px;
-    background-color: #f8f8f8;
+    background-color: var(--ascii-bg);
+    color: var(--input-fg);
     border: 2px solid var(--border);
     padding: 1rem;
     white-space: pre;
@@ -192,12 +199,13 @@ canvas {
     font-weight: bold;
     font-size: 0.9rem;
 }
-
 .input-group input {
     padding: 0.75rem;
     border: 2px solid var(--border);
     border-radius: 4px;
     font-size: 1rem;
+    background-color: var(--input-bg);
+    color: var(--input-fg);
 }
 
 .text-areas {
@@ -221,6 +229,8 @@ canvas {
     padding: 0.5rem;
     border: 2px solid var(--border);
     border-radius: 4px;
+    background-color: var(--input-bg);
+    color: var(--input-fg);
 }
 
 .checkbox-group {
@@ -318,6 +328,8 @@ canvas {
     border-radius: 4px;
     font-size: 1rem;
     font-family: inherit;
+    background-color: var(--input-bg);
+    color: var(--input-fg);
 }
 
 .input-group textarea {

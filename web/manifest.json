@@ -4,7 +4,7 @@
   "description": "Sketch UI layouts, get LLM prompts instantly",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#fefce8",
+  "background_color": "#1a1e16",
   "theme_color": "#166534",
   "icons": [
     {
