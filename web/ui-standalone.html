@@ -330,7 +330,7 @@
             }
 
             canvas {
-                max-width: none;
+                max-width: 100%;
             }
         }
 
@@ -641,26 +641,42 @@ Please create a functional interface that matches this layout exactly. Use the v
         }
 
         // Event listeners
-        document.getElementById('layoutPicker').addEventListener('change', function (e) {
-            const layout = e.target.value;
+        let currentLayout = 'desktop';
 
+        function setCanvasLayout(layout) {
+            currentLayout = layout;
             switch (layout) {
                 case 'desktop':
                     canvas.width = 800;
                     canvas.height = 450;
+                    canvas.style.width = '';
+                    canvas.style.maxHeight = '';
                     break;
                 case 'mobile':
-                    canvas.width = 450;
-                    canvas.height = 800;
+                case 'square': {
+                    // Fit canvas height to available viewport space
+                    const availH = window.innerHeight - canvas.getBoundingClientRect().top - 20;
+                    const h = Math.max(snapSize * 10, Math.floor(availH / snapSize) * snapSize);
+                    const ratio = layout === 'mobile' ? 9 / 16 : 1;
+                    canvas.height = h;
+                    canvas.width = Math.max(snapSize, Math.floor((h * ratio) / snapSize) * snapSize);
+                    canvas.style.width = 'auto';
+                    canvas.style.maxHeight = h + 'px';
                     break;
-                case 'square':
-                    canvas.width = 600;
-                    canvas.height = 600;
-                    break;
+                }
             }
-
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             rectangles = [];
+        }
+
+        document.getElementById('layoutPicker').addEventListener('change', function (e) {
+            setCanvasLayout(e.target.value);
+        });
+
+        window.addEventListener('resize', function () {
+            if (currentLayout !== 'desktop') {
+                setCanvasLayout(currentLayout);
+            }
         });
 
         // Set initial active state

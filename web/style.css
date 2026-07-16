@@ -150,6 +150,7 @@ h1 {
 
 canvas {
     width: 100%;
+    max-width: 100%;
     background-color: var(--canvas-bg);
     border: 2px solid var(--border);
     border-radius: 8px;
