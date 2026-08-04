@@ -28,6 +28,12 @@ let currentLayout = 'desktop';
 
 function setCanvasLayout(layout) {
     currentLayout = layout;
+    applyCanvasSize(layout);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    rectangles = [];
+}
+
+function applyCanvasSize(layout) {
     switch (layout) {
         case 'desktop':
             canvas.width = 800;
@@ -48,9 +54,8 @@ function setCanvasLayout(layout) {
             break;
         }
     }
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    rectangles = [];
 }
+
 
 document.getElementById('layoutPicker').addEventListener('change', function (e) {
     setCanvasLayout(e.target.value);
@@ -58,7 +63,20 @@ document.getElementById('layoutPicker').addEventListener('change', function (e) 
 
 window.addEventListener('resize', function () {
     if (currentLayout !== 'desktop') {
-        setCanvasLayout(currentLayout);
+        const oldW = canvas.width;
+        const oldH = canvas.height;
+        applyCanvasSize(currentLayout);
+        // Remap existing rectangles to the new canvas size so they stay on-grid
+        // and remain consistent with the regenerated ASCII preview.
+        rectangles = rectangles.map(shape => ({
+            ...shape,
+            x: snapToGrid(shape.x * (canvas.width / oldW), snapSize),
+            y: snapToGrid(shape.y * (canvas.height / oldH), snapSize),
+            width: Math.max(snapSize, Math.round(shape.width * (canvas.width / oldW))),
+            height: Math.max(snapSize, Math.round(shape.height * (canvas.height / oldH)))
+        }));
+        redrawCanvas(ctx, rectangles);
+        updateLayout(rectangles, canvas.width, canvas.height, snapSize, uiColorMapping, document.getElementById('ascii-preview'), document.getElementById('rectangle-dropdowns'));
     }
 });
 
@@ -113,7 +131,7 @@ document.addEventListener('mouseup', function (e) {
     const height = pos.y - startY;
 
     // Only add if rectangle has actual size
-    if (Math.abs(width) >= 10 && Math.abs(height) >= 10) {
+    if (Math.abs(width) >= snapSize && Math.abs(height) >= snapSize) {
         rectangles.push({
             x: Math.min(startX, pos.x),
             y: Math.min(startY, pos.y),
@@ -141,16 +159,20 @@ document.addEventListener('mousemove', function (e) {
     // Redraw everything + show preview rectangle
     redrawCanvas(ctx, rectangles);
 
-    // Draw the preview rectangle
+    // Draw the preview rectangle (normalized so dragging up/left works)
+    const px = Math.min(startX, pos.x);
+    const py = Math.min(startY, pos.y);
+    const pw = Math.abs(width);
+    const ph = Math.abs(height);
     ctx.strokeStyle = currentColor;
     ctx.lineWidth = 2;
     if (currentColor === '#ff00ff') {
         // Purple rectangles get filled
         ctx.fillStyle = currentColor;
-        ctx.fillRect(startX, startY, width, height);
+        ctx.fillRect(px, py, pw, ph);
     } else {
         // Other colors just get stroked
-        ctx.strokeRect(startX, startY, width, height);
+        ctx.strokeRect(px, py, pw, ph);
     }
 });
 
@@ -162,20 +184,7 @@ function undoLastRectangle() {
     );
 }
 
-function oldupdateLayout() {
-    // Call with the mapping
-    const ascii_out = generateASCII(rectangles, canvas.width, canvas.height, snapSize, uiColorMapping);
-    document.getElementById('ascii-preview').textContent = ascii_out;
-    generateInputFields(rectangles, document.getElementById('rectangle-dropdowns'), "UI");
-}
-
 document.getElementById('undoBtn').addEventListener('click', undoLastRectangle);
-
-let isTUIMode = false;
-
-document.getElementById('tuiMode').addEventListener('change', function (e) {
-    isTUIMode = e.target.checked;
-});
 
 
 
@@ -279,9 +288,13 @@ document.getElementById("get_prompt").addEventListener('click', function () {
             }, 1500);
         }).catch(() => {
             // Fallback if clipboard fails
+            const originalText = this.textContent;
+            const originalBg = this.style.backgroundColor;
             this.textContent = 'Copy failed';
+            this.style.backgroundColor = '#dc2626';
             setTimeout(() => {
-                this.textContent = 'Get Prompt!';
+                this.textContent = originalText;
+                this.style.backgroundColor = originalBg;
             }, 2000);
         });
     }
@@ -354,16 +367,20 @@ document.addEventListener('touchmove', function (e) {
     // Redraw everything + show preview rectangle
     redrawCanvas(ctx, rectangles);
 
-    // Draw the preview rectangle
+    // Draw the preview rectangle (normalized so dragging up/left works)
+    const px = Math.min(startX, pos.x);
+    const py = Math.min(startY, pos.y);
+    const pw = Math.abs(width);
+    const ph = Math.abs(height);
     ctx.strokeStyle = currentColor;
     ctx.lineWidth = 2;
     if (currentColor === '#ff00ff') {
         // Purple rectangles get filled
         ctx.fillStyle = currentColor;
-        ctx.fillRect(startX, startY, width, height);
+        ctx.fillRect(px, py, pw, ph);
     } else {
         // Other colors just get stroked
-        ctx.strokeRect(startX, startY, width, height);
+        ctx.strokeRect(px, py, pw, ph);
     }
 });
 

@@ -504,9 +504,9 @@
 
             if (shape.type === 'rectangle') {
                 const onLeftOrRight = (pixelX === shape.x || pixelX === shape.x + shape.width - snapSize) &&
-                    (pixelY >= shape.y && pixelY < shape.y + shape.height);
+                    (pixelY >= shape.y && pixelY <= shape.y + shape.height - snapSize);
                 const onTopOrBottom = (pixelY === shape.y || pixelY === shape.y + shape.height - snapSize) &&
-                    (pixelX >= shape.x && pixelX < shape.x + shape.width);
+                    (pixelX >= shape.x && pixelX <= shape.x + shape.width - snapSize);
 
                 return onLeftOrRight || onTopOrBottom;
             }
@@ -645,6 +645,12 @@ Please create a functional interface that matches this layout exactly. Use the v
 
         function setCanvasLayout(layout) {
             currentLayout = layout;
+            applyCanvasSize(layout);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            rectangles = [];
+        }
+
+        function applyCanvasSize(layout) {
             switch (layout) {
                 case 'desktop':
                     canvas.width = 800;
@@ -665,8 +671,6 @@ Please create a functional interface that matches this layout exactly. Use the v
                     break;
                 }
             }
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            rectangles = [];
         }
 
         document.getElementById('layoutPicker').addEventListener('change', function (e) {
@@ -675,7 +679,21 @@ Please create a functional interface that matches this layout exactly. Use the v
 
         window.addEventListener('resize', function () {
             if (currentLayout !== 'desktop') {
-                setCanvasLayout(currentLayout);
+                const oldW = canvas.width;
+                const oldH = canvas.height;
+                applyCanvasSize(currentLayout);
+                // Remap existing rectangles to the new canvas size so they stay on-grid
+                // and remain consistent with the regenerated ASCII preview.
+                rectangles = rectangles.map(shape => ({
+                    ...shape,
+                    x: snapToGrid(shape.x * (canvas.width / oldW), snapSize),
+                    y: snapToGrid(shape.y * (canvas.height / oldH), snapSize),
+                    width: Math.max(snapSize, Math.round(shape.width * (canvas.width / oldW))),
+                    height: Math.max(snapSize, Math.round(shape.height * (canvas.height / oldH)))
+                }));
+                redrawCanvas(ctx, rectangles);
+                updateLayout(rectangles, canvas.width, canvas.height, snapSize, uiColorMapping,
+                    document.getElementById('ascii-preview'), document.getElementById('rectangle-dropdowns'));
             }
         });
 
@@ -706,7 +724,7 @@ Please create a functional interface that matches this layout exactly. Use the v
             const width = pos.x - startX;
             const height = pos.y - startY;
 
-            if (Math.abs(width) >= 10 && Math.abs(height) >= 10) {
+            if (Math.abs(width) >= snapSize && Math.abs(height) >= snapSize) {
                 rectangles.push({
                     x: Math.min(startX, pos.x),
                     y: Math.min(startY, pos.y),
@@ -733,13 +751,17 @@ Please create a functional interface that matches this layout exactly. Use the v
 
             redrawCanvas(ctx, rectangles);
 
+            const px = Math.min(startX, pos.x);
+            const py = Math.min(startY, pos.y);
+            const pw = Math.abs(width);
+            const ph = Math.abs(height);
             ctx.strokeStyle = currentColor;
             ctx.lineWidth = 2;
             if (currentColor === '#ff00ff') {
                 ctx.fillStyle = currentColor;
-                ctx.fillRect(startX, startY, width, height);
+                ctx.fillRect(px, py, pw, ph);
             } else {
-                ctx.strokeRect(startX, startY, width, height);
+                ctx.strokeRect(px, py, pw, ph);
             }
         });
 
@@ -762,13 +784,17 @@ Please create a functional interface that matches this layout exactly. Use the v
 
             redrawCanvas(ctx, rectangles);
 
+            const px = Math.min(startX, pos.x);
+            const py = Math.min(startY, pos.y);
+            const pw = Math.abs(width);
+            const ph = Math.abs(height);
             ctx.strokeStyle = currentColor;
             ctx.lineWidth = 2;
             if (currentColor === '#ff00ff') {
                 ctx.fillStyle = currentColor;
-                ctx.fillRect(startX, startY, width, height);
+                ctx.fillRect(px, py, pw, ph);
             } else {
-                ctx.strokeRect(startX, startY, width, height);
+                ctx.strokeRect(px, py, pw, ph);
             }
         });
 

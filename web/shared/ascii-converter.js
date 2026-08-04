@@ -83,9 +83,9 @@ export function isOnPerimeter(x, y, shape, snapSize) {
 
     if (shape.type === 'rectangle') {
         const onLeftOrRight = (pixelX === shape.x || pixelX === shape.x + shape.width - snapSize) &&
-            (pixelY >= shape.y && pixelY < shape.y + shape.height);
+            (pixelY >= shape.y && pixelY <= shape.y + shape.height - snapSize);
         const onTopOrBottom = (pixelY === shape.y || pixelY === shape.y + shape.height - snapSize) &&
-            (pixelX >= shape.x && pixelX < shape.x + shape.width);
+            (pixelX >= shape.x && pixelX <= shape.x + shape.width - snapSize);
 
         return onLeftOrRight || onTopOrBottom;
     }
