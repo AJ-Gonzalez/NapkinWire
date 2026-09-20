@@ -6,15 +6,24 @@
         <meta name="description"
             content="Sketch UI layouts, get LLM prompts instantly">
         <title>NapkinWire - Sketch to Prompt</title>
-        <link href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap'
-            rel='stylesheet'>
-        <link href='https://cdn.jsdelivr.net/fontsource/fonts/iosevka@5.2.5/latin-400-normal.woff2' as='font' type='font/woff2' crossorigin rel='preload'>
+        <script>
+            (function () {
+                var t = 'dark';
+                try {
+                    t = localStorage.getItem('nw-theme')
+                        || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+                } catch (e) { /* storage unavailable */ }
+                document.documentElement.dataset.theme = t;
+                var meta = document.querySelector('meta[name="theme-color"]');
+                if (meta) meta.setAttribute('content', t === 'light' ? '#f2f6f9' : '#1a1833');
+            })();
+        </script>
         <link rel="icon" type="image/png" sizes="32x32"
             href="./favicon-32x32.png">
         <link rel="apple-touch-icon" href="./icon-192.png">
         <link rel="stylesheet" href="style.css">
         <link rel="manifest" href="manifest.json">
-        <meta name="theme-color" content="#1a1e16">
+        <meta name="theme-color" content="#1a1833">
         <meta property="og:type" content="website">
         <meta property="og:title" content="NapkinWire - From sketch to prompt in seconds">
         <meta property="og:description" content="Sketch UI layouts, get LLM prompts instantly. Free, open source, no accounts.">
@@ -34,14 +43,34 @@
             <h1>NapkinWire</h1>
             <p class="tagline">From sketch to prompt in seconds</p>
 
-            <a href="https://github.com/AJ-Gonzalez/NapkinWire"
-                class="github-btn">
-                <svg width="16" height="16" fill="currentColor"
-                    viewBox="0 0 16 16">
-                    <path
-                        d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z" />
-                </svg>
-            </a>
+            <div class="header-actions">
+                <a href="https://github.com/AJ-Gonzalez/NapkinWire"
+                    class="github-btn">
+                    <svg width="16" height="16" fill="currentColor"
+                        viewBox="0 0 16 16" aria-hidden="true">
+                        <path
+                            d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z" />
+                    </svg>
+                </a>
+
+                <button id="theme-toggle" class="theme-toggle" type="button"
+                    aria-pressed="true" aria-label="Toggle dark theme">
+                    <svg class="icon-moon" width="20" height="20"
+                        viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" aria-hidden="true">
+                        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z" />
+                    </svg>
+                    <svg class="icon-sun" width="20" height="20"
+                        viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="12" cy="12" r="4" />
+                        <path
+                            d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+                    </svg>
+                </button>
+            </div>
 
         </header>
 

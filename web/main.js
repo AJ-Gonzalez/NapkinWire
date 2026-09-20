@@ -9,6 +9,31 @@ import { updateLayout } from './shared/ascii-converter.js';
 import { generateAnnotatedASCII } from './shared/ascii-converter.js';
 
 const canvas = document.getElementById('drawingCanvas');
+
+// Theme toggle: <html data-theme> is pre-set by an inline head script; sync
+// control state and swap the browser chrome color on click.
+const themeToggle = document.getElementById('theme-toggle');
+const THEME_COLORS = { dark: '#1a1833', light: '#f2f6f9' };
+
+function syncThemeControl(theme) {
+    if (themeToggle) {
+        themeToggle.setAttribute('aria-pressed', String(theme === 'dark'));
+    }
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', THEME_COLORS[theme]);
+}
+
+if (themeToggle) {
+    syncThemeControl(document.documentElement.dataset.theme || 'dark');
+    themeToggle.addEventListener('click', () => {
+        const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+        document.documentElement.dataset.theme = next;
+        try {
+            localStorage.setItem('nw-theme', next);
+        } catch (e) { /* storage unavailable, theme still applies */ }
+        syncThemeControl(next);
+    });
+}
 // Touch detection for adjusting snap grid
 const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 const snapSize = isTouchDevice ? 15 : 10; // Bigger grid for touch
@@ -250,13 +275,13 @@ document.getElementById("get_prompt").addEventListener('click', function () {
         .then(data => {
             if (data.success) {
                 this.textContent = 'Sent to Claude!';
-                this.style.backgroundColor = '#059669';
+                this.style.backgroundColor = 'var(--ok)';
                 setTimeout(() => {
                     window.close(); // Close the window after successful send
                 }, 1000);
             } else {
                 this.textContent = 'Send failed';
-                this.style.backgroundColor = '#dc2626';
+                this.style.backgroundColor = 'var(--danger)';
                 setTimeout(() => {
                     this.textContent = originalText;
                     this.style.backgroundColor = 'var(--button_bg)';
@@ -267,7 +292,7 @@ document.getElementById("get_prompt").addEventListener('click', function () {
         .catch(error => {
             console.error('Error sending to Claude:', error);
             this.textContent = 'Send failed';
-            this.style.backgroundColor = '#dc2626';
+            this.style.backgroundColor = 'var(--danger)';
             setTimeout(() => {
                 this.textContent = originalText;
                 this.style.backgroundColor = 'var(--button_bg)';
@@ -280,7 +305,7 @@ document.getElementById("get_prompt").addEventListener('click', function () {
             // Flash the button text
             const originalText = this.textContent;
             this.textContent = 'Copied to Clipboard!';
-            this.style.backgroundColor = '#059669'; // Slightly different green
+            this.style.backgroundColor = 'var(--ok)'; // theme success token
 
             setTimeout(() => {
                 this.textContent = originalText;
@@ -291,7 +316,7 @@ document.getElementById("get_prompt").addEventListener('click', function () {
             const originalText = this.textContent;
             const originalBg = this.style.backgroundColor;
             this.textContent = 'Copy failed';
-            this.style.backgroundColor = '#dc2626';
+            this.style.backgroundColor = 'var(--danger)';
             setTimeout(() => {
                 this.textContent = originalText;
                 this.style.backgroundColor = originalBg;

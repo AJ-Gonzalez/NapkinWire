@@ -1,51 +1,98 @@
 @font-face {
+    font-family: 'Lexend';
+    font-style: normal;
+    font-display: swap;
+    font-weight: 100 900;
+    src: url('fonts/lexend-latin-wght-normal.woff2') format('woff2');
+}
+
+@font-face {
     font-family: 'Iosevka Mono';
     font-style: normal;
     font-display: swap;
     font-weight: 400;
-    src: url(https://cdn.jsdelivr.net/fontsource/fonts/iosevka@5.2.5/latin-400-normal.woff2) format('woff2');
+    src: url('fonts/iosevka-latin-400-normal.woff2') format('woff2');
 }
 
+/* Dark theme (default) — indigo base #3F3B6C, mauve #9F73AB, steel #A3C7D6 */
 :root {
     color-scheme: dark;
-    --fg: #e8e6d8;
-    --bg: #1a1e16;
-    --button_fg: #fefce8;
-    --button_bg: #166534;
-    --button_bg_clicked: #0d4322;
-    --border: #3a3f33;
-    /* Dark-mode palette + canvas */
-    --palette-bg: #2a2e26;
-    --palette-active-bg: #3d3d3d;
-    --palette-fg: #e5e5e5;
-    --canvas-bg: #1e1e1e;
-    --input-bg: #252a20;
-    --input-fg: #e8e6d8;
-    --ascii-bg: #232820;
+    --bg: #1a1833;
+    --fg: #a3c7d6;
+    --muted: #9f73ab;
+    --button_bg: #a3c7d6;
+    --button_fg: #1a1833;
+    --button_bg_clicked: #b8d4e1;
+    --secondary_bg: #9f73ab;
+    --secondary_fg: #1a1833;
+    --secondary_bg_clicked: #ab83b8;
+    --border: #3a3663;
+    --input-border: #7b75b8;
+    --input-bg: #23204a;
+    --input-fg: #a3c7d6;
+    --canvas-bg: #201d3e;
+    --palette-bg: #2b2850;
+    --palette-active-bg: #3a3663;
+    --palette-fg: #d8d2e4;
+    --ascii-bg: #131126;
+    --focus: #a3c7d6;
+    --ok: #a7e8c6;
+    --danger: #f6b3ac;
+}
+
+/* Light theme — same hues, flipped lightness */
+:root[data-theme="light"] {
+    color-scheme: light;
+    --bg: #f2f6f9;
+    --fg: #1c1839;
+    --muted: #5a5370;
+    --button_bg: #3f3b6c;
+    --button_fg: #ffffff;
+    --button_bg_clicked: #322e5b;
+    --secondary_bg: #a87fb6;
+    --secondary_fg: #1c1839;
+    --secondary_bg_clicked: #a176b2;
+    --border: #c9c3da;
+    --input-border: #624f82;
+    --input-bg: #ffffff;
+    --input-fg: #1c1839;
+    --canvas-bg: #ffffff;
+    --palette-bg: #e7e3ef;
+    --palette-active-bg: #d8d3e4;
+    --palette-fg: #241f44;
+    --ascii-bg: #edeaf4;
+    --focus: #624f82;
+    --ok: #17703c;
+    --danger: #b3261e;
 }
 
 * {
     box-sizing: border-box;
 }
 
+:focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 2px;
+}
+
 body {
     margin: 0;
     background-color: var(--bg);
     color: var(--fg);
-    font-family: 'Inter', sans-serif;
+    font-family: 'Lexend', sans-serif;
 }
 
 header {
     padding: 0.5rem 1rem;
     border-bottom: 2px solid var(--border);
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
 }
 
 h1 {
-    font-family: 'Oswald', sans-serif;
     font-size: 1.5rem;
+    font-weight: 700;
     margin: 0;
     margin-right: 2%;
     display: inline-block;
@@ -53,12 +100,46 @@ h1 {
 
 .tagline {
     margin: 0.2rem 0 0 0;
-    margin-top: auto ;
+    margin-top: auto;
     font-style: italic;
-    color: #9a9a8a;
+    color: var(--muted);
     display: inline-block;
-    justify-self: left;
-    align-self: left;
+}
+
+.header-actions {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.theme-toggle {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    display: grid;
+    place-items: center;
+    background: var(--palette-bg);
+    color: var(--palette-fg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.theme-toggle:hover {
+    background: var(--palette-active-bg);
+}
+
+.theme-toggle .icon-moon {
+    display: none;
+}
+
+[data-theme="light"] .theme-toggle .icon-sun {
+    display: none;
+}
+
+[data-theme="light"] .theme-toggle .icon-moon {
+    display: block;
 }
 
 .app-container {
@@ -84,10 +165,11 @@ h1 {
 
 .layout-select {
     padding: 0.5rem;
-    border: 2px solid var(--border);
+    border: 2px solid var(--input-border);
     border-radius: 4px;
     background: var(--input-bg);
     color: var(--input-fg);
+    font-family: inherit;
 }
 
 .color-palette {
@@ -103,6 +185,7 @@ h1 {
     background: var(--palette-bg);
     color: var(--palette-fg);
     border-radius: 6px;
+    font-family: inherit;
 }
 .color-btn::before {
     content: '●';
@@ -137,15 +220,16 @@ h1 {
 
 .action-btn {
     padding: 0.5rem 1rem;
-    background-color: var(--button_bg);
-    color: var(--button_fg);
+    background-color: var(--secondary_bg);
+    color: var(--secondary_fg);
     border: none;
     border-radius: 6px;
     cursor: pointer;
+    font-family: inherit;
 }
 
 .action-btn:hover {
-    background-color: var(--button_bg_clicked);
+    background-color: var(--secondary_bg_clicked);
 }
 
 canvas {
@@ -197,16 +281,17 @@ canvas {
 }
 
 .input-group label {
-    font-weight: bold;
+    font-weight: 600;
     font-size: 0.9rem;
 }
 .input-group input {
     padding: 0.75rem;
-    border: 2px solid var(--border);
+    border: 2px solid var(--input-border);
     border-radius: 4px;
     font-size: 1rem;
     background-color: var(--input-bg);
     color: var(--input-fg);
+    font-family: inherit;
 }
 
 .text-areas {
@@ -222,16 +307,17 @@ canvas {
 }
 
 .text-areas label {
-    font-weight: bold;
+    font-weight: 600;
     font-size: 0.9rem;
 }
 
 .text-areas input {
     padding: 0.5rem;
-    border: 2px solid var(--border);
+    border: 2px solid var(--input-border);
     border-radius: 4px;
     background-color: var(--input-bg);
     color: var(--input-fg);
+    font-family: inherit;
 }
 
 .checkbox-group {
@@ -243,6 +329,7 @@ canvas {
 .checkbox-group input[type="checkbox"] {
     width: 18px;
     height: 18px;
+    accent-color: var(--button_bg);
 }
 
 .button-group {
@@ -259,9 +346,10 @@ canvas {
     border: none;
     border-radius: 6px;
     font-size: 1.1rem;
-    font-weight: bold;
+    font-weight: 600;
     cursor: pointer;
     transition: background-color 0.2s;
+    font-family: inherit;
 }
 
 .primary-btn:hover {
@@ -303,14 +391,9 @@ canvas {
 }
 
 .github-btn {
-
     padding: 10px 12px;
-    margin-bottom: 5px;
-    background: #166534;
-    margin-inline-end: 0px;
-    /* Your forest green */
-    color: #fefce8;
-    /* Your cream */
+    background: var(--button_bg);
+    color: var(--button_fg);
     text-decoration: none;
     border-radius: 6px;
     font-weight: 500;
@@ -318,14 +401,13 @@ canvas {
 }
 
 .github-btn:hover {
-    background: #124a26;
-    /* Darker green on hover */
+    background: var(--button_bg_clicked);
 }
 
 .input-group input,
 .input-group textarea {
     padding: 0.75rem;
-    border: 2px solid var(--border);
+    border: 2px solid var(--input-border);
     border-radius: 4px;
     font-size: 1rem;
     font-family: inherit;
@@ -335,4 +417,11 @@ canvas {
 
 .input-group textarea {
     resize: vertical;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .primary-btn,
+    .github-btn {
+        transition: none;
+    }
 }

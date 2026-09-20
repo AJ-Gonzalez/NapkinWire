@@ -4,56 +4,115 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NapkinWire - UI Mockup Tool (Standalone)</title>
-    <link href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap' rel='stylesheet'>
-    <link href='https://cdn.jsdelivr.net/fontsource/fonts/iosevka@5.2.5/latin-400-normal.woff2' as='font' type='font/woff2' crossorigin rel='preload'>
+    <script>
+        (function () {
+            var t = 'dark';
+            try {
+                t = localStorage.getItem('nw-theme')
+                    || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+            } catch (e) { /* storage unavailable */ }
+            document.documentElement.dataset.theme = t;
+            var meta = document.querySelector('meta[name="theme-color"]');
+            if (meta) meta.setAttribute('content', t === 'light' ? '#f2f6f9' : '#1a1833');
+        })();
+    </script>
+    <meta name="theme-color" content="#1a1833">
     <style>
+        @font-face {
+            font-family: 'Lexend';
+            font-style: normal;
+            font-display: swap;
+            font-weight: 100 900;
+            src: url('fonts/lexend-latin-wght-normal.woff2') format('woff2');
+        }
+
         @font-face {
             font-family: 'Iosevka Mono';
             font-style: normal;
             font-display: swap;
             font-weight: 400;
-            src: url(https://cdn.jsdelivr.net/fontsource/fonts/iosevka@5.2.5/latin-400-normal.woff2) format('woff2');
+            src: url('fonts/iosevka-latin-400-normal.woff2') format('woff2');
         }
 
+        /* Dark theme (default) — indigo base #3F3B6C, mauve #9F73AB, steel #A3C7D6 */
         :root {
             color-scheme: dark;
-            --fg: #e8e6d8;
-            --bg: #1a1e16;
-            --button_fg: #fefce8;
-            --button_bg: #166534;
-            --button_bg_clicked: #0d4322;
-            --border: #3a3f33;
-            /* Dark-mode palette + canvas */
-            --palette-bg: #2a2e26;
-            --palette-active-bg: #3d3d3d;
-            --palette-fg: #e5e5e5;
-            --canvas-bg: #1e1e1e;
-            --input-bg: #252a20;
-            --input-fg: #e8e6d8;
-            --ascii-bg: #232820;
+            --fg: #a3c7d6;
+            --bg: #1a1833;
+            --muted: #9f73ab;
+            --button_fg: #1a1833;
+            --button_bg: #a3c7d6;
+            --button_bg_clicked: #b8d4e1;
+            --secondary_bg: #9f73ab;
+            --secondary_fg: #1a1833;
+            --secondary_bg_clicked: #ab83b8;
+            --border: #3a3663;
+            --input-border: #7b75b8;
+            --palette-bg: #2b2850;
+            --palette-active-bg: #3a3663;
+            --palette-fg: #d8d2e4;
+            --canvas-bg: #201d3e;
+            --input-bg: #23204a;
+            --input-fg: #a3c7d6;
+            --ascii-bg: #131126;
+            --focus: #a3c7d6;
+            --ok: #a7e8c6;
+            --danger: #f6b3ac;
+        }
+
+        /* Light theme — same hues, flipped lightness */
+        :root[data-theme="light"] {
+            color-scheme: light;
+            --fg: #1c1839;
+            --bg: #f2f6f9;
+            --muted: #5a5370;
+            --button_fg: #ffffff;
+            --button_bg: #3f3b6c;
+            --button_bg_clicked: #322e5b;
+            --secondary_bg: #a87fb6;
+            --secondary_fg: #1c1839;
+            --secondary_bg_clicked: #a176b2;
+            --border: #c9c3da;
+            --input-border: #624f82;
+            --palette-bg: #e7e3ef;
+            --palette-active-bg: #d8d3e4;
+            --palette-fg: #241f44;
+            --canvas-bg: #ffffff;
+            --input-bg: #ffffff;
+            --input-fg: #1c1839;
+            --ascii-bg: #edeaf4;
+            --focus: #624f82;
+            --ok: #17703c;
+            --danger: #b3261e;
         }
 
         * {
             box-sizing: border-box;
         }
 
+        :focus-visible {
+            outline: 3px solid var(--focus);
+            outline-offset: 2px;
+        }
+
         body {
             margin: 0;
             background-color: var(--bg);
             color: var(--fg);
-            font-family: 'Inter', sans-serif;
+            font-family: 'Lexend', sans-serif;
         }
 
         header {
             padding: 0.5rem 1rem;
             border-bottom: 2px solid var(--border);
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-start;
             align-items: center;
         }
 
         h1 {
             font-size: 1.5rem;
+            font-weight: 700;
             margin: 0;
             margin-right: 2%;
             display: inline-block;
@@ -63,10 +122,43 @@
             margin: 0.2rem 0 0 0;
             margin-top: auto;
             font-style: italic;
-            color: #9a9a8a;
+            color: var(--muted);
             display: inline-block;
-            justify-self: left;
-            align-self: left;
+        }
+
+        .header-actions {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+        }
+
+        .theme-toggle {
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            display: grid;
+            place-items: center;
+            background: var(--palette-bg);
+            color: var(--palette-fg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .theme-toggle:hover {
+            background: var(--palette-active-bg);
+        }
+
+        .theme-toggle .icon-moon {
+            display: none;
+        }
+
+        [data-theme="light"] .theme-toggle .icon-sun {
+            display: none;
+        }
+
+        [data-theme="light"] .theme-toggle .icon-moon {
+            display: block;
         }
 
         .app-container {
@@ -90,10 +182,11 @@
 
         .layout-select {
             padding: 0.5rem;
-            border: 2px solid var(--border);
+            border: 2px solid var(--input-border);
             border-radius: 4px;
             background: var(--input-bg);
             color: var(--input-fg);
+            font-family: inherit;
         }
 
         .color-palette {
@@ -109,6 +202,7 @@
             background: var(--palette-bg);
             color: var(--palette-fg);
             border-radius: 6px;
+            font-family: inherit;
         }
 
         .color-btn::before {
@@ -144,15 +238,16 @@
 
         .action-btn {
             padding: 0.5rem 1rem;
-            background-color: var(--button_bg);
-            color: var(--button_fg);
+            background-color: var(--secondary_bg);
+            color: var(--secondary_fg);
             border: none;
             border-radius: 6px;
             cursor: pointer;
+            font-family: inherit;
         }
 
         .action-btn:hover {
-            background-color: var(--button_bg_clicked);
+            background-color: var(--secondary_bg_clicked);
         }
 
         canvas {
@@ -185,7 +280,7 @@
         .context-display p {
             margin: 0;
             font-style: italic;
-            color: #9a9a8a;
+            color: var(--muted);
         }
 
         .ascii-display {
@@ -223,7 +318,7 @@
         .input-group input,
         .input-group textarea {
             padding: 0.75rem;
-            border: 2px solid var(--border);
+            border: 2px solid var(--input-border);
             border-radius: 4px;
             font-size: 1rem;
             font-family: inherit;
@@ -254,10 +349,11 @@
 
         .text-areas input {
             padding: 0.5rem;
-            border: 2px solid var(--border);
+            border: 2px solid var(--input-border);
             border-radius: 4px;
             background-color: var(--input-bg);
             color: var(--input-fg);
+            font-family: inherit;
         }
 
         .checkbox-group {
@@ -269,6 +365,7 @@
         .checkbox-group input[type="checkbox"] {
             width: 18px;
             height: 18px;
+            accent-color: var(--button_bg);
         }
 
         .primary-btn {
@@ -278,9 +375,10 @@
             border: none;
             border-radius: 6px;
             font-size: 1.1rem;
-            font-weight: bold;
+            font-weight: 600;
             cursor: pointer;
             transition: background-color 0.2s;
+            font-family: inherit;
         }
 
         .primary-btn:hover {
@@ -353,6 +451,24 @@
             <h1>NapkinWire</h1>
             <p class="tagline">Standalone UI Mockup Tool</p>
         </div>
+
+        <div class="header-actions">
+            <button id="theme-toggle" class="theme-toggle" type="button"
+                aria-pressed="true" aria-label="Toggle dark theme">
+                <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24"
+                    fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z" />
+                </svg>
+                <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24"
+                    fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="4" />
+                    <path
+                        d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+                </svg>
+            </button>
+        </div>
     </header>
 
     <main class="app-container">
@@ -422,13 +538,38 @@
                 <div class="result-area">
                     <h3>Generated Prompt:</h3>
                     <textarea id="resultText" readonly placeholder="Draw your mockup and click 'Generate Prompt'"></textarea>
-                    <button id="saveResult" class="primary-btn" style="background: green; margin-top: 10px;">Save & Return to Claude</button>
+                    <button id="saveResult" class="primary-btn" style="margin-top: 10px;">Save & Return to Claude</button>
                 </div>
             </div>
         </section>
     </main>
 
     <script>
+        // Theme toggle: <html data-theme> is pre-set by an inline head script; sync
+        // control state and swap the browser chrome color on click.
+        const themeToggle = document.getElementById('theme-toggle');
+        const THEME_COLORS = { dark: '#1a1833', light: '#f2f6f9' };
+
+        function syncThemeControl(theme) {
+            if (themeToggle) {
+                themeToggle.setAttribute('aria-pressed', String(theme === 'dark'));
+            }
+            const meta = document.querySelector('meta[name="theme-color"]');
+            if (meta) meta.setAttribute('content', THEME_COLORS[theme]);
+        }
+
+        if (themeToggle) {
+            syncThemeControl(document.documentElement.dataset.theme || 'dark');
+            themeToggle.addEventListener('click', () => {
+                const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+                document.documentElement.dataset.theme = next;
+                try {
+                    localStorage.setItem('nw-theme', next);
+                } catch (e) { /* storage unavailable, theme still applies */ }
+                syncThemeControl(next);
+            });
+        }
+
         // Constants and variables
         const canvas = document.getElementById('drawingCanvas');
         const ctx = canvas.getContext('2d');
@@ -866,7 +1007,7 @@ Please create a functional interface that matches this layout exactly. Use the v
 
             const originalText = this.textContent;
             this.textContent = 'Prompt Generated!';
-            this.style.backgroundColor = '#059669';
+            this.style.backgroundColor = 'var(--ok)';
 
             setTimeout(() => {
                 this.textContent = originalText;
@@ -881,10 +1022,10 @@ Please create a functional interface that matches this layout exactly. Use the v
                 // For now, just copy to clipboard as fallback
                 navigator.clipboard.writeText(result).then(() => {
                     this.textContent = 'Copied to Clipboard!';
-                    this.style.backgroundColor = '#059669';
+                    this.style.backgroundColor = 'var(--ok)';
                     setTimeout(() => {
                         this.textContent = 'Save & Return to Claude';
-                        this.style.backgroundColor = 'green';
+                        this.style.backgroundColor = 'var(--button_bg)';
                     }, 2000);
                 }).catch(() => {
                     alert('Result ready! Copy the text manually and return to Claude.');
