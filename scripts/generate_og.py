@@ -16,16 +16,15 @@ WEB = ROOT / "web"
 LOGO_PATH = WEB / "icon-512.png"
 OUT_PATH = WEB / "og-image.png"
 
-# Brand palette (kept in sync with web/style.css :root)
-BG = (0x1A, 0x1E, 0x16)        # --bg
-FG = (0xE8, 0xE6, 0xD8)        # --fg (wordmark)
-TAGLINE = (0x9A, 0x9A, 0x8A)   # .tagline color
-ACCENT = (0x16, 0x65, 0x34)    # --button_bg / theme_color
-BORDER = (0x3A, 0x3F, 0x33)    # --border
+# Brand palette (kept in sync with web/style.css :root — dark default)
+BG = (0x1A, 0x18, 0x33)        # --bg
+FG = (0xA3, 0xC7, 0xD6)        # --fg (wordmark)
+TAGLINE = (0x9F, 0x73, 0xAB)   # --muted (tagline color)
+ACCENT = (0xA3, 0xC7, 0xD6)    # --button_bg (divider)
+BORDER = (0x3A, 0x36, 0x63)    # --border
 
-# Inter.ttc face indices (probed via ImageFont.getname()).
-INTER_DISPLAY_BLACK = 18
-INTER_MEDIUM_ITALIC = 11
+# Bundled Lexend variable font (web/fonts) — one face, weight via variation.
+LEXEND_PATH = WEB / "fonts" / "lexend-latin-wght-normal.woff2"
 
 CARD_W, CARD_H = 1200, 630
 
@@ -33,8 +32,10 @@ CARD_W, CARD_H = 1200, 630
 SAFE = 60
 
 
-def load_font(size: int, index: int) -> ImageFont.FreeTypeFont:
-    return ImageFont.truetype("/usr/share/fonts/truetype/Inter.ttc", size, index=index)
+def load_font(size: int, weight: int = 400) -> ImageFont.FreeTypeFont:
+    font = ImageFont.truetype(str(LEXEND_PATH), size)
+    font.set_variation_by_axes([weight])
+    return font
 
 
 def text_size(draw: ImageDraw.ImageDraw, text: str, font: ImageFont.FreeTypeFont):
@@ -66,7 +67,7 @@ def main():
 
     # --- Wordmark ------------------------------------------------------
     wordmark = "NapkinWire"
-    wm_font = load_font(82, INTER_DISPLAY_BLACK)
+    wm_font = load_font(82, weight=700)
     wm_h = centered_text(draw, wordmark, wm_font, FG, CARD_W // 2, ly + logo_size + 26)
 
     # --- Accent divider ------------------------------------------------
@@ -80,7 +81,7 @@ def main():
 
     # --- Tagline -------------------------------------------------------
     tagline = "From sketch to prompt in seconds"
-    tag_font = load_font(38, INTER_MEDIUM_ITALIC)
+    tag_font = load_font(38)
     centered_text(draw, tagline, tag_font, TAGLINE, CARD_W // 2, divider_y + 24)
 
     # --- Subtle inner frame (within safe zone) ------------------------
